@@ -1,0 +1,45 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/*.local
+
+# Python / backend (from Step 2 onward)
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Runtime data and models
+data/raw/
+data/processed/
+*.sqlite3
+*.db
+*.onnx
+*.joblib
+*.pt
+*.pth
+
+# Keep manifests, small fixtures, and documentation under version control.
+!data/catalog/
+!data/cases/
+!models/**/manifest.json
+
+# Desktop build outputs
+src-tauri/target/
+dist-desktop/
+
+# Logs and local settings
+*.log
+.env
+.env.*
+!.env.example
+
+# System / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+

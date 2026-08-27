@@ -1,0 +1,16 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": ["frontend/src"],
+  "locale": "zh-CN",
+  "canonicalMap": "UX-CONTRACT.md",
+  "requiredCapabilities": ["Scrollbar"],
+  "ownership": {
+    "Scrollbar": "global-application-stylesheet"
+  },
+  "requiredCommands": ["build"],
+  "commands": {
+    "build": "npm --prefix frontend run build"
+  },
+  "evidence": {}
+}
+
