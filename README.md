@@ -38,4 +38,6 @@ npm --prefix frontend run dev
 
 ## 开发状态
 
-持续状态记录在 [TASK_STATE.md](TASK_STATE.md)。下一步只做前后端、数据库和实时连接，不提前训练模型。
+持续状态记录在 [TASK_STATE.md](TASK_STATE.md)。下一步先完成已经确认的 Tabler 前端迁移；迁移完成并经用户再次确认后，才开始后端、数据库和实时连接。模型训练不会提前开始。
+
+跨对话继续开发时，必须先完整阅读 [CONTEXT_HANDOFF.md](CONTEXT_HANDOFF.md)。当前已确认的下一项工作是 Tabler 前端迁移；完成后再决定是否进入后端阶段。
