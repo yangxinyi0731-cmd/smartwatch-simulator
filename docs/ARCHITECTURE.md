@@ -7,6 +7,8 @@ Windows 浏览器中的 Vue 前端
        ├─ GET /api/contracts ───────────┤
        ├─ GET /api/cases ───────────────┤
        ├─ GET /api/models ──────────────┤
+       ├─ GET /api/reports ─────────────┤
+       ├─ GET /api/reports/export.json ─┤
        ├─ GET /api/cases/{id}/          │
        │       replay-preview ──────────┤
        └─ WS /ws/system ────────────────┤
@@ -26,10 +28,10 @@ import_runs / case_import_runs
 case_source_files / sensor_quality / ground_truth_events
 routine_profiles / routine_events
 
-模型适配器（尚未接入）
-├─ 跌倒检测 ONNX
-├─ 个人规律异常统计规则
-└─ 腕部活动识别 ONNX
+模型适配器
+├─ 跌倒检测 ONNX（已接入研究版）
+├─ 个人规律异常统计规则（已接入研究版）
+└─ 腕部活动识别 ONNX（训练与登记中）
 ```
 
 ## 当前数据流
@@ -45,7 +47,8 @@ routine_profiles / routine_events
 9. `/api/models` 返回已登记 manifest 的版本、artifact 哈希、评估引用、限制和审批状态；
 10. `/api/cases/{case_id}/replay-preview` 从 SQLite 重建合同，再次校验本地路径、文件 SHA-256、NPY 形状和有限数值；WEDA 案例运行固定跌倒 ONNX，合成规律案例运行保存的统计规则；
 11. 前端只读播放 API 返回的真实波形、标签、候选告警或合成规律逐日判断；开始、暂停和重置当前不写数据库，WebSocket 仍只传系统状态；
-12. 原始文件保持只读，处理后的 50 Hz 六轴数组保存在 Git 忽略目录，SQLite 只保存相对路径、哈希、质量和标签。
+12. `/api/reports` 只读取已登记 manifest 对应的本地评估文件，按模型语义规范化展示并重新计算报告 SHA-256；导出端点返回同一结构的可下载 JSON；
+13. 原始文件保持只读，处理后的 50 Hz 六轴数组保存在 Git 忽略目录，SQLite 只保存相对路径、哈希、质量和标签。
 
 ## HTTP 合同
 
@@ -90,6 +93,10 @@ SQLite 正常时返回 HTTP 200；后端仍能响应但数据库不可用时返�
 ### `GET /api/cases/{case_id}/replay-preview`
 
 这是当前总览页使用的只读回放数据接口。传感器案例在读取时验证仓库内路径、文件哈希、数组形状、`float32` 与有限值，再用固定 manifest 运行逐窗推理；响应只为绘图等距抽取真实点，不生成新数值。规律案例按日期返回已登记的 100 天合成事件和三项独立规则评估。不存在的案例返回不泄漏内部信息的 404，本地数据损坏或缺失返回可重试 503。
+
+### `GET /api/reports` 与 `GET /api/reports/export.json`
+
+报告清单只处理 SQLite 已登记模型，并从项目内安全相对路径读取实际 JSON 报告。跌倒报告明确标为同源行为重放，规律报告明确标为确定性规则场景，活动报告完成后标为同数据集不重叠参与者留出；三者都不能冒充独立外部验证。响应包含实际报告文件 SHA-256、指标解释、manifest 限制、外部验证与部署审批状态。导出端点返回同一内容并设置下载文件名，不生成新的模型成绩。
 
 ## SQLite 结构版本 4
 
@@ -152,5 +159,5 @@ npm --prefix frontend run generate:api
 - 可用 `SMARTWATCH_DATABASE_PATH` 指定绝对路径；
 - Uvicorn 只监听 `127.0.0.1`；
 - 当前无账号、权限、局域网服务或互联网发布；
-- 当前已有本机案例文件但仍无模型推理和真实设备流，WebSocket 只发送系统状态；
+- 当前已有两个研究版模型推理和本机案例文件，但无真实设备流；WebSocket 只发送系统状态；
 - GitHub 远程仓库仍未配置，本阶段只有公开资料检索，没有发布项目。

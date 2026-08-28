@@ -133,6 +133,52 @@ def test_model_catalog_returns_registered_research_manifest(tmp_path: Path) -> N
     assert item["external_validation_completed"] is False
 
 
+def test_report_catalog_normalizes_saved_evidence_without_overclaiming(
+    tmp_path: Path,
+) -> None:
+    database_path = tmp_path / "reports-test.sqlite3"
+    sync(database_path)
+
+    with TestClient(create_app(database_path=database_path)) as client:
+        response = client.get("/api/reports")
+
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-store"
+    payload = response.json()
+    assert payload["total"] == 2
+    by_kind = {item["model_kind"]: item for item in payload["items"]}
+    fall = by_kind["FALL_DETECTION"]
+    assert fall["evidence_scope"] == "same_source_behavior_replay"
+    assert fall["deployment_approved"] is False
+    assert len(fall["report_sha256"]) == 64
+    assert {
+        metric["key"]: metric["display_value"] for metric in fall["metrics"]
+    }["simulated_fall_alert_overlap"] == "40 / 40"
+    assert "不是实际老人跌倒" in fall["evidence_scope_note"]
+    routine = by_kind["ROUTINE_ANOMALY"]
+    assert routine["evidence_scope"] == "deterministic_rule_scenarios"
+    assert {
+        metric["key"]: metric["display_value"] for metric in routine["metrics"]
+    }["rule_scenarios_passed"] == "5 / 5 通过"
+    assert all(item["external_validation_completed"] is False for item in payload["items"])
+    assert any("不合并" in item for item in payload["disclaimers"])
+
+
+def test_report_export_is_a_downloadable_json_snapshot(tmp_path: Path) -> None:
+    database_path = tmp_path / "report-export-test.sqlite3"
+    sync(database_path)
+
+    with TestClient(create_app(database_path=database_path)) as client:
+        response = client.get("/api/reports/export.json")
+
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["content-disposition"] == (
+        'attachment; filename="smartwatch-model-evaluation-reports.json"'
+    )
+    assert response.json()["total"] == 2
+
+
 def test_routine_replay_preview_uses_registered_synthetic_events(tmp_path: Path) -> None:
     database_path = tmp_path / "routine-preview.sqlite3"
     sync(database_path)

@@ -6,6 +6,8 @@ import {
   IconCalendarStats,
   IconDatabaseOff,
   IconDeviceWatch,
+  IconDownload,
+  IconFileAnalytics,
   IconFileSearch,
   IconPlayerPause,
   IconPlayerPlay,
@@ -25,6 +27,7 @@ import StatusBadge from './components/StatusBadge.vue'
 import type { CaseListItem, ModelKind, TruthCategory } from './api/generated'
 import { useCatalog } from './composables/useCatalog'
 import { useReplayPreview } from './composables/useReplayPreview'
+import { useReports } from './composables/useReports'
 import { useSystemConnection } from './composables/useSystemConnection'
 
 type BadgeTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger'
@@ -57,6 +60,13 @@ const {
   errorMessage: catalogError,
   refresh: refreshCatalog,
 } = useCatalog()
+const {
+  reports,
+  disclaimers: reportDisclaimers,
+  isLoading: isReportsLoading,
+  errorMessage: reportError,
+  refresh: refreshReports,
+} = useReports()
 const selectedCaseId = ref('')
 const truthFilter = ref<'ALL' | TruthCategory>('ALL')
 const {
@@ -787,6 +797,91 @@ const replayOutputs = computed(() => [
           </dl>
           <StatusBadge :tone="model.tone">{{ model.status }}</StatusBadge>
         </article>
+      </div>
+    </AppCard>
+
+    <AppCard id="reports" class="reports-card" aria-labelledby="reports-title">
+      <template #header>
+        <div class="app-card__heading">
+          <span class="app-card__icon" aria-hidden="true">
+            <IconFileAnalytics :size="20" :stroke-width="1.8" />
+          </span>
+          <div>
+            <h2 id="reports-title" class="card-title">测试报告</h2>
+            <p>直接读取已保存评估文件；每份报告附带范围说明与文件哈希。</p>
+          </div>
+        </div>
+        <div class="report-header-actions">
+          <StatusBadge :tone="reports.length ? 'info' : 'neutral'">
+            {{ isReportsLoading ? '正在读取' : `${reports.length} 份可用` }}
+          </StatusBadge>
+          <a
+            class="app-button app-button--neutral app-button--outline report-download"
+            href="/api/reports/export.json"
+            download="smartwatch-model-evaluation-reports.json"
+          >
+            <IconDownload :size="16" :stroke-width="1.8" aria-hidden="true" />
+            下载 JSON
+          </a>
+        </div>
+      </template>
+
+      <p v-if="reportError" class="connection-message connection-message--warning" role="alert">
+        {{ reportError }}
+        <button class="text-action" type="button" @click="refreshReports">重新读取</button>
+      </p>
+
+      <div v-if="reports.length" class="report-grid">
+        <article v-for="report in reports" :key="report.report_id" class="report-panel">
+          <header>
+            <div>
+              <span>{{ modelLabels[report.model_kind] }}</span>
+              <h3>{{ report.title }}</h3>
+            </div>
+            <StatusBadge tone="info">研究版</StatusBadge>
+          </header>
+          <p class="report-panel__scope">{{ report.evidence_scope_note }}</p>
+          <dl class="report-metrics">
+            <div v-for="metric in report.metrics" :key="metric.key">
+              <dt>{{ metric.label }}</dt>
+              <dd>{{ metric.display_value }}</dd>
+              <p>{{ metric.interpretation }}</p>
+            </div>
+          </dl>
+          <details class="report-limitations">
+            <summary>查看 {{ report.limitations.length }} 条限制</summary>
+            <ul>
+              <li v-for="limitation in report.limitations" :key="limitation">{{ limitation }}</li>
+            </ul>
+          </details>
+          <dl class="report-integrity">
+            <div>
+              <dt>报告文件</dt>
+              <dd>{{ report.report_relative_path }}</dd>
+            </div>
+            <div>
+              <dt>SHA-256</dt>
+              <dd :title="report.report_sha256">{{ report.report_sha256.slice(0, 16) }}…</dd>
+            </div>
+          </dl>
+        </article>
+      </div>
+
+      <EmptyState
+        v-else-if="!isReportsLoading && !reportError"
+        title="尚无可显示的测试报告"
+        description="只有已登记模型且本地评估文件通过读取后，才会出现在这里。"
+      >
+        <template #icon>
+          <IconFileAnalytics :size="30" :stroke-width="1.7" />
+        </template>
+      </EmptyState>
+
+      <div v-if="reportDisclaimers.length" class="report-disclaimers" role="note">
+        <IconShieldCheck :size="22" :stroke-width="1.7" aria-hidden="true" />
+        <ul>
+          <li v-for="message in reportDisclaimers" :key="message">{{ message }}</li>
+        </ul>
       </div>
     </AppCard>
   </AppShell>

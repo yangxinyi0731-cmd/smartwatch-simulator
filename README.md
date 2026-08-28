@@ -16,6 +16,8 @@
 - `GET /api/contracts`：真实性类别、三模型固定输入输出和回放事件合同；
 - `GET /api/cases`：真实服务端分页、筛选和白名单排序；
 - `GET /api/models`：从 SQLite 读取模型版本、artifact 哈希、评估引用、审批状态和局限；
+- `GET /api/reports`：把已登记模型的本地评估文件规范化为带证据范围、限制和报告 SHA-256 的统一清单；
+- `GET /api/reports/export.json`：下载当前统一测试报告 JSON 快照；
 - `GET /api/cases/{case_id}/replay-preview`：重新校验本地文件并返回真实波形、标签、模型窗口、候选告警或合成规律逐日判断；
 - Pydantic → OpenAPI/JSON Schema → TypeScript 的可重复生成链；
 - 前端自动检查、断线重试和手动刷新；
@@ -24,11 +26,12 @@
 - 每条案例的原始文件 SHA-256、处理文件 SHA-256、质量标记和标签边界；
 - 已核验接入的跌倒 ONNX、100 案例重放报告、100 天合成规律与统计规则；
 - 前端按真实性筛选案例、开始/暂停/继续/重置回放、1×–16×速度、六轴波形、证据时间线和数据质量展示。
+- 前端测试报告区域：实读保存的评估文件、显示适用范围与限制，并提供 JSON 下载。
 
 尚未完成：
 
 - 腕部活动识别模型训练；
-- 批量测试、独立报告页面和导出流程；
+- 可持久恢复的批量重放任务；
 - 真实设备接入；
 - Windows 一键交付包和 GitHub 远程发布。
 
@@ -71,6 +74,10 @@ FastAPI 接口文档：`http://127.0.0.1:8000/docs`
 案例目录：`http://127.0.0.1:8000/api/cases`
 
 模型清单：`http://127.0.0.1:8000/api/models`
+
+测试报告：`http://127.0.0.1:8000/api/reports`
+
+测试报告 JSON 下载：`http://127.0.0.1:8000/api/reports/export.json`
 
 单案例回放预览：`http://127.0.0.1:8000/api/cases/weda-f01-u01_r01/replay-preview`
 

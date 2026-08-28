@@ -134,6 +134,41 @@ class ModelListResponse(ApiModel):
     total: int = Field(ge=0)
 
 
+class ReportMetric(ApiModel):
+    key: str
+    label: str
+    display_value: str
+    numeric_value: float | int | None
+    interpretation: str
+
+
+class ReportSummaryItem(ApiModel):
+    report_id: str
+    manifest_id: str
+    model_kind: ModelKind
+    title: str
+    evidence_scope: Literal[
+        "same_source_behavior_replay",
+        "deterministic_rule_scenarios",
+        "same_dataset_participant_holdout",
+    ]
+    evidence_scope_note: str
+    report_relative_path: str
+    report_sha256: str
+    metrics: tuple[ReportMetric, ...]
+    limitations: tuple[str, ...]
+    deployment_approved: bool
+    external_validation_completed: bool
+    created_at: datetime
+
+
+class ReportListResponse(ApiModel):
+    items: tuple[ReportSummaryItem, ...]
+    total: int = Field(ge=0)
+    generated_at: datetime
+    disclaimers: tuple[str, ...]
+
+
 class SensorSamplePoint(ApiModel):
     offset_ms: int = Field(ge=0)
     values: tuple[float, ...] = Field(min_length=1)

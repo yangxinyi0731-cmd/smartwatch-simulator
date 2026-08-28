@@ -586,6 +586,109 @@ export type ReplayPreviewResponse = {
 };
 
 /**
+ * ReportListResponse
+ */
+export type ReportListResponse = {
+    /**
+     * Disclaimers
+     */
+    disclaimers: Array<string>;
+    /**
+     * Generated At
+     */
+    generated_at: string;
+    /**
+     * Items
+     */
+    items: Array<ReportSummaryItem>;
+    /**
+     * Total
+     */
+    total: number;
+};
+
+/**
+ * ReportMetric
+ */
+export type ReportMetric = {
+    /**
+     * Display Value
+     */
+    display_value: string;
+    /**
+     * Interpretation
+     */
+    interpretation: string;
+    /**
+     * Key
+     */
+    key: string;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Numeric Value
+     */
+    numeric_value: number | number | null;
+};
+
+/**
+ * ReportSummaryItem
+ */
+export type ReportSummaryItem = {
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Deployment Approved
+     */
+    deployment_approved: boolean;
+    /**
+     * Evidence Scope
+     */
+    evidence_scope: 'same_source_behavior_replay' | 'deterministic_rule_scenarios' | 'same_dataset_participant_holdout';
+    /**
+     * Evidence Scope Note
+     */
+    evidence_scope_note: string;
+    /**
+     * External Validation Completed
+     */
+    external_validation_completed: boolean;
+    /**
+     * Limitations
+     */
+    limitations: Array<string>;
+    /**
+     * Manifest Id
+     */
+    manifest_id: string;
+    /**
+     * Metrics
+     */
+    metrics: Array<ReportMetric>;
+    model_kind: ModelKind;
+    /**
+     * Report Id
+     */
+    report_id: string;
+    /**
+     * Report Relative Path
+     */
+    report_relative_path: string;
+    /**
+     * Report Sha256
+     */
+    report_sha256: string;
+    /**
+     * Title
+     */
+    title: string;
+};
+
+/**
  * RoutineAssessment
  */
 export type RoutineAssessment = {
@@ -1132,3 +1235,53 @@ export type ModelsApiModelsGetResponses = {
 };
 
 export type ModelsApiModelsGetResponse = ModelsApiModelsGetResponses[keyof ModelsApiModelsGetResponses];
+
+export type ReportsApiReportsGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/reports';
+};
+
+export type ReportsApiReportsGetErrors = {
+    /**
+     * 评估报告暂不可读，响应不包含内部异常。
+     */
+    503: ApiError;
+};
+
+export type ReportsApiReportsGetError = ReportsApiReportsGetErrors[keyof ReportsApiReportsGetErrors];
+
+export type ReportsApiReportsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReportListResponse;
+};
+
+export type ReportsApiReportsGetResponse = ReportsApiReportsGetResponses[keyof ReportsApiReportsGetResponses];
+
+export type ExportReportsApiReportsExportJsonGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/reports/export.json';
+};
+
+export type ExportReportsApiReportsExportJsonGetErrors = {
+    /**
+     * 评估报告暂不可导出。
+     */
+    503: ApiError;
+};
+
+export type ExportReportsApiReportsExportJsonGetError = ExportReportsApiReportsExportJsonGetErrors[keyof ExportReportsApiReportsExportJsonGetErrors];
+
+export type ExportReportsApiReportsExportJsonGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReportListResponse;
+};
+
+export type ExportReportsApiReportsExportJsonGetResponse = ExportReportsApiReportsExportJsonGetResponses[keyof ExportReportsApiReportsExportJsonGetResponses];

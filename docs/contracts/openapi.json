@@ -1074,6 +1074,172 @@
         "title": "ReplayPreviewResponse",
         "type": "object"
       },
+      "ReportListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "disclaimers": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Disclaimers",
+            "type": "array"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReportSummaryItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "generated_at",
+          "disclaimers"
+        ],
+        "title": "ReportListResponse",
+        "type": "object"
+      },
+      "ReportMetric": {
+        "additionalProperties": false,
+        "properties": {
+          "display_value": {
+            "title": "Display Value",
+            "type": "string"
+          },
+          "interpretation": {
+            "title": "Interpretation",
+            "type": "string"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "numeric_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Numeric Value"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "display_value",
+          "numeric_value",
+          "interpretation"
+        ],
+        "title": "ReportMetric",
+        "type": "object"
+      },
+      "ReportSummaryItem": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "deployment_approved": {
+            "title": "Deployment Approved",
+            "type": "boolean"
+          },
+          "evidence_scope": {
+            "enum": [
+              "same_source_behavior_replay",
+              "deterministic_rule_scenarios",
+              "same_dataset_participant_holdout"
+            ],
+            "title": "Evidence Scope",
+            "type": "string"
+          },
+          "evidence_scope_note": {
+            "title": "Evidence Scope Note",
+            "type": "string"
+          },
+          "external_validation_completed": {
+            "title": "External Validation Completed",
+            "type": "boolean"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "manifest_id": {
+            "title": "Manifest Id",
+            "type": "string"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/ReportMetric"
+            },
+            "title": "Metrics",
+            "type": "array"
+          },
+          "model_kind": {
+            "$ref": "#/components/schemas/ModelKind"
+          },
+          "report_id": {
+            "title": "Report Id",
+            "type": "string"
+          },
+          "report_relative_path": {
+            "title": "Report Relative Path",
+            "type": "string"
+          },
+          "report_sha256": {
+            "title": "Report Sha256",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "report_id",
+          "manifest_id",
+          "model_kind",
+          "title",
+          "evidence_scope",
+          "evidence_scope_note",
+          "report_relative_path",
+          "report_sha256",
+          "metrics",
+          "limitations",
+          "deployment_approved",
+          "external_validation_completed",
+          "created_at"
+        ],
+        "title": "ReportSummaryItem",
+        "type": "object"
+      },
       "RoutineAssessment": {
         "additionalProperties": false,
         "properties": {
@@ -2031,6 +2197,62 @@
           }
         },
         "summary": "Models"
+      }
+    },
+    "/api/reports": {
+      "get": {
+        "operationId": "reports_api_reports_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "评估报告暂不可读，响应不包含内部异常。"
+          }
+        },
+        "summary": "Reports"
+      }
+    },
+    "/api/reports/export.json": {
+      "get": {
+        "operationId": "export_reports_api_reports_export_json_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "评估报告暂不可导出。"
+          }
+        },
+        "summary": "Export Reports"
       }
     }
   }

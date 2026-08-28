@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import sqlite3
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
@@ -15,6 +16,7 @@ from .config import Settings
 from .contracts import ContractCatalog, ModelKind, TruthCategory, contract_catalog
 from .database import Database
 from .replay import build_replay_preview
+from .reports import build_report_list
 from .schemas import (
     ApiError,
     CaseListItem,
@@ -23,6 +25,7 @@ from .schemas import (
     DatabaseHealth,
     ModelListItem,
     ModelListResponse,
+    ReportListResponse,
     ReplayPreviewResponse,
     ServiceHealth,
     SystemStatus,
@@ -238,6 +241,62 @@ def create_app(
             for record in records
         )
         return ModelListResponse(items=items, total=len(items))
+
+    @application.get(
+        "/api/reports",
+        response_model=ReportListResponse,
+        responses={
+            503: {
+                "model": ApiError,
+                "description": "评估报告暂不可读，响应不包含内部异常。",
+            }
+        },
+    )
+    def reports(response: Response) -> ReportListResponse | JSONResponse:
+        try:
+            result = build_report_list(database.list_model_manifests())
+        except (OSError, RuntimeError, sqlite3.Error, ValueError, KeyError, TypeError, json.JSONDecodeError):
+            error = ApiError(
+                code="REPORT_CATALOG_UNAVAILABLE",
+                message="测试报告暂不可用，请核对本地报告文件后重试。",
+                retryable=True,
+            )
+            return JSONResponse(
+                status_code=503,
+                content=error.model_dump(mode="json"),
+                headers={"Cache-Control": "no-store"},
+            )
+        response.headers["Cache-Control"] = "no-store"
+        return result
+
+    @application.get(
+        "/api/reports/export.json",
+        response_model=ReportListResponse,
+        responses={503: {"model": ApiError, "description": "评估报告暂不可导出。"}},
+    )
+    def export_reports() -> JSONResponse:
+        try:
+            result = build_report_list(database.list_model_manifests())
+        except (OSError, RuntimeError, sqlite3.Error, ValueError, KeyError, TypeError, json.JSONDecodeError):
+            error = ApiError(
+                code="REPORT_EXPORT_UNAVAILABLE",
+                message="测试报告暂不可导出，请核对本地报告文件后重试。",
+                retryable=True,
+            )
+            return JSONResponse(
+                status_code=503,
+                content=error.model_dump(mode="json"),
+                headers={"Cache-Control": "no-store"},
+            )
+        return JSONResponse(
+            content=result.model_dump(mode="json"),
+            headers={
+                "Cache-Control": "no-store",
+                "Content-Disposition": (
+                    'attachment; filename="smartwatch-model-evaluation-reports.json"'
+                ),
+            },
+        )
 
     @application.get(
         "/api/cases/{case_id}/replay-preview",

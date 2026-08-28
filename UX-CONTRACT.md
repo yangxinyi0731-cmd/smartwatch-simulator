@@ -60,6 +60,7 @@
 | 按钮 | `frontend/src/components/AppButton.vue` | 强调程度 × 语义意图；忙碌时尺寸稳定；当前用于真实刷新状态 |
 | 系统连接状态 | `frontend/src/composables/useSystemConnection.ts` | HTTP 健康检查后建立 WebSocket；旧请求取消；断线有上限地自动重试 |
 | HTTP 类型 | `frontend/src/api/generated/` | 从 `docs/contracts/openapi.json` 自动生成，不手工修改；构建时做 TypeScript 检查 |
+| 测试报告 | `frontend/src/composables/useReports.ts` 与 `#reports` | 只读已保存报告；显示证据范围、解释、限制与 SHA-256；JSON 下载使用真实 GET 端点 |
 
 ## Component behavior
 
@@ -93,6 +94,7 @@
 | Upload/background job | “运行全部案例” | 持久阶段进度 | 报告详情 | 报告已生成 | 可恢复/重试失败案例 | 报告标题 | PRODUCT.md |
 | Cancel/back | “返回案例库” | 无 | 来源页面 | 通常无 | 未保存时应用对话框 | 原触发位置 | 本合同 |
 | 刷新系统状态 | “刷新状态” | 按钮保持尺寸并显示“检查中” | 当前总览 | 状态条和连接说明更新 | 保留空状态并自动重试 | 原按钮 | `docs/ARCHITECTURE.md` |
+| 下载报告 | “下载 JSON” | 浏览器原生下载 | 当前页面 | 获得统一报告快照 | 后端错误响应保留可重试说明 | 原链接 | `docs/ARCHITECTURE.md` |
 
 ## Navigation and responsive behavior
 
@@ -100,7 +102,7 @@
 - Route error / 403：首版本地单用户无 403；404 和 5xx 保留应用导航、说明原因与返回/重试。
 - Breadcrumb/tab/route state：顶层页面使用路由链接；同一案例的同级视图才使用 route-backed tabs。
 - Sidebar transformation：桌面固定侧栏；小于 760px 转为顶部品牌区和可横向滚动导航，不隐藏当前项。三模型子项在窄屏收拢到“三模型中心”顶层入口，内容区仍保留三个模型锚点。
-- Unavailable navigation：尚未实现的案例库、告警记录和测试报告显示“未开放”，使用非交互元素并附原因，不使用空 `href`、`href="#"` 或无效果按钮。
+- Unavailable navigation：尚未实现的案例库和告警记录显示“未开放”，使用非交互元素并附原因，不使用空 `href`、`href="#"` 或无效果按钮；测试报告使用真实 `#reports` 锚点。
 - Responsive table：优先横向滚动并保留案例 ID 与来源；详情页显示全部字段。
 - Truncation：来源、错误与真实性说明不截断；长哈希可显示短预览并提供复制。
 - Focus restoration：路由后聚焦主标题；对话框关闭回到触发器；sticky 区域不得遮挡焦点。

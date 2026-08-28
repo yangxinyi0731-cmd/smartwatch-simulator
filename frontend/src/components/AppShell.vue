@@ -39,7 +39,7 @@ const navigation = [
     ],
   },
   { label: '告警记录', icon: IconAlertTriangle, disabled: true },
-  { label: '测试报告', icon: IconFileAnalytics, disabled: true },
+  { label: '测试报告', href: '#reports', icon: IconFileAnalytics },
   { label: '数据与来源', href: '#provenance', icon: IconFileSearch },
 ]
 </script>
