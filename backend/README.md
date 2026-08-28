@@ -1,14 +1,16 @@
 # FastAPI 本地后端
 
-当前后端已经建立统一领域合同、SQLite 结构版本 4，从固定版本 WEDA-FALL 本机检出导入 100 个可追溯案例，注册 1 个 100 天合成规律案例和 4 个 CAPTURE-24 真实自由生活活动窗口，并接入跌倒 ONNX、规律统计规则与活动识别 ONNX；仍不包含真实设备通信。
+当前后端已经建立统一领域合同、SQLite 结构版本 5，从固定版本 WEDA-FALL 本机检出导入 100 个可追溯案例，注册 1 个 100 天合成规律案例和 4 个 CAPTURE-24 真实自由生活活动窗口，并接入跌倒 ONNX、规律统计规则、活动识别 ONNX 与可恢复批量回放；仍不包含真实设备通信。
 
 ## 已实现
 
 - `GET /api/health`：返回后端、SQLite、结构版本和案例实数；
 - `GET /api/contracts`：返回真实性、三模型输入输出和回放事件合同；
 - `GET /api/cases`：返回服务端分页、筛选和排序后的只读案例目录；
+- `POST /api/batch-replays`：用客户端请求标识幂等创建 1–200 个案例的持久化任务；
+- `GET /api/batch-replays` 与 `GET /api/batch-replays/{task_id}`：读取任务进度和逐案例独立结果摘要；
 - `WS /ws/system`：连接后立即发送状态，此后每 15 秒更新；
-- SQLite 结构版本 4：来源、案例、传感器流、导入批次、原始文件哈希、质量记录、真实标签、合成规律、manifest、回放事件和三模型独立输出；
+- SQLite 结构版本 5：来源、案例、传感器流、导入批次、原始文件哈希、质量记录、真实标签、合成规律、manifest、回放事件、三模型独立输出和批量任务；
 - WEDA-FALL 确定性导入器：40 条年轻参与者受控模拟跌倒、30 条老人日常活动、30 条年轻人日常活动；
 - Pydantic 合同导出为 OpenAPI、JSON Schema 和前端 TypeScript 类型；
 - 数据库版本保护：发现比程序更新的结构时拒绝自动降级；
@@ -22,6 +24,7 @@
 backend/
 ├─ app/
 │  ├─ config.py       # 本地数据库路径配置
+│  ├─ batch_replay.py # 批量任务执行、独立摘要与后台工作循环
 │  ├─ contracts.py    # 统一领域合同与真实性硬约束
 │  ├─ database.py     # SQLite 迁移、状态快照和案例分页
 │  ├─ main.py         # FastAPI、HTTP 与 WebSocket
@@ -46,9 +49,9 @@ backend/
 
 后端明确绑定 `127.0.0.1`，避免在没有认证和发布安全设计的情况下暴露到局域网。
 
-## SQLite 结构版本 4 的边界
+## SQLite 结构版本 5 的边界
 
-结构版本 3 增加 `import_runs`、`case_import_runs`、`case_source_files`、`sensor_quality` 和 `ground_truth_events`；结构版本 4 再增加 `routine_profiles` 和 `routine_events`。同一标识的等价同步可以安全重跑；只要哈希或元数据冲突，事务就会回滚。当前默认库共 105 个案例并注册三个研究模型 manifest；单案例只读回放会在读取时复核文件哈希、形状和有限值，并运行对应的独立模型适配器。
+结构版本 3 增加 `import_runs`、`case_import_runs`、`case_source_files`、`sensor_quality` 和 `ground_truth_events`；结构版本 4 增加 `routine_profiles` 和 `routine_events`；结构版本 5 增加 `batch_replay_tasks` 和 `batch_replay_items`。同一标识的等价同步可以安全重跑；只要哈希或元数据冲突，事务就会回滚。当前默认库共 105 个案例并注册三个研究模型 manifest；单案例和批量回放都会在读取时复核文件哈希、形状和有限值，并运行对应的独立模型适配器。程序重启时，未结束的 `RUNNING` 批量项回到队列，已完成项不会重复执行。
 
 导入命令必须指向保留 `.git` 元数据且 HEAD 为固定提交的本机 WEDA-FALL 检出：
 

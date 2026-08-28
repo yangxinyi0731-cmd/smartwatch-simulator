@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import {
   IconActivityHeartbeat,
-  IconAlertTriangle,
   IconBrain,
   IconDatabase,
   IconFileAnalytics,
   IconFileSearch,
   IconLayoutDashboard,
+  IconListCheck,
   IconPlayerPlay,
 } from '@tabler/icons-vue'
 
@@ -38,7 +38,7 @@ const navigation = [
       { label: '活动识别', href: '#model-activity' },
     ],
   },
-  { label: '告警记录', icon: IconAlertTriangle, disabled: true },
+  { label: '批量回放', href: '#batch-replays', icon: IconListCheck },
   { label: '测试报告', href: '#reports', icon: IconFileAnalytics },
   { label: '数据与来源', href: '#provenance', icon: IconFileSearch },
 ]

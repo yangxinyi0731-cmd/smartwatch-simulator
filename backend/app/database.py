@@ -4,6 +4,7 @@ import json
 import sqlite3
 from contextlib import contextmanager
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Iterator, Sequence
 
@@ -23,7 +24,7 @@ from .contracts import (
 )
 
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
 _SCHEMA_V1 = """
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -490,6 +491,58 @@ CREATE INDEX idx_routine_events_profile_time
 ON routine_events (profile_id, started_at, event_type);
 """
 
+_SCHEMA_V5 = """
+CREATE TABLE batch_replay_tasks (
+    task_id TEXT PRIMARY KEY,
+    client_request_id TEXT NOT NULL UNIQUE CHECK (length(trim(client_request_id)) > 0),
+    request_sha256 TEXT NOT NULL CHECK (
+        length(request_sha256) = 64 AND request_sha256 NOT GLOB '*[^0-9a-f]*'
+    ),
+    state TEXT NOT NULL CHECK (
+        state IN ('QUEUED', 'RUNNING', 'COMPLETED', 'COMPLETED_WITH_ERRORS', 'FAILED')
+    ),
+    total_count INTEGER NOT NULL CHECK (total_count > 0),
+    completed_count INTEGER NOT NULL DEFAULT 0 CHECK (completed_count >= 0),
+    failed_count INTEGER NOT NULL DEFAULT 0 CHECK (failed_count >= 0),
+    recovery_count INTEGER NOT NULL DEFAULT 0 CHECK (recovery_count >= 0),
+    current_case_id TEXT REFERENCES cases(case_id) ON DELETE RESTRICT,
+    error_message TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    completed_at TEXT,
+    CHECK (completed_count + failed_count <= total_count),
+    CHECK (
+        (state IN ('COMPLETED', 'COMPLETED_WITH_ERRORS', 'FAILED') AND completed_at IS NOT NULL)
+        OR
+        (state IN ('QUEUED', 'RUNNING') AND completed_at IS NULL)
+    )
+);
+
+CREATE INDEX idx_batch_replay_tasks_state_created
+ON batch_replay_tasks (state, created_at, task_id);
+
+CREATE TABLE batch_replay_items (
+    task_id TEXT NOT NULL REFERENCES batch_replay_tasks(task_id) ON DELETE CASCADE,
+    sequence INTEGER NOT NULL CHECK (sequence >= 0),
+    case_id TEXT NOT NULL REFERENCES cases(case_id) ON DELETE RESTRICT,
+    model_kind TEXT NOT NULL CHECK (
+        model_kind IN ('FALL_DETECTION', 'ROUTINE_ANOMALY', 'ACTIVITY_RECOGNITION')
+    ),
+    state TEXT NOT NULL CHECK (state IN ('PENDING', 'RUNNING', 'COMPLETED', 'FAILED')),
+    result_summary_json TEXT CHECK (
+        result_summary_json IS NULL OR json_valid(result_summary_json)
+    ),
+    error_message TEXT,
+    started_at TEXT,
+    completed_at TEXT,
+    PRIMARY KEY (task_id, sequence),
+    UNIQUE (task_id, case_id)
+);
+
+CREATE INDEX idx_batch_replay_items_task_state
+ON batch_replay_items (task_id, state, sequence);
+"""
+
 
 @dataclass(frozen=True, slots=True)
 class DatabaseSnapshot:
@@ -564,6 +617,36 @@ class CaseRuntimeBundle:
     routine_events: tuple[RoutineEventContract, ...]
 
 
+@dataclass(frozen=True, slots=True)
+class BatchReplayItemRecord:
+    sequence: int
+    case_id: str
+    model_kind: str
+    state: str
+    result_summary: dict[str, object] | None
+    error_message: str | None
+    started_at: str | None
+    completed_at: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class BatchReplayTaskRecord:
+    task_id: str
+    client_request_id: str
+    request_sha256: str
+    state: str
+    total_count: int
+    completed_count: int
+    failed_count: int
+    recovery_count: int
+    current_case_id: str | None
+    error_message: str | None
+    created_at: str
+    updated_at: str
+    completed_at: str | None
+    items: tuple[BatchReplayItemRecord, ...] = ()
+
+
 class Database:
     def __init__(self, path: Path) -> None:
         self.path = path.resolve()
@@ -626,6 +709,10 @@ COMMIT;
 
             if current_version < 4:
                 self._apply_migration(connection, version=4, script=_SCHEMA_V4)
+                current_version = 4
+
+            if current_version < 5:
+                self._apply_migration(connection, version=5, script=_SCHEMA_V5)
 
     def snapshot(self) -> DatabaseSnapshot:
         with self.connect() as connection:
@@ -770,6 +857,373 @@ COMMIT;
                 )
             )
         return tuple(records)
+
+    @staticmethod
+    def _batch_item_record(row: sqlite3.Row) -> BatchReplayItemRecord:
+        return BatchReplayItemRecord(
+            sequence=int(row["sequence"]),
+            case_id=row["case_id"],
+            model_kind=row["model_kind"],
+            state=row["state"],
+            result_summary=(
+                None
+                if row["result_summary_json"] is None
+                else json.loads(row["result_summary_json"])
+            ),
+            error_message=row["error_message"],
+            started_at=row["started_at"],
+            completed_at=row["completed_at"],
+        )
+
+    @staticmethod
+    def _batch_task_record(
+        row: sqlite3.Row,
+        items: tuple[BatchReplayItemRecord, ...] = (),
+    ) -> BatchReplayTaskRecord:
+        return BatchReplayTaskRecord(
+            task_id=row["task_id"],
+            client_request_id=row["client_request_id"],
+            request_sha256=row["request_sha256"],
+            state=row["state"],
+            total_count=int(row["total_count"]),
+            completed_count=int(row["completed_count"]),
+            failed_count=int(row["failed_count"]),
+            recovery_count=int(row["recovery_count"]),
+            current_case_id=row["current_case_id"],
+            error_message=row["error_message"],
+            created_at=row["created_at"],
+            updated_at=row["updated_at"],
+            completed_at=row["completed_at"],
+            items=items,
+        )
+
+    @staticmethod
+    def _now_text() -> str:
+        return datetime.now(UTC).isoformat().replace("+00:00", "Z")
+
+    def create_batch_replay_task(
+        self,
+        *,
+        task_id: str,
+        client_request_id: str,
+        request_sha256: str,
+        case_ids: Sequence[str],
+    ) -> tuple[BatchReplayTaskRecord, bool]:
+        if not case_ids or len(case_ids) > 200:
+            raise ValueError("批量回放案例数必须在 1 到 200 之间。")
+        if len(set(case_ids)) != len(case_ids):
+            raise ValueError("批量回放不能包含重复案例。")
+        now = self._now_text()
+        with self.connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                existing = connection.execute(
+                    "SELECT * FROM batch_replay_tasks WHERE client_request_id = ?",
+                    (client_request_id,),
+                ).fetchone()
+                if existing is not None:
+                    if existing["request_sha256"] != request_sha256:
+                        raise ValueError("相同请求标识已用于不同的批量案例集合。")
+                    connection.commit()
+                    record = self.get_batch_replay_task(existing["task_id"])
+                    if record is None:
+                        raise RuntimeError("幂等批量任务写入后无法读取。")
+                    return record, False
+
+                placeholders = ", ".join("?" for _ in case_ids)
+                rows = connection.execute(
+                    "SELECT case_id, allowed_models_json FROM cases "
+                    f"WHERE case_id IN ({placeholders})",
+                    tuple(case_ids),
+                ).fetchall()
+                by_case = {row["case_id"]: row for row in rows}
+                missing = [case_id for case_id in case_ids if case_id not in by_case]
+                if missing:
+                    raise ValueError(f"批量回放包含不存在的案例：{missing}")
+                model_kinds: list[str] = []
+                for case_id in case_ids:
+                    allowed = json.loads(by_case[case_id]["allowed_models_json"])
+                    if len(allowed) != 1:
+                        raise ValueError(
+                            f"案例 {case_id} 必须且只能允许一个独立模型进入批量回放。"
+                        )
+                    model_kinds.append(str(allowed[0]))
+
+                connection.execute(
+                    "INSERT INTO batch_replay_tasks ("
+                    "task_id, client_request_id, request_sha256, state, total_count, "
+                    "completed_count, failed_count, recovery_count, current_case_id, "
+                    "error_message, created_at, updated_at, completed_at"
+                    ") VALUES (?, ?, ?, 'QUEUED', ?, 0, 0, 0, NULL, NULL, ?, ?, NULL)",
+                    (
+                        task_id,
+                        client_request_id,
+                        request_sha256,
+                        len(case_ids),
+                        now,
+                        now,
+                    ),
+                )
+                connection.executemany(
+                    "INSERT INTO batch_replay_items ("
+                    "task_id, sequence, case_id, model_kind, state"
+                    ") VALUES (?, ?, ?, ?, 'PENDING')",
+                    (
+                        (task_id, sequence, case_id, model_kinds[sequence])
+                        for sequence, case_id in enumerate(case_ids)
+                    ),
+                )
+                connection.commit()
+            except Exception:
+                if connection.in_transaction:
+                    connection.rollback()
+                raise
+        record = self.get_batch_replay_task(task_id)
+        if record is None:
+            raise RuntimeError("批量任务创建后无法读取。")
+        return record, True
+
+    def get_batch_replay_task(self, task_id: str) -> BatchReplayTaskRecord | None:
+        with self.connect() as connection:
+            row = connection.execute(
+                "SELECT * FROM batch_replay_tasks WHERE task_id = ?",
+                (task_id,),
+            ).fetchone()
+            if row is None:
+                return None
+            item_rows = connection.execute(
+                "SELECT * FROM batch_replay_items WHERE task_id = ? "
+                "ORDER BY sequence ASC",
+                (task_id,),
+            ).fetchall()
+        return self._batch_task_record(
+            row,
+            tuple(self._batch_item_record(item) for item in item_rows),
+        )
+
+    def list_batch_replay_tasks(
+        self,
+        *,
+        limit: int = 20,
+    ) -> tuple[BatchReplayTaskRecord, ...]:
+        if limit < 1 or limit > 100:
+            raise ValueError("批量任务清单数量必须在 1 到 100 之间。")
+        with self.connect() as connection:
+            rows = connection.execute(
+                "SELECT * FROM batch_replay_tasks "
+                "ORDER BY created_at DESC, task_id DESC LIMIT ?",
+                (limit,),
+            ).fetchall()
+        return tuple(self._batch_task_record(row) for row in rows)
+
+    def recover_interrupted_batch_replays(self) -> int:
+        now = self._now_text()
+        with self.connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                task_rows = connection.execute(
+                    "SELECT task_id FROM batch_replay_tasks WHERE state = 'RUNNING'"
+                ).fetchall()
+                task_ids = [row["task_id"] for row in task_rows]
+                if task_ids:
+                    placeholders = ", ".join("?" for _ in task_ids)
+                    connection.execute(
+                        "UPDATE batch_replay_items SET state = 'PENDING', "
+                        "started_at = NULL WHERE state = 'RUNNING' "
+                        f"AND task_id IN ({placeholders})",
+                        tuple(task_ids),
+                    )
+                    connection.execute(
+                        "UPDATE batch_replay_tasks SET state = 'QUEUED', "
+                        "current_case_id = NULL, recovery_count = recovery_count + 1, "
+                        "updated_at = ? "
+                        f"WHERE task_id IN ({placeholders})",
+                        (now, *task_ids),
+                    )
+                connection.commit()
+            except Exception:
+                if connection.in_transaction:
+                    connection.rollback()
+                raise
+        return len(task_ids)
+
+    def claim_next_batch_replay_task(self) -> str | None:
+        now = self._now_text()
+        with self.connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                row = connection.execute(
+                    "SELECT task_id FROM batch_replay_tasks WHERE state = 'QUEUED' "
+                    "ORDER BY created_at ASC, task_id ASC LIMIT 1"
+                ).fetchone()
+                if row is None:
+                    connection.commit()
+                    return None
+                task_id = row["task_id"]
+                connection.execute(
+                    "UPDATE batch_replay_tasks SET state = 'RUNNING', updated_at = ?, "
+                    "error_message = NULL WHERE task_id = ? AND state = 'QUEUED'",
+                    (now, task_id),
+                )
+                connection.commit()
+                return task_id
+            except Exception:
+                if connection.in_transaction:
+                    connection.rollback()
+                raise
+
+    def claim_next_batch_replay_item(
+        self,
+        task_id: str,
+    ) -> BatchReplayItemRecord | None:
+        now = self._now_text()
+        with self.connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                row = connection.execute(
+                    "SELECT * FROM batch_replay_items WHERE task_id = ? "
+                    "AND state = 'PENDING' ORDER BY sequence ASC LIMIT 1",
+                    (task_id,),
+                ).fetchone()
+                if row is None:
+                    connection.commit()
+                    return None
+                connection.execute(
+                    "UPDATE batch_replay_items SET state = 'RUNNING', started_at = ?, "
+                    "error_message = NULL WHERE task_id = ? AND sequence = ? "
+                    "AND state = 'PENDING'",
+                    (now, task_id, row["sequence"]),
+                )
+                connection.execute(
+                    "UPDATE batch_replay_tasks SET current_case_id = ?, updated_at = ? "
+                    "WHERE task_id = ? AND state = 'RUNNING'",
+                    (row["case_id"], now, task_id),
+                )
+                updated = connection.execute(
+                    "SELECT * FROM batch_replay_items WHERE task_id = ? AND sequence = ?",
+                    (task_id, row["sequence"]),
+                ).fetchone()
+                connection.commit()
+            except Exception:
+                if connection.in_transaction:
+                    connection.rollback()
+                raise
+        if updated is None:
+            raise RuntimeError("批量回放项领取后无法读取。")
+        return self._batch_item_record(updated)
+
+    def finish_batch_replay_item(
+        self,
+        *,
+        task_id: str,
+        sequence: int,
+        result_summary: dict[str, object] | None = None,
+        error_message: str | None = None,
+    ) -> None:
+        if (result_summary is None) == (error_message is None):
+            raise ValueError("批量回放项必须恰好保存结果或错误。")
+        state = "COMPLETED" if result_summary is not None else "FAILED"
+        now = self._now_text()
+        with self.connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                cursor = connection.execute(
+                    "UPDATE batch_replay_items SET state = ?, result_summary_json = ?, "
+                    "error_message = ?, completed_at = ? WHERE task_id = ? "
+                    "AND sequence = ? AND state = 'RUNNING'",
+                    (
+                        state,
+                        None if result_summary is None else self._json(result_summary),
+                        error_message,
+                        now,
+                        task_id,
+                        sequence,
+                    ),
+                )
+                if cursor.rowcount != 1:
+                    raise RuntimeError("批量回放项不在可完成状态。")
+                connection.execute(
+                    "UPDATE batch_replay_tasks SET "
+                    "completed_count = (SELECT COUNT(*) FROM batch_replay_items "
+                    "WHERE task_id = ? AND state = 'COMPLETED'), "
+                    "failed_count = (SELECT COUNT(*) FROM batch_replay_items "
+                    "WHERE task_id = ? AND state = 'FAILED'), "
+                    "current_case_id = NULL, updated_at = ? WHERE task_id = ?",
+                    (task_id, task_id, now, task_id),
+                )
+                connection.commit()
+            except Exception:
+                if connection.in_transaction:
+                    connection.rollback()
+                raise
+
+    def finalize_batch_replay_task(self, task_id: str) -> BatchReplayTaskRecord:
+        now = self._now_text()
+        with self.connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                pending = int(
+                    connection.execute(
+                        "SELECT COUNT(*) FROM batch_replay_items WHERE task_id = ? "
+                        "AND state IN ('PENDING', 'RUNNING')",
+                        (task_id,),
+                    ).fetchone()[0]
+                )
+                if pending:
+                    raise RuntimeError("批量任务仍有未完成项，不能结束。")
+                failed = int(
+                    connection.execute(
+                        "SELECT COUNT(*) FROM batch_replay_items WHERE task_id = ? "
+                        "AND state = 'FAILED'",
+                        (task_id,),
+                    ).fetchone()[0]
+                )
+                state = "COMPLETED_WITH_ERRORS" if failed else "COMPLETED"
+                cursor = connection.execute(
+                    "UPDATE batch_replay_tasks SET state = ?, current_case_id = NULL, "
+                    "updated_at = ?, completed_at = ? WHERE task_id = ? "
+                    "AND state = 'RUNNING'",
+                    (state, now, now, task_id),
+                )
+                if cursor.rowcount != 1:
+                    raise RuntimeError("批量任务不在可结束状态。")
+                connection.commit()
+            except Exception:
+                if connection.in_transaction:
+                    connection.rollback()
+                raise
+        record = self.get_batch_replay_task(task_id)
+        if record is None:
+            raise RuntimeError("批量任务结束后无法读取。")
+        return record
+
+    def fail_batch_replay_task(self, task_id: str, error_message: str) -> None:
+        now = self._now_text()
+        with self.connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                connection.execute(
+                    "UPDATE batch_replay_items SET state = 'FAILED', "
+                    "result_summary_json = NULL, error_message = ?, completed_at = ? "
+                    "WHERE task_id = ? AND state IN ('PENDING', 'RUNNING')",
+                    (error_message, now, task_id),
+                )
+                connection.execute(
+                    "UPDATE batch_replay_tasks SET state = 'FAILED', "
+                    "completed_count = (SELECT COUNT(*) FROM batch_replay_items "
+                    "WHERE task_id = ? AND state = 'COMPLETED'), "
+                    "failed_count = (SELECT COUNT(*) FROM batch_replay_items "
+                    "WHERE task_id = ? AND state = 'FAILED'), "
+                    "current_case_id = NULL, error_message = ?, updated_at = ?, "
+                    "completed_at = ? WHERE task_id = ? "
+                    "AND state IN ('QUEUED', 'RUNNING')",
+                    (task_id, task_id, error_message, now, now, task_id),
+                )
+                connection.commit()
+            except Exception:
+                if connection.in_transaction:
+                    connection.rollback()
+                raise
 
     def get_case_runtime_bundle(self, case_id: str) -> CaseRuntimeBundle | None:
         with self.connect() as connection:

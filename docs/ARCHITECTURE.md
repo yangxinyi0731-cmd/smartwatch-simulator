@@ -1,4 +1,4 @@
-# 系统结构（模型资产同步与 SQLite 结构版本 4）
+# 系统结构（模型资产同步与 SQLite 结构版本 5）
 
 ```text
 Windows 浏览器中的 Vue 前端
@@ -9,6 +9,7 @@ Windows 浏览器中的 Vue 前端
        ├─ GET /api/models ──────────────┤
        ├─ GET /api/reports ─────────────┤
        ├─ GET /api/reports/export.json ─┤
+       ├─ POST/GET /api/batch-replays ──┤
        ├─ GET /api/cases/{id}/          │
        │       replay-preview ──────────┤
        └─ WS /ws/system ────────────────┤
@@ -17,7 +18,7 @@ Windows 浏览器中的 Vue 前端
                                         │
                 Pydantic 统一合同 ───────┤
                                         ↓
-                             SQLite 结构版本 4
+                             SQLite 结构版本 5
        ┌────────────────────────────────┼────────────────────────────┐
        ↓                                ↓                            ↓
 来源与案例                       回放会话与有序事件               三模型独立输出
@@ -27,6 +28,7 @@ sensor_streams
 import_runs / case_import_runs
 case_source_files / sensor_quality / ground_truth_events
 routine_profiles / routine_events
+batch_replay_tasks / batch_replay_items
 
 模型适配器
 ├─ 跌倒检测 ONNX（已接入研究版）
@@ -48,7 +50,8 @@ routine_profiles / routine_events
 10. `/api/cases/{case_id}/replay-preview` 从 SQLite 重建合同，再次校验本地路径、文件 SHA-256、NPY 形状和有限数值；WEDA 案例运行固定跌倒 ONNX，合成规律案例运行保存的统计规则，CAPTURE-24 案例运行固定活动 ONNX；
 11. 前端只读播放 API 返回的真实波形、标签、候选告警或合成规律逐日判断；开始、暂停和重置当前不写数据库，WebSocket 仍只传系统状态；
 12. `/api/reports` 只读取已登记 manifest 对应的本地评估文件，按模型语义规范化展示并重新计算报告 SHA-256；导出端点返回同一结构的可下载 JSON；
-13. 原始文件保持只读，处理后的 50 Hz 六轴数组保存在 Git 忽略目录，SQLite 只保存相对路径、哈希、质量和标签。
+13. `/api/batch-replays` 用客户端请求 ID 与案例集合哈希保证幂等，后台逐案例运行对应独立模型并保存进度、可公开错误和语义受限的结果摘要；重启时只把未结束项放回队列；
+14. 原始文件保持只读，处理后的传感器数组保存在 Git 忽略目录，SQLite 只保存相对路径、哈希、质量和标签。
 
 ## HTTP 合同
 
@@ -98,7 +101,11 @@ SQLite 正常时返回 HTTP 200；后端仍能响应但数据库不可用时返�
 
 报告清单只处理 SQLite 已登记模型，并从项目内安全相对路径读取实际 JSON 报告。跌倒报告明确标为同源行为重放，规律报告明确标为确定性规则场景，活动报告完成后标为同数据集不重叠参与者留出；三者都不能冒充独立外部验证。响应包含实际报告文件 SHA-256、指标解释、manifest 限制、外部验证与部署审批状态。导出端点返回同一内容并设置下载文件名，不生成新的模型成绩。
 
-## SQLite 结构版本 4
+### `POST /api/batch-replays`、`GET /api/batch-replays` 与 `GET /api/batch-replays/{task_id}`
+
+创建接口接受 1–200 个不重复案例和客户端请求标识；同一标识、同一有序案例集合会返回原任务，不会重复执行，同一标识配不同集合会返回冲突。清单接口返回最近任务摘要，详情接口返回每个案例的模型种类、状态、受限结果摘要或可公开错误。任务状态只允许排队、运行、完成、带错误完成和失败；单条案例失败不会阻断后续案例。三个模型的摘要分别保存，不相加、不平均，也不解释为医学风险。
+
+## SQLite 结构版本 5
 
 ### `data_sources`
 
@@ -136,9 +143,13 @@ SQLite 正常时返回 HTTP 200；后端仍能响应但数据库不可用时返�
 
 每条输出保留模型 manifest、案例、会话、输入窗口、时间边界和完整 JSON。没有综合风险列；三个模型的语义分别保存。
 
+### `batch_replay_tasks` 与 `batch_replay_items`
+
+任务表保存客户端请求标识、请求 SHA-256、总数、完成数、失败数、当前案例、恢复次数和时间戳；条目表按固定顺序保存案例、唯一允许模型、状态、结果摘要或错误。领取和完成均在 SQLite 即时事务内更新。服务启动时只把中断的 `RUNNING` 条目恢复为 `PENDING`，并增加恢复计数；已经完成或失败的条目保持不变。
+
 ## 迁移与生成物
 
-- 新数据库依次应用结构版本 1、2、3 和 4；
+- 新数据库依次应用结构版本 1、2、3、4 和 5；
 - 真实存在的结构版本 1 案例会被保留，但缺失信息明确迁移为 `UNKNOWN / UNVERIFIED / legacy-unrecorded`，不会编造设备、许可或处理命令；
 - 发现高于程序支持版本的数据库时拒绝自动降级；
 - `backend/app/contracts.py` 是领域合同代码源；

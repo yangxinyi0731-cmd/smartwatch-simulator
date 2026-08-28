@@ -9,6 +9,7 @@ import {
   IconDownload,
   IconFileAnalytics,
   IconFileSearch,
+  IconListCheck,
   IconPlayerPause,
   IconPlayerPlay,
   IconRefresh,
@@ -24,7 +25,8 @@ import AppShell from './components/AppShell.vue'
 import EmptyState from './components/EmptyState.vue'
 import SensorWaveform from './components/SensorWaveform.vue'
 import StatusBadge from './components/StatusBadge.vue'
-import type { CaseListItem, ModelKind, TruthCategory } from './api/generated'
+import type { BatchReplayTaskSummary, CaseListItem, ModelKind, TruthCategory } from './api/generated'
+import { useBatchReplays } from './composables/useBatchReplays'
 import { useCatalog } from './composables/useCatalog'
 import { useReplayPreview } from './composables/useReplayPreview'
 import { useReports } from './composables/useReports'
@@ -67,6 +69,15 @@ const {
   errorMessage: reportError,
   refresh: refreshReports,
 } = useReports()
+const {
+  latestTask: batchTask,
+  isLoading: isBatchLoading,
+  isCreating: isBatchCreating,
+  isActive: isBatchActive,
+  errorMessage: batchError,
+  create: createBatchReplay,
+  refreshLatest: refreshBatchReplay,
+} = useBatchReplays()
 const selectedCaseId = ref('')
 const truthFilter = ref<'ALL' | TruthCategory>('ALL')
 const {
@@ -120,6 +131,35 @@ const filteredCases = computed(() =>
   truthFilter.value === 'ALL'
     ? cases.value
     : cases.value.filter((item) => item.truth_category === truthFilter.value),
+)
+
+const batchStateLabels: Record<BatchReplayTaskSummary['state'], string> = {
+  QUEUED: '已排队',
+  RUNNING: '正在核验',
+  COMPLETED: '全部完成',
+  COMPLETED_WITH_ERRORS: '完成但有失败项',
+  FAILED: '任务中断',
+}
+
+const batchTone = computed<BadgeTone>(() => {
+  if (!batchTask.value) return 'neutral'
+  if (batchTask.value.state === 'COMPLETED') return 'success'
+  if (batchTask.value.state === 'COMPLETED_WITH_ERRORS' || batchTask.value.state === 'FAILED') {
+    return 'warning'
+  }
+  return 'info'
+})
+
+const batchModelStats = computed(() =>
+  (Object.keys(modelLabels) as ModelKind[]).map((kind) => {
+    const items = batchTask.value?.items.filter((item) => item.model_kind === kind) ?? []
+    return {
+      kind,
+      total: items.length,
+      completed: items.filter((item) => item.state === 'COMPLETED').length,
+      failed: items.filter((item) => item.state === 'FAILED').length,
+    }
+  }),
 )
 
 const selectedCase = computed(() =>
@@ -804,6 +844,97 @@ const replayOutputs = computed(() => [
           <StatusBadge :tone="model.tone">{{ model.status }}</StatusBadge>
         </article>
       </div>
+    </AppCard>
+
+    <AppCard id="batch-replays" class="batch-card" aria-labelledby="batch-replays-title">
+      <template #header>
+        <div class="app-card__heading">
+          <span class="app-card__icon" aria-hidden="true">
+            <IconListCheck :size="20" :stroke-width="1.8" />
+          </span>
+          <div>
+            <h2 id="batch-replays-title" class="card-title">可恢复批量回放</h2>
+            <p>对当前真实性筛选范围逐案例运行独立模型，并把进度、结果摘要和错误写入 SQLite。</p>
+          </div>
+        </div>
+        <StatusBadge :tone="batchTone">
+          {{ batchTask ? batchStateLabels[batchTask.state] : isBatchLoading ? '正在读取' : '尚无任务' }}
+        </StatusBadge>
+      </template>
+
+      <div class="batch-actions">
+        <div>
+          <strong>当前范围：{{ filteredCases.length }} 个案例</strong>
+          <p>选择上方真实性筛选后创建；运行中不能重复创建，完成后可重新核验。</p>
+        </div>
+        <AppButton
+          intent="primary"
+          emphasis="solid"
+          :busy="isBatchCreating"
+          :disabled="isBatchActive || filteredCases.length === 0"
+          @click="createBatchReplay(filteredCases.map((item) => item.case_id))"
+        >
+          <IconPlayerPlay :size="17" :stroke-width="1.8" aria-hidden="true" />
+          {{ isBatchActive ? '任务进行中' : `批量核验 ${filteredCases.length} 个` }}
+        </AppButton>
+      </div>
+
+      <p v-if="batchError" class="connection-message connection-message--warning" role="alert">
+        {{ batchError }}
+        <button class="text-action" type="button" @click="refreshBatchReplay">重新读取</button>
+      </p>
+
+      <div v-if="batchTask" class="batch-task" aria-live="polite">
+        <div class="batch-task__headline">
+          <div>
+            <span>任务 {{ batchTask.task_id.slice(0, 18) }}…</span>
+            <strong>{{ batchStateLabels[batchTask.state] }}</strong>
+          </div>
+          <strong>{{ Math.round(batchTask.progress * 100) }}%</strong>
+        </div>
+        <progress :value="batchTask.progress" max="1">
+          {{ Math.round(batchTask.progress * 100) }}%
+        </progress>
+        <dl class="batch-counters">
+          <div>
+            <dt>已完成</dt>
+            <dd>{{ batchTask.completed_count }} / {{ batchTask.total_count }}</dd>
+          </div>
+          <div>
+            <dt>失败项</dt>
+            <dd>{{ batchTask.failed_count }}</dd>
+          </div>
+          <div>
+            <dt>当前案例</dt>
+            <dd>{{ batchTask.current_case_id ?? '无' }}</dd>
+          </div>
+          <div>
+            <dt>重启恢复</dt>
+            <dd>{{ batchTask.recovery_count }} 次</dd>
+          </div>
+        </dl>
+        <div class="batch-model-grid">
+          <article v-for="stat in batchModelStats" :key="stat.kind">
+            <span>{{ modelLabels[stat.kind] }}</span>
+            <strong>{{ stat.completed }} / {{ stat.total }}</strong>
+            <small v-if="stat.failed">{{ stat.failed }} 个失败项</small>
+            <small v-else>独立结果摘要</small>
+          </article>
+        </div>
+        <p class="batch-task__note">
+          批量任务不生成综合医学风险；跌倒、规律与活动结果按各自语义保存。中断的 RUNNING 项会在后端重启时回到队列。
+        </p>
+      </div>
+
+      <EmptyState
+        v-else-if="!isBatchLoading && !batchError"
+        title="尚未创建批量任务"
+        description="可先选择一个真实性范围，再创建本机持久化批量核验。"
+      >
+        <template #icon>
+          <IconListCheck :size="30" :stroke-width="1.7" />
+        </template>
+      </EmptyState>
     </AppCard>
 
     <AppCard id="reports" class="reports-card" aria-labelledby="reports-title">

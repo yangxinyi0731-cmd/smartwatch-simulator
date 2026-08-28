@@ -1,24 +1,34 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import sqlite3
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from datetime import UTC, datetime
 from math import ceil
 from pathlib import Path
 from typing import Annotated, AsyncIterator, Literal
+from uuid import uuid4
 
 from fastapi import FastAPI, Query, Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 
 from .config import Settings
+from .batch_replay import (
+    batch_replay_worker,
+    batch_task_response,
+    summarize_batch_task,
+)
 from .contracts import ContractCatalog, ModelKind, TruthCategory, contract_catalog
 from .database import Database
 from .replay import build_replay_preview
 from .reports import build_report_list
 from .schemas import (
     ApiError,
+    BatchReplayCreateRequest,
+    BatchReplayTaskListResponse,
+    BatchReplayTaskResponse,
     CaseListItem,
     CaseListResponse,
     CaseSummary,
@@ -32,7 +42,7 @@ from .schemas import (
 )
 
 
-SERVICE_VERSION = "0.6.0"
+SERVICE_VERSION = "0.7.0"
 STATUS_INTERVAL_SECONDS = 15
 
 
@@ -88,14 +98,29 @@ def create_app(
     @asynccontextmanager
     async def lifespan(application: FastAPI) -> AsyncIterator[None]:
         database.initialize()
+        recovered_tasks = database.recover_interrupted_batch_replays()
+        batch_wake_event = asyncio.Event()
+        if recovered_tasks or database.list_batch_replay_tasks(limit=1):
+            batch_wake_event.set()
+        worker_task = asyncio.create_task(
+            batch_replay_worker(database, batch_wake_event),
+            name="batch-replay-worker",
+        )
         application.state.database = database
-        yield
+        application.state.batch_wake_event = batch_wake_event
+        try:
+            yield
+        finally:
+            worker_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await worker_task
 
     application = FastAPI(
         title="模拟智能手表本地服务",
         version=SERVICE_VERSION,
         description=(
-            "为本地研究演示提供健康检查、可追溯案例合同、SQLite 状态和实时连接。"
+            "为本地研究演示提供健康检查、可追溯案例合同、SQLite 状态、"
+            "可恢复批量回放和实时连接。"
         ),
         lifespan=lifespan,
     )
@@ -297,6 +322,129 @@ def create_app(
                 ),
             },
         )
+
+    @application.post(
+        "/api/batch-replays",
+        response_model=BatchReplayTaskResponse,
+        status_code=202,
+        responses={
+            409: {"model": ApiError, "description": "请求标识或案例集合冲突。"},
+            503: {"model": ApiError, "description": "批量任务暂不可创建。"},
+        },
+    )
+    async def create_batch_replay(
+        request: BatchReplayCreateRequest,
+        response: Response,
+    ) -> BatchReplayTaskResponse | JSONResponse:
+        request_payload = json.dumps(
+            list(request.case_ids),
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        request_sha256 = hashlib.sha256(request_payload).hexdigest()
+        try:
+            record, created = database.create_batch_replay_task(
+                task_id=f"batch-{uuid4()}",
+                client_request_id=request.client_request_id,
+                request_sha256=request_sha256,
+                case_ids=request.case_ids,
+            )
+        except ValueError:
+            error = ApiError(
+                code="BATCH_REPLAY_CONFLICT",
+                message="批量任务请求与现有标识冲突，或案例集合无效。",
+                retryable=False,
+            )
+            return JSONResponse(
+                status_code=409,
+                content=error.model_dump(mode="json"),
+                headers={"Cache-Control": "no-store"},
+            )
+        except (OSError, RuntimeError, sqlite3.Error):
+            error = ApiError(
+                code="BATCH_REPLAY_UNAVAILABLE",
+                message="批量任务暂不可创建，请稍后重试。",
+                retryable=True,
+            )
+            return JSONResponse(
+                status_code=503,
+                content=error.model_dump(mode="json"),
+                headers={"Cache-Control": "no-store"},
+            )
+        if created:
+            application.state.batch_wake_event.set()
+            response.status_code = 202
+        else:
+            response.status_code = 200
+        response.headers["Cache-Control"] = "no-store"
+        return batch_task_response(record)
+
+    @application.get(
+        "/api/batch-replays",
+        response_model=BatchReplayTaskListResponse,
+        responses={503: {"model": ApiError, "description": "批量任务清单暂不可读。"}},
+    )
+    def batch_replays(
+        response: Response,
+        limit: Annotated[int, Query(ge=1, le=100)] = 20,
+    ) -> BatchReplayTaskListResponse | JSONResponse:
+        try:
+            records = database.list_batch_replay_tasks(limit=limit)
+        except (OSError, RuntimeError, sqlite3.Error, ValueError):
+            error = ApiError(
+                code="BATCH_REPLAY_LIST_UNAVAILABLE",
+                message="批量任务清单暂不可用，请稍后重试。",
+                retryable=True,
+            )
+            return JSONResponse(
+                status_code=503,
+                content=error.model_dump(mode="json"),
+                headers={"Cache-Control": "no-store"},
+            )
+        response.headers["Cache-Control"] = "no-store"
+        return BatchReplayTaskListResponse(
+            items=tuple(summarize_batch_task(record) for record in records),
+            total=len(records),
+        )
+
+    @application.get(
+        "/api/batch-replays/{task_id}",
+        response_model=BatchReplayTaskResponse,
+        responses={
+            404: {"model": ApiError, "description": "批量任务不存在。"},
+            503: {"model": ApiError, "description": "批量任务暂不可读。"},
+        },
+    )
+    def batch_replay_detail(
+        task_id: str,
+        response: Response,
+    ) -> BatchReplayTaskResponse | JSONResponse:
+        try:
+            record = database.get_batch_replay_task(task_id)
+        except (OSError, RuntimeError, sqlite3.Error, ValueError, json.JSONDecodeError):
+            error = ApiError(
+                code="BATCH_REPLAY_DETAIL_UNAVAILABLE",
+                message="批量任务暂不可用，请稍后重试。",
+                retryable=True,
+            )
+            return JSONResponse(
+                status_code=503,
+                content=error.model_dump(mode="json"),
+                headers={"Cache-Control": "no-store"},
+            )
+        if record is None:
+            error = ApiError(
+                code="BATCH_REPLAY_NOT_FOUND",
+                message="没有找到这个批量任务。",
+                retryable=False,
+            )
+            return JSONResponse(
+                status_code=404,
+                content=error.model_dump(mode="json"),
+                headers={"Cache-Control": "no-store"},
+            )
+        response.headers["Cache-Control"] = "no-store"
+        return batch_task_response(record)
 
     @application.get(
         "/api/cases/{case_id}/replay-preview",

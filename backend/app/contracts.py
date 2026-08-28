@@ -772,7 +772,7 @@ ReplayEvent = Annotated[
 
 class ContractCatalog(ContractModel):
     contract_version: Literal["1.0.0"] = "1.0.0"
-    database_schema_version: int = 4
+    database_schema_version: int = 5
     truth_categories: tuple[TruthCategory, ...]
     model_contracts: tuple[ModelContract, ...]
     replay_event_types: tuple[ReplayEventType, ...]

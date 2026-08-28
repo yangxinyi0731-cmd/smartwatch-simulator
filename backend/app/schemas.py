@@ -229,3 +229,64 @@ class ReplayPreviewResponse(ApiModel):
     activity_result: ActivityPreviewResult | None
     messages: tuple[str, ...]
     generated_at: datetime
+
+
+BatchReplayTaskState = Literal[
+    "QUEUED",
+    "RUNNING",
+    "COMPLETED",
+    "COMPLETED_WITH_ERRORS",
+    "FAILED",
+]
+BatchReplayItemState = Literal["PENDING", "RUNNING", "COMPLETED", "FAILED"]
+
+
+class BatchReplayCreateRequest(ApiModel):
+    client_request_id: str = Field(
+        min_length=8,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]+$",
+    )
+    case_ids: tuple[str, ...] = Field(min_length=1, max_length=200)
+
+    @model_validator(mode="after")
+    def validate_unique_case_ids(self) -> "BatchReplayCreateRequest":
+        if len(set(self.case_ids)) != len(self.case_ids):
+            raise ValueError("批量回放案例不能重复。")
+        return self
+
+
+class BatchReplayItem(ApiModel):
+    sequence: int = Field(ge=0)
+    case_id: str
+    model_kind: ModelKind
+    state: BatchReplayItemState
+    result_summary: dict[str, object] | None
+    error_message: str | None
+    started_at: datetime | None
+    completed_at: datetime | None
+
+
+class BatchReplayTaskSummary(ApiModel):
+    task_id: str
+    client_request_id: str
+    state: BatchReplayTaskState
+    total_count: int = Field(gt=0)
+    completed_count: int = Field(ge=0)
+    failed_count: int = Field(ge=0)
+    recovery_count: int = Field(ge=0)
+    current_case_id: str | None
+    error_message: str | None
+    progress: float = Field(ge=0, le=1)
+    created_at: datetime
+    updated_at: datetime
+    completed_at: datetime | None
+
+
+class BatchReplayTaskResponse(BatchReplayTaskSummary):
+    items: tuple[BatchReplayItem, ...]
+
+
+class BatchReplayTaskListResponse(ApiModel):
+    items: tuple[BatchReplayTaskSummary, ...]
+    total: int = Field(ge=0)

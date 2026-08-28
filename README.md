@@ -11,7 +11,7 @@
 - Vue 3 + TypeScript + Vite 前端；
 - Tabler 工作台布局、共享状态和空状态组件；
 - `GET /api/health` 真实健康检查；
-- SQLite 结构版本 4：来源、案例、传感器流、导入批次、原始文件哈希、质量记录、真实标签、合成规律、模型 manifest、回放和三模型独立输出表；
+- SQLite 结构版本 5：来源、案例、传感器流、导入批次、原始文件哈希、质量记录、真实标签、合成规律、模型 manifest、回放、三模型独立输出和可恢复批量任务表；
 - `WS /ws/system` 实时系统状态；
 - `GET /api/contracts`：真实性类别、三模型固定输入输出和回放事件合同；
 - `GET /api/cases`：真实服务端分页、筛选和白名单排序；
@@ -19,6 +19,7 @@
 - `GET /api/reports`：把已登记模型的本地评估文件规范化为带证据范围、限制和报告 SHA-256 的统一清单；
 - `GET /api/reports/export.json`：下载当前统一测试报告 JSON 快照；
 - `GET /api/cases/{case_id}/replay-preview`：重新校验本地文件并返回真实波形、标签、模型窗口、候选告警或合成规律逐日判断；
+- `POST /api/batch-replays`、`GET /api/batch-replays` 与 `GET /api/batch-replays/{task_id}`：创建、查询并恢复 SQLite 持久化批量回放；
 - Pydantic → OpenAPI/JSON Schema → TypeScript 的可重复生成链；
 - 前端自动检查、断线重试和手动刷新；
 - 后端接口与数据库自动测试；
@@ -28,10 +29,10 @@
 - CAPTURE-24 恢复前缀子集的固定可用性扫描、24 人训练组、12 人不重叠评估组、活动 ONNX、模型卡与留出报告；
 - 前端按真实性筛选案例、开始/暂停/继续/重置回放、1×–16×速度、真实三轴/六轴波形、证据时间线和数据质量展示；
 - 前端测试报告区域：实读保存的评估文件、显示适用范围与限制，并提供 JSON 下载。
+- 前端批量回放区域：按当前真实性筛选创建任务，显示真实进度、失败数、恢复次数和三个模型各自完成数，不生成综合医学风险。
 
 尚未完成：
 
-- 可持久恢复的批量重放任务；
 - 真实设备接入；
 - Windows 一键交付包和 GitHub 远程发布。
 
@@ -80,6 +81,8 @@ FastAPI 接口文档：`http://127.0.0.1:8000/docs`
 测试报告 JSON 下载：`http://127.0.0.1:8000/api/reports/export.json`
 
 单案例回放预览：`http://127.0.0.1:8000/api/cases/weda-f01-u01_r01/replay-preview`
+
+批量回放清单：`http://127.0.0.1:8000/api/batch-replays`
 
 固定版本 WEDA-FALL 导入命令和许可边界见 `backend/README.md` 与 `data/catalog/README.md`。来源许可证尚未核验，因此原始和处理后的传感器文件都不进入 Git，也不被重新分发。
 

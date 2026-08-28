@@ -74,6 +74,191 @@ export type ApiError = {
 export type ApprovalStatus = 'RESEARCH_ONLY' | 'EXTERNAL_VALIDATION_REQUIRED' | 'APPROVED';
 
 /**
+ * BatchReplayCreateRequest
+ */
+export type BatchReplayCreateRequest = {
+    /**
+     * Case Ids
+     */
+    case_ids: Array<string>;
+    /**
+     * Client Request Id
+     */
+    client_request_id: string;
+};
+
+/**
+ * BatchReplayItem
+ */
+export type BatchReplayItem = {
+    /**
+     * Case Id
+     */
+    case_id: string;
+    /**
+     * Completed At
+     */
+    completed_at: string | null;
+    /**
+     * Error Message
+     */
+    error_message: string | null;
+    model_kind: ModelKind;
+    /**
+     * Result Summary
+     */
+    result_summary: {
+        [key: string]: unknown;
+    } | null;
+    /**
+     * Sequence
+     */
+    sequence: number;
+    /**
+     * Started At
+     */
+    started_at: string | null;
+    /**
+     * State
+     */
+    state: 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+};
+
+/**
+ * BatchReplayTaskListResponse
+ */
+export type BatchReplayTaskListResponse = {
+    /**
+     * Items
+     */
+    items: Array<BatchReplayTaskSummary>;
+    /**
+     * Total
+     */
+    total: number;
+};
+
+/**
+ * BatchReplayTaskResponse
+ */
+export type BatchReplayTaskResponse = {
+    /**
+     * Client Request Id
+     */
+    client_request_id: string;
+    /**
+     * Completed At
+     */
+    completed_at: string | null;
+    /**
+     * Completed Count
+     */
+    completed_count: number;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Current Case Id
+     */
+    current_case_id: string | null;
+    /**
+     * Error Message
+     */
+    error_message: string | null;
+    /**
+     * Failed Count
+     */
+    failed_count: number;
+    /**
+     * Items
+     */
+    items: Array<BatchReplayItem>;
+    /**
+     * Progress
+     */
+    progress: number;
+    /**
+     * Recovery Count
+     */
+    recovery_count: number;
+    /**
+     * State
+     */
+    state: 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'COMPLETED_WITH_ERRORS' | 'FAILED';
+    /**
+     * Task Id
+     */
+    task_id: string;
+    /**
+     * Total Count
+     */
+    total_count: number;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+};
+
+/**
+ * BatchReplayTaskSummary
+ */
+export type BatchReplayTaskSummary = {
+    /**
+     * Client Request Id
+     */
+    client_request_id: string;
+    /**
+     * Completed At
+     */
+    completed_at: string | null;
+    /**
+     * Completed Count
+     */
+    completed_count: number;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Current Case Id
+     */
+    current_case_id: string | null;
+    /**
+     * Error Message
+     */
+    error_message: string | null;
+    /**
+     * Failed Count
+     */
+    failed_count: number;
+    /**
+     * Progress
+     */
+    progress: number;
+    /**
+     * Recovery Count
+     */
+    recovery_count: number;
+    /**
+     * State
+     */
+    state: 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'COMPLETED_WITH_ERRORS' | 'FAILED';
+    /**
+     * Task Id
+     */
+    task_id: string;
+    /**
+     * Total Count
+     */
+    total_count: number;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+};
+
+/**
  * CaseContract
  */
 export type CaseContract = {
@@ -1082,6 +1267,111 @@ export type ValidationError = {
      */
     type: string;
 };
+
+export type BatchReplaysApiBatchReplaysGetData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/batch-replays';
+};
+
+export type BatchReplaysApiBatchReplaysGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * 批量任务清单暂不可读。
+     */
+    503: ApiError;
+};
+
+export type BatchReplaysApiBatchReplaysGetError = BatchReplaysApiBatchReplaysGetErrors[keyof BatchReplaysApiBatchReplaysGetErrors];
+
+export type BatchReplaysApiBatchReplaysGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: BatchReplayTaskListResponse;
+};
+
+export type BatchReplaysApiBatchReplaysGetResponse = BatchReplaysApiBatchReplaysGetResponses[keyof BatchReplaysApiBatchReplaysGetResponses];
+
+export type CreateBatchReplayApiBatchReplaysPostData = {
+    body: BatchReplayCreateRequest;
+    path?: never;
+    query?: never;
+    url: '/api/batch-replays';
+};
+
+export type CreateBatchReplayApiBatchReplaysPostErrors = {
+    /**
+     * 请求标识或案例集合冲突。
+     */
+    409: ApiError;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * 批量任务暂不可创建。
+     */
+    503: ApiError;
+};
+
+export type CreateBatchReplayApiBatchReplaysPostError = CreateBatchReplayApiBatchReplaysPostErrors[keyof CreateBatchReplayApiBatchReplaysPostErrors];
+
+export type CreateBatchReplayApiBatchReplaysPostResponses = {
+    /**
+     * Successful Response
+     */
+    202: BatchReplayTaskResponse;
+};
+
+export type CreateBatchReplayApiBatchReplaysPostResponse = CreateBatchReplayApiBatchReplaysPostResponses[keyof CreateBatchReplayApiBatchReplaysPostResponses];
+
+export type BatchReplayDetailApiBatchReplaysTaskIdGetData = {
+    body?: never;
+    path: {
+        /**
+         * Task Id
+         */
+        task_id: string;
+    };
+    query?: never;
+    url: '/api/batch-replays/{task_id}';
+};
+
+export type BatchReplayDetailApiBatchReplaysTaskIdGetErrors = {
+    /**
+     * 批量任务不存在。
+     */
+    404: ApiError;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * 批量任务暂不可读。
+     */
+    503: ApiError;
+};
+
+export type BatchReplayDetailApiBatchReplaysTaskIdGetError = BatchReplayDetailApiBatchReplaysTaskIdGetErrors[keyof BatchReplayDetailApiBatchReplaysTaskIdGetErrors];
+
+export type BatchReplayDetailApiBatchReplaysTaskIdGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: BatchReplayTaskResponse;
+};
+
+export type BatchReplayDetailApiBatchReplaysTaskIdGetResponse = BatchReplayDetailApiBatchReplaysTaskIdGetResponses[keyof BatchReplayDetailApiBatchReplaysTaskIdGetResponses];
 
 export type CasesApiCasesGetData = {
     body?: never;
