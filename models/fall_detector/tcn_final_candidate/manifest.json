@@ -1,0 +1,89 @@
+{
+  "manifest_id": "fall-detector-tcn-0.2.0-dev",
+  "model_id": "fall_detector_tcn_final_candidate",
+  "model_kind": "FALL_DETECTION",
+  "version": "0.2.0-dev",
+  "format": "ONNX",
+  "source_commit": "6c8bd6058f19467221e292c77a8df00630b8bd0b",
+  "artifact_relative_path": "models/fall_detector/tcn_final_candidate/model.onnx",
+  "artifact_sha256": "1e214ebd89fce6620cf09a7a071aa904cd5ca0932e960181ce43c3695e212a3f",
+  "contract": {
+    "model_kind": "FALL_DETECTION",
+    "name_zh_cn": "腕部跌倒检测",
+    "task": "识别刚刚发生的受控模拟跌倒候选事件",
+    "tensor_input": {
+      "sample_rate_hz": 50.0,
+      "window_seconds": 4.0,
+      "sample_count": 200,
+      "channels": [
+        {
+          "name": "ax",
+          "quantity": "acceleration",
+          "unit": "m/s^2"
+        },
+        {
+          "name": "ay",
+          "quantity": "acceleration",
+          "unit": "m/s^2"
+        },
+        {
+          "name": "az",
+          "quantity": "acceleration",
+          "unit": "m/s^2"
+        },
+        {
+          "name": "gx",
+          "quantity": "angular_velocity",
+          "unit": "rad/s"
+        },
+        {
+          "name": "gy",
+          "quantity": "angular_velocity",
+          "unit": "rad/s"
+        },
+        {
+          "name": "gz",
+          "quantity": "angular_velocity",
+          "unit": "rad/s"
+        }
+      ],
+      "input_shape": [
+        null,
+        200,
+        6
+      ]
+    },
+    "routine_event_input": null,
+    "output_labels": [
+      {
+        "code": "adl",
+        "label_zh_cn": "日常活动",
+        "meaning": "当前窗口更接近日常活动。"
+      },
+      {
+        "code": "fall",
+        "label_zh_cn": "跌倒候选",
+        "meaning": "当前窗口需要进入事件状态机复核，不能直接宣布真实跌倒。"
+      }
+    ],
+    "safety_boundary": "不预测未来跌倒；单窗口概率不得直接触发真实救援结论。"
+  },
+  "training_truth_categories": [
+    "REAL_LAB_ACTIVITY",
+    "SIMULATED_FALL"
+  ],
+  "training_data_references": [
+    "WEDA-FALL fixed commit 74e0b93cb061d4ecbca12628f2d47090e97fbeea"
+  ],
+  "evaluation_reference": "来源仓库 reports/tcn_loso_metrics.json 与 reports/tcn_threshold_sweep.json；本平台另行保存 100 案例重放评估。",
+  "limitations": [
+    "跌倒样本仅来自年轻参与者在床垫上的受控模拟。",
+    "老年参与者只有日常活动，没有老人跌倒样本。",
+    "尚无外部数据集、长期自由生活或真实设备验收。",
+    "0.7 阈值是查看 WEDA-FALL 开发标签后的后验工作点，需要外部确认。"
+  ],
+  "deployment_approved": false,
+  "approval_status": "EXTERNAL_VALIDATION_REQUIRED",
+  "external_validation_completed": false,
+  "created_at": "2026-08-27T15:59:16+08:00"
+}

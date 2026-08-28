@@ -14,6 +14,7 @@ from backend.app.contracts import (
     ModelManifest,
     ModelOutput,
     ReplayEvent,
+    RoutineEventContract,
     SensorQualityContract,
     SensorStreamContract,
     SensorWindow,
@@ -52,6 +53,7 @@ def build_domain_schema() -> dict[str, Any]:
             "ModelManifest": ModelManifest.model_json_schema(),
             "ModelOutput": TypeAdapter(ModelOutput).json_schema(),
             "ReplayEvent": TypeAdapter(ReplayEvent).json_schema(),
+            "RoutineEventContract": RoutineEventContract.model_json_schema(),
         },
     }
 

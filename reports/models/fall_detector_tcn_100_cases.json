@@ -1,0 +1,1564 @@
+{
+  "cases": [
+    {
+      "activity_label": "D01",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d01-u01_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.05753323435783386,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 16
+    },
+    {
+      "activity_label": "D01",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d01-u09_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.0314597487449646,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 13
+    },
+    {
+      "activity_label": "D01",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d01-u12_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.05971086025238037,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 12
+    },
+    {
+      "activity_label": "D01",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d01-u21_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.07864347100257874,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 19
+    },
+    {
+      "activity_label": "D01",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d01-u22_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.09003937244415283,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 17
+    },
+    {
+      "activity_label": "D01",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d01-u23_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.061242759227752686,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 14
+    },
+    {
+      "activity_label": "D01",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d01-u27_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.03886398673057556,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 17
+    },
+    {
+      "activity_label": "D01",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d01-u28_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.1347680389881134,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 13
+    },
+    {
+      "activity_label": "D02",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d02-u02_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.28480076789855957,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 14
+    },
+    {
+      "activity_label": "D02",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d02-u10_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.04958844184875488,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 17
+    },
+    {
+      "activity_label": "D02",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d02-u13_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.0026391148567199707,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 11
+    },
+    {
+      "activity_label": "D03",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d03-u03_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.10205712914466858,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 23
+    },
+    {
+      "activity_label": "D03",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d03-u11_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.04085630178451538,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 26
+    },
+    {
+      "activity_label": "D03",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d03-u14_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.1479511857032776,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 23
+    },
+    {
+      "activity_label": "D03",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d03-u23_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.15066075325012207,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 24
+    },
+    {
+      "activity_label": "D03",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d03-u24_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.22245880961418152,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 37
+    },
+    {
+      "activity_label": "D03",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d03-u26_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.15242430567741394,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 11
+    },
+    {
+      "activity_label": "D03",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d03-u28_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.4310187101364136,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 22
+    },
+    {
+      "activity_label": "D03",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d03-u29_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.10344353318214417,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 23
+    },
+    {
+      "activity_label": "D04",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d04-u01_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.21284258365631104,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 11
+    },
+    {
+      "activity_label": "D04",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d04-u04_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.21414345502853394,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 8
+    },
+    {
+      "activity_label": "D04",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d04-u12_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.23648783564567566,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 9
+    },
+    {
+      "activity_label": "D04",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d04-u22_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.17047074437141418,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 14
+    },
+    {
+      "activity_label": "D04",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d04-u23_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.16228574514389038,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 6
+    },
+    {
+      "activity_label": "D04",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d04-u24_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.07941830158233643,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 3
+    },
+    {
+      "activity_label": "D04",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d04-u29_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.08216756582260132,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 5
+    },
+    {
+      "activity_label": "D04",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d04-u30_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.03584367036819458,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 3
+    },
+    {
+      "activity_label": "D05",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d05-u02_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.08093082904815674,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 8
+    },
+    {
+      "activity_label": "D05",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d05-u05_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.13528642058372498,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 12
+    },
+    {
+      "activity_label": "D05",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d05-u13_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.2587180733680725,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 6
+    },
+    {
+      "activity_label": "D06",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d06-u03_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.04908815026283264,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 10
+    },
+    {
+      "activity_label": "D06",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d06-u06_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.3330151438713074,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 8
+    },
+    {
+      "activity_label": "D06",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d06-u14_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.04150441288948059,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 9
+    },
+    {
+      "activity_label": "D07",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-d07-u01_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 9000,
+          "peak_probability": 0.8805675506591797,
+          "start_offset_ms": 2000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 1,
+      "max_fall_probability": 0.8805675506591797,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 6
+    },
+    {
+      "activity_label": "D07",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d07-u04_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.2565646171569824,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 5
+    },
+    {
+      "activity_label": "D07",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d07-u07_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.026750028133392334,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 5
+    },
+    {
+      "activity_label": "D08",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d08-u02_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.05938667058944702,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 3
+    },
+    {
+      "activity_label": "D08",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-d08-u05_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 8000,
+          "peak_probability": 0.9426730275154114,
+          "start_offset_ms": 2000,
+          "window_count": 3
+        }
+      ],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 1,
+      "max_fall_probability": 0.9426730275154114,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 8
+    },
+    {
+      "activity_label": "D08",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d08-u08_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.3858048617839813,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 4
+    },
+    {
+      "activity_label": "D09",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d09-u06_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.6163142919540405,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 5
+    },
+    {
+      "activity_label": "D09",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d09-u09_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.18818914890289307,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 5
+    },
+    {
+      "activity_label": "D09",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d09-u24_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.09114193916320801,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 1
+    },
+    {
+      "activity_label": "D09",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d09-u25_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.1671087145805359,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 1
+    },
+    {
+      "activity_label": "D09",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d09-u27_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.2142317295074463,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 1
+    },
+    {
+      "activity_label": "D09",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d09-u30_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.5747827887535095,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 1
+    },
+    {
+      "activity_label": "D09",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d09-u31_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.4144657552242279,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 7
+    },
+    {
+      "activity_label": "D10",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d10-u07_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.10255482792854309,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 6
+    },
+    {
+      "activity_label": "D10",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d10-u10_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.21188846230506897,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 5
+    },
+    {
+      "activity_label": "D10",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d10-u21_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.22125843167304993,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 9
+    },
+    {
+      "activity_label": "D10",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d10-u25_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.09784111380577087,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 7
+    },
+    {
+      "activity_label": "D10",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d10-u26_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.012934267520904541,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 4
+    },
+    {
+      "activity_label": "D10",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d10-u28_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.052496254444122314,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 6
+    },
+    {
+      "activity_label": "D10",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d10-u31_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.031775057315826416,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 5
+    },
+    {
+      "activity_label": "D11",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d11-u08_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.10190045833587646,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 11
+    },
+    {
+      "activity_label": "D11",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d11-u11_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.039682865142822266,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 8
+    },
+    {
+      "activity_label": "D11",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d11-u21_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.29278358817100525,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 8
+    },
+    {
+      "activity_label": "D11",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d11-u22_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.35780537128448486,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 14
+    },
+    {
+      "activity_label": "D11",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d11-u25_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.15892478823661804,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 6
+    },
+    {
+      "activity_label": "D11",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d11-u26_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.08608242869377136,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 5
+    },
+    {
+      "activity_label": "D11",
+      "age_group": "OLDER_ADULT",
+      "alarm_episode_count": 0,
+      "case_id": "weda-d11-u27_r01",
+      "episodes": [],
+      "fall_event_detected": null,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.4942551553249359,
+      "truth_category": "REAL_LAB_ACTIVITY",
+      "window_count": 4
+    },
+    {
+      "activity_label": "F01",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f01-u01_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 10000,
+          "peak_probability": 0.9988727569580078,
+          "start_offset_ms": 2000,
+          "window_count": 5
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9988727569580078,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 9
+    },
+    {
+      "activity_label": "F01",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f01-u03_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 8000,
+          "peak_probability": 0.9411918520927429,
+          "start_offset_ms": 1000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9411918520927429,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 6
+    },
+    {
+      "activity_label": "F01",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f01-u05_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 9000,
+          "peak_probability": 0.985161304473877,
+          "start_offset_ms": 2000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.985161304473877,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 9
+    },
+    {
+      "activity_label": "F01",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f01-u09_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 9000,
+          "peak_probability": 0.9855618476867676,
+          "start_offset_ms": 2000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9855618476867676,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 11
+    },
+    {
+      "activity_label": "F01",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f01-u11_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 7000,
+          "peak_probability": 0.9953237175941467,
+          "start_offset_ms": 1000,
+          "window_count": 3
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9953237175941467,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 4
+    },
+    {
+      "activity_label": "F02",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f02-u02_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 9000,
+          "peak_probability": 0.9913225769996643,
+          "start_offset_ms": 2000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9913225769996643,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 10
+    },
+    {
+      "activity_label": "F02",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f02-u04_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 10000,
+          "peak_probability": 0.998528003692627,
+          "start_offset_ms": 2000,
+          "window_count": 5
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.998528003692627,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 7
+    },
+    {
+      "activity_label": "F02",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f02-u06_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 9000,
+          "peak_probability": 0.9189478158950806,
+          "start_offset_ms": 3000,
+          "window_count": 3
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9189478158950806,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 10
+    },
+    {
+      "activity_label": "F02",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f02-u10_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 9000,
+          "peak_probability": 0.8973572254180908,
+          "start_offset_ms": 2000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.8973572254180908,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 10
+    },
+    {
+      "activity_label": "F02",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f02-u12_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 7000,
+          "peak_probability": 0.9999603033065796,
+          "start_offset_ms": 0,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9999603033065796,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 6
+    },
+    {
+      "activity_label": "F03",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f03-u03_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 10000,
+          "peak_probability": 0.9992737174034119,
+          "start_offset_ms": 3000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9992737174034119,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 9
+    },
+    {
+      "activity_label": "F03",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f03-u05_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 11000,
+          "peak_probability": 0.9997023344039917,
+          "start_offset_ms": 3000,
+          "window_count": 5
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9997023344039917,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 11
+    },
+    {
+      "activity_label": "F03",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f03-u07_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 9000,
+          "peak_probability": 0.9862613081932068,
+          "start_offset_ms": 2000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9862613081932068,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 9
+    },
+    {
+      "activity_label": "F03",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f03-u11_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 9000,
+          "peak_probability": 0.9997230768203735,
+          "start_offset_ms": 2000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9997230768203735,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 6
+    },
+    {
+      "activity_label": "F03",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f03-u13_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 8000,
+          "peak_probability": 0.9989705085754395,
+          "start_offset_ms": 1000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9989705085754395,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 7
+    },
+    {
+      "activity_label": "F04",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f04-u04_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 8000,
+          "peak_probability": 0.9852470755577087,
+          "start_offset_ms": 1000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9852470755577087,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 6
+    },
+    {
+      "activity_label": "F04",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f04-u06_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 14000,
+          "peak_probability": 0.9970169067382812,
+          "start_offset_ms": 2000,
+          "window_count": 7
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9970169067382812,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 11
+    },
+    {
+      "activity_label": "F04",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f04-u08_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 12000,
+          "peak_probability": 0.9950683116912842,
+          "start_offset_ms": 5000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9950683116912842,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 12
+    },
+    {
+      "activity_label": "F04",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f04-u12_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 7000,
+          "peak_probability": 0.988391637802124,
+          "start_offset_ms": 0,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.988391637802124,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 7
+    },
+    {
+      "activity_label": "F04",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f04-u14_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 10000,
+          "peak_probability": 0.9949619770050049,
+          "start_offset_ms": 2000,
+          "window_count": 5
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9949619770050049,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 12
+    },
+    {
+      "activity_label": "F05",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f05-u01_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 10000,
+          "peak_probability": 0.9967590570449829,
+          "start_offset_ms": 2000,
+          "window_count": 5
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9967590570449829,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 9
+    },
+    {
+      "activity_label": "F05",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f05-u05_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 10000,
+          "peak_probability": 0.9602822065353394,
+          "start_offset_ms": 4000,
+          "window_count": 3
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9602822065353394,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 10
+    },
+    {
+      "activity_label": "F05",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f05-u07_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 6000,
+          "peak_probability": 0.9765802025794983,
+          "start_offset_ms": 0,
+          "window_count": 3
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9765802025794983,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 5
+    },
+    {
+      "activity_label": "F05",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f05-u09_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 8000,
+          "peak_probability": 0.9860340356826782,
+          "start_offset_ms": 1000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9860340356826782,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 5
+    },
+    {
+      "activity_label": "F05",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f05-u13_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 6000,
+          "peak_probability": 0.9988336563110352,
+          "start_offset_ms": 0,
+          "window_count": 3
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9988336563110352,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 3
+    },
+    {
+      "activity_label": "F06",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f06-u02_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 9000,
+          "peak_probability": 0.9010642766952515,
+          "start_offset_ms": 2000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9010642766952515,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 6
+    },
+    {
+      "activity_label": "F06",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f06-u06_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 9000,
+          "peak_probability": 0.9960806965827942,
+          "start_offset_ms": 2000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9960806965827942,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 9
+    },
+    {
+      "activity_label": "F06",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f06-u08_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 9000,
+          "peak_probability": 0.8176242113113403,
+          "start_offset_ms": 5000,
+          "window_count": 1
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.8176242113113403,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 12
+    },
+    {
+      "activity_label": "F06",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f06-u10_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 8000,
+          "peak_probability": 0.9909611940383911,
+          "start_offset_ms": 1000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9909611940383911,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 9
+    },
+    {
+      "activity_label": "F06",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f06-u14_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 12000,
+          "peak_probability": 0.9234557151794434,
+          "start_offset_ms": 5000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9234557151794434,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 12
+    },
+    {
+      "activity_label": "F07",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f07-u01_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 12000,
+          "peak_probability": 0.9995725154876709,
+          "start_offset_ms": 4000,
+          "window_count": 5
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9995725154876709,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 12
+    },
+    {
+      "activity_label": "F07",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f07-u03_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 7000,
+          "peak_probability": 0.9925588369369507,
+          "start_offset_ms": 0,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9925588369369507,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 6
+    },
+    {
+      "activity_label": "F07",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f07-u07_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 8000,
+          "peak_probability": 0.9976547360420227,
+          "start_offset_ms": 1000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9976547360420227,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 8
+    },
+    {
+      "activity_label": "F07",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f07-u09_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 8000,
+          "peak_probability": 0.9995824694633484,
+          "start_offset_ms": 1000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9995824694633484,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 9
+    },
+    {
+      "activity_label": "F07",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f07-u11_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 8000,
+          "peak_probability": 0.9950487613677979,
+          "start_offset_ms": 1000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9950487613677979,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 6
+    },
+    {
+      "activity_label": "F08",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f08-u02_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 8000,
+          "peak_probability": 0.9980804920196533,
+          "start_offset_ms": 1000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9980804920196533,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 7
+    },
+    {
+      "activity_label": "F08",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f08-u04_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 7000,
+          "peak_probability": 0.9988501667976379,
+          "start_offset_ms": 0,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9988501667976379,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 4
+    },
+    {
+      "activity_label": "F08",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f08-u08_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 8000,
+          "peak_probability": 0.987896203994751,
+          "start_offset_ms": 1000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.987896203994751,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 9
+    },
+    {
+      "activity_label": "F08",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f08-u10_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 8000,
+          "peak_probability": 0.9125564694404602,
+          "start_offset_ms": 1000,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9125564694404602,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 5
+    },
+    {
+      "activity_label": "F08",
+      "age_group": "YOUNG_ADULT",
+      "alarm_episode_count": 1,
+      "case_id": "weda-f08-u12_r01",
+      "episodes": [
+        {
+          "end_offset_ms": 7000,
+          "peak_probability": 0.9709509611129761,
+          "start_offset_ms": 0,
+          "window_count": 4
+        }
+      ],
+      "fall_event_detected": true,
+      "false_alarm_episode_count": 0,
+      "max_fall_probability": 0.9709509611129761,
+      "truth_category": "SIMULATED_FALL",
+      "window_count": 6
+    }
+  ],
+  "dataset": {
+    "case_count": 100,
+    "catalog_relative_path": "data/catalog/weda_fall_100_v1.json",
+    "catalog_sha256": "4e6a68fa8de730999d85f2d254af40adc6241038fc2af2a0c2ce9cfab4041f49",
+    "distribution": {
+      "OLDER_ADULT__REAL_LAB_ACTIVITY": 30,
+      "YOUNG_ADULT__REAL_LAB_ACTIVITY": 30,
+      "YOUNG_ADULT__SIMULATED_FALL": 40
+    },
+    "relationship_to_training": "同一 WEDA-FALL 来源；交付 ONNX 在全部 WEDA-FALL 参与者上重新拟合，因此本报告只是本机重放行为核验，不是独立泛化评估。"
+  },
+  "evaluated_at": "2026-08-28T11:11:25.358436Z",
+  "event_metrics": {
+    "evaluated_scripted_duration_s": 1284.3000000000002,
+    "event_f1": 0.975609756097561,
+    "event_precision": 0.9523809523809523,
+    "event_recall": 1.0,
+    "false_alarm_episodes": 2,
+    "false_alarms_per_scripted_replay_hour": 5.606166783461807,
+    "false_negative_simulated_fall_events": 0,
+    "trial_confusion_matrix": {
+      "labels": [
+        "adl_trial",
+        "simulated_fall_trial"
+      ],
+      "matrix": [
+        [
+          58,
+          2
+        ],
+        [
+          0,
+          40
+        ]
+      ]
+    },
+    "true_positive_simulated_fall_events": 40
+  },
+  "execution_command": "python -m backend.scripts.evaluate_fall_model --catalog data/catalog/weda_fall_100_v1.json --manifest models/fall_detector/tcn_final_candidate/manifest.json --report reports/models/fall_detector_tcn_100_cases.json",
+  "limitations": [
+    "40 个跌倒案例均为年轻参与者在受控床垫条件下模拟。",
+    "30 个老人案例全部是受控日常活动，只能用于误报分析。",
+    "模型已在同一数据集的全部参与者上重新拟合，本报告不能作为外部测试准确率。",
+    "每小时误报分母是短时脚本回放时长，不能外推为自然生活每天误报数。",
+    "模型未完成外部验证，deployment_approved=false。"
+  ],
+  "model": {
+    "artifact_sha256": "1e214ebd89fce6620cf09a7a071aa904cd5ca0932e960181ce43c3695e212a3f",
+    "deployment_approved": false,
+    "manifest_id": "fall-detector-tcn-0.2.0-dev",
+    "threshold": 0.7
+  },
+  "older_adl_false_alarm_analysis": {
+    "case_count": 30,
+    "evaluated_scripted_duration_s": 412.1,
+    "false_alarm_episodes": 0,
+    "false_alarms_per_scripted_replay_hour": 0.0,
+    "meaning": "仅分析老年参与者受控日常活动误报；没有老人跌倒样本。"
+  },
+  "report_version": "1.0.0",
+  "runtime": {
+    "onnxruntime_version": "1.29.0",
+    "providers": [
+      "CPUExecutionProvider"
+    ]
+  }
+}

@@ -2009,6 +2009,61 @@
         }
       ]
     },
+    "RoutineEventContract": {
+      "additionalProperties": false,
+      "properties": {
+        "duration_minutes": {
+          "exclusiveMinimum": 0,
+          "title": "Duration Minutes",
+          "type": "number"
+        },
+        "event_id": {
+          "minLength": 1,
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "enum": [
+            "meal",
+            "nap",
+            "walk"
+          ],
+          "title": "Event Type",
+          "type": "string"
+        },
+        "profile_id": {
+          "minLength": 1,
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "slot_key": {
+          "minLength": 1,
+          "title": "Slot Key",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "truth_category": {
+          "const": "SYNTHETIC_ROUTINE",
+          "default": "SYNTHETIC_ROUTINE",
+          "title": "Truth Category",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "profile_id",
+        "event_type",
+        "slot_key",
+        "started_at",
+        "duration_minutes"
+      ],
+      "title": "RoutineEventContract",
+      "type": "object"
+    },
     "SensorQualityContract": {
       "additionalProperties": false,
       "properties": {

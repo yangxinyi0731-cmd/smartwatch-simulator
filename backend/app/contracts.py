@@ -154,6 +154,18 @@ class RoutineEventInputContract(ContractModel):
     required_fields: tuple[NonEmptyText, ...]
 
 
+class RoutineEventContract(ContractModel):
+    event_id: NonEmptyText
+    profile_id: NonEmptyText
+    event_type: Literal["meal", "nap", "walk"]
+    slot_key: NonEmptyText
+    started_at: datetime
+    duration_minutes: float = Field(gt=0)
+    truth_category: Literal[TruthCategory.SYNTHETIC_ROUTINE] = (
+        TruthCategory.SYNTHETIC_ROUTINE
+    )
+
+
 class LabelDefinition(ContractModel):
     code: NonEmptyText
     label_zh_cn: NonEmptyText

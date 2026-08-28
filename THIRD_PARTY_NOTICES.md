@@ -2,7 +2,7 @@
 
 这份清单用于记录后续开发可能参考的开源项目，方便比赛答辩时说明“思路来自哪里”。
 
-> 当前前端使用 Tabler 的官方 npm 样式包和 Vue 图标组件。下列模型与数据项目仍只作为路线参考，没有把其代码、权重或指标当成本项目成果。
+> 当前前端使用 Tabler 的官方 npm 样式包和 Vue 图标组件；后端使用 ONNX Runtime CPU 执行本项目已有跌倒模型。外部数据、代码和本项目自有模型分别登记，不把上游指标冒充本平台实测结果。
 
 | 项目 | 用途参考 | 固定版本（Git 提交） | 许可证/使用边界 |
 |---|---|---|---|
@@ -10,6 +10,7 @@
 | [tabler/tabler-icons](https://github.com/tabler/tabler-icons) / `@tabler/icons-vue` | Vue 3 线性图标组件 | npm `3.46.0`（精确锁定） | MIT；Copyright (c) 2020-2026 Paweł Kuna；许可证保存在 `licenses/TABLER_ICONS_LICENSE.txt` |
 | [fastapi/fastapi](https://github.com/fastapi/fastapi) | 本地 HTTP 与 WebSocket 应用框架 | PyPI `0.141.1`（直接依赖精确锁定） | MIT；包元数据与上游仓库为准 |
 | [encode/uvicorn](https://github.com/encode/uvicorn) | 只监听本机的 ASGI 开发服务器 | PyPI `0.52.4`（直接依赖精确锁定） | BSD-3-Clause；包元数据与上游仓库为准 |
+| [microsoft/onnxruntime](https://github.com/microsoft/onnxruntime) | 在 Windows CPU 上执行固定 ONNX 模型 | PyPI `1.29.0`（直接依赖精确锁定并在 CPython 3.14 实测） | MIT；只启用 `CPUExecutionProvider` |
 | [pydantic/httpx2](https://github.com/pydantic/httpx2) | FastAPI/Starlette 测试客户端依赖 | PyPI `2.12.0`（开发依赖精确锁定） | BSD-3-Clause；只用于自动测试 |
 | [pytest-dev/pytest](https://github.com/pytest-dev/pytest) | 后端自动测试 | PyPI `9.1.1`（开发依赖精确锁定） | MIT；只用于自动测试 |
 | [hey-api/hey-api](https://github.com/hey-api/hey-api) / `@hey-api/openapi-ts` | 从后端 OpenAPI 生成 Vue 可用的 TypeScript 类型 | npm `0.99.0`（开发依赖精确锁定） | MIT；许可证保存在 `licenses/HEY_API_OPENAPI_TS_LICENSE.txt`；仅处理本仓库生成的 JSON，不处理不可信 YAML |
@@ -40,6 +41,7 @@
 - 精确版本同时写入 `frontend/package.json` 和 `frontend/package-lock.json`，避免比赛前自动升级。
 - Tabler Core 依赖 Bootstrap `5.3.7` 与 Popper；依赖树及完整性校验由 npm 锁文件记录。
 - FastAPI 与 Uvicorn 的直接依赖写入 `backend/requirements.txt`，测试依赖写入 `backend/requirements-dev.txt`。
+- `onnxruntime==1.29.0` 只用于本机 CPU 推理；跌倒 ONNX 来自用户自己的固定模型仓库提交 `6c8bd6058f19467221e292c77a8df00630b8bd0b`，导入时再次核验 SHA-256 和未部署批准状态。
 - `backend/requirements-lock.txt` 保存 2026-08-28 在 Windows CPython 3.14 上实际解析和测试的完整 Python 环境版本；跨 Python 或跨平台安装仍需重新验证。
 - `@hey-api/openapi-ts@0.99.0` 只用于从 `docs/contracts/openapi.json` 生成 `frontend/src/api/generated/`；该目录视为生成物，不手工修改。
 - 上游生成器依赖的 `js-yaml` 被 npm `overrides` 固定为 `4.3.1`，用于避开截至 2026-08-28 npm audit 报告的旧版拒绝服务漏洞；本项目输入为本地生成的 JSON。

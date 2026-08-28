@@ -1,0 +1,233 @@
+{
+  "schema_version": "1.0",
+  "id": "fall_detector_tcn_final_candidate",
+  "version": "0.2.0-dev",
+  "format": "onnx",
+  "training_status": "full_weda_training_after_complete_loso_development_validation",
+  "deployment_approved": false,
+  "artifact": "model.onnx",
+  "artifact_sha256": "1e214ebd89fce6620cf09a7a071aa904cd5ca0932e960181ce43c3695e212a3f",
+  "input": {
+    "name": "imu_window",
+    "shape": [
+      "batch",
+      200,
+      6
+    ],
+    "dtype": "float32",
+    "channels": [
+      "ax",
+      "ay",
+      "az",
+      "gx",
+      "gy",
+      "gz"
+    ],
+    "sample_rate_hz": 50,
+    "window_samples": 200,
+    "stride_samples": 50,
+    "acc_unit": "m/s2",
+    "gyro_unit": "rad/s",
+    "placement": "wrist_unspecified_side",
+    "normalization": "embedded_in_model_from_all_weda_training_subjects"
+  },
+  "output": {
+    "name": "fall_probability",
+    "labels": [
+      "adl",
+      "fall"
+    ],
+    "threshold": 0.7,
+    "note": "Single-window score; App must apply data quality and event state logic."
+  },
+  "training": {
+    "dataset": "WEDA-FALL fixed repository commit 74e0b93cb061d4ecbca12628f2d47090e97fbeea",
+    "subjects": 25,
+    "recordings": 969,
+    "windows": 8886,
+    "config": "configs/tcn_final.json",
+    "seed": 20261827,
+    "epochs": 8
+  },
+  "development_evaluation": {
+    "method": "25-fold leave-one-subject-out with fixed threshold 0.5",
+    "metrics_file": "reports/tcn_loso_metrics.json",
+    "aggregate_event_metrics": {
+      "event_counts": {
+        "true_positive_fall_events": 341,
+        "false_negative_fall_events": 9,
+        "false_alarm_episodes": 110
+      },
+      "event_recall": 0.9742857142857143,
+      "event_precision": 0.7560975609756098,
+      "event_f1": 0.8514357053682896,
+      "false_alarms_per_replay_hour": 32.43349495478967,
+      "evaluated_replay_duration_s": 12209.6,
+      "evaluated_recordings": 962,
+      "excluded_recordings": [
+        {
+          "recording_id": "D08/U09_R02",
+          "activity_id": "D08",
+          "subject_id": "U09",
+          "duration_s": 3.68,
+          "reason": "shorter_than_one_full_model_window"
+        },
+        {
+          "recording_id": "D08/U09_R03",
+          "activity_id": "D08",
+          "subject_id": "U09",
+          "duration_s": 3.14,
+          "reason": "shorter_than_one_full_model_window"
+        },
+        {
+          "recording_id": "D09/U04_R02",
+          "activity_id": "D09",
+          "subject_id": "U04",
+          "duration_s": 3.24,
+          "reason": "shorter_than_one_full_model_window"
+        },
+        {
+          "recording_id": "D09/U04_R03",
+          "activity_id": "D09",
+          "subject_id": "U04",
+          "duration_s": 3.38,
+          "reason": "shorter_than_one_full_model_window"
+        },
+        {
+          "recording_id": "D09/U13_R02",
+          "activity_id": "D09",
+          "subject_id": "U13",
+          "duration_s": 3.9,
+          "reason": "shorter_than_one_full_model_window"
+        },
+        {
+          "recording_id": "D09/U26_R02",
+          "activity_id": "D09",
+          "subject_id": "U26",
+          "duration_s": 3.92,
+          "reason": "shorter_than_one_full_model_window"
+        },
+        {
+          "recording_id": "D09/U29_R01",
+          "activity_id": "D09",
+          "subject_id": "U29",
+          "duration_s": 3.48,
+          "reason": "shorter_than_one_full_model_window"
+        }
+      ],
+      "trial_confusion_matrix": {
+        "labels": [
+          "adl_trial",
+          "fall_trial"
+        ],
+        "matrix": [
+          [
+            513,
+            99
+          ],
+          [
+            9,
+            341
+          ]
+        ],
+        "note": "Trial-level matrix; event precision separately counts every false alarm episode."
+      }
+    },
+    "elder_adl_event_metrics": {
+      "event_counts": {
+        "true_positive_fall_events": 0,
+        "false_negative_fall_events": 0,
+        "false_alarm_episodes": 14
+      },
+      "event_recall": null,
+      "event_precision": 0.0,
+      "event_f1": null,
+      "false_alarms_per_replay_hour": 29.699469652327647,
+      "evaluated_replay_duration_s": 1696.9999999999995,
+      "evaluated_recordings": 155,
+      "excluded_recordings": [
+        {
+          "recording_id": "D09/U26_R02",
+          "activity_id": "D09",
+          "subject_id": "U26",
+          "duration_s": 3.92,
+          "reason": "shorter_than_one_full_model_window"
+        },
+        {
+          "recording_id": "D09/U29_R01",
+          "activity_id": "D09",
+          "subject_id": "U29",
+          "duration_s": 3.48,
+          "reason": "shorter_than_one_full_model_window"
+        }
+      ],
+      "trial_confusion_matrix": {
+        "labels": [
+          "adl_trial",
+          "fall_trial"
+        ],
+        "matrix": [
+          [
+            141,
+            14
+          ],
+          [
+            0,
+            0
+          ]
+        ],
+        "note": "Trial-level matrix; event precision separately counts every false alarm episode."
+      }
+    },
+    "note": "Metrics are from fold-specific out-of-fold models. The delivered artifact was then refit on all WEDA-FALL subjects using the same fixed configuration."
+  },
+  "model_statistics": {
+    "parameter_count": 3025,
+    "artifact_size_bytes": 16180,
+    "onnx_max_abs_error": 1.1920928955078125e-07,
+    "host_latency": {
+      "environment": "current Windows CPU host; not an Android or watch measurement",
+      "runs": 200,
+      "median_ms": 0.1601999974809587,
+      "p95_ms": 0.1762300020345719
+    }
+  },
+  "data_truth": {
+    "falls": "young participants simulating falls on a mattress",
+    "elder_participants": "ADL only; no fall trials"
+  },
+  "allowed_use": [
+    "offline research reproduction",
+    "clearly labelled development demo in the simulated watch App"
+  ],
+  "warnings": [
+    "Final development artifact for the current WEDA-FALL scope; not a clinically validated final product.",
+    "No real elder fall examples were available for training or testing.",
+    "No external dataset, long-duration natural-living, or Android device acceptance test has been completed.",
+    "Formal App mode must reject this artifact while deployment_approved=false."
+  ],
+  "development_operating_point": {
+    "threshold": 0.7,
+    "event_recall": 0.9142857142857143,
+    "event_precision": 0.8311688311688312,
+    "event_f1": 0.8707482993197279,
+    "false_alarm_episodes": 65,
+    "false_alarms_per_replay_hour": 19.16524701873935,
+    "trial_confusion_matrix": [
+      [
+        552,
+        60
+      ],
+      [
+        30,
+        320
+      ]
+    ],
+    "elder_adl_false_alarm_episodes": 6,
+    "elder_adl_false_alarms_per_replay_hour": 12.728344136711847,
+    "selection_report": "reports/tcn_threshold_sweep.json",
+    "selection_status": "posthoc_development_only_requires_external_confirmation",
+    "primary_prespecified_loso_threshold": 0.5,
+    "warning": "The threshold was selected after viewing WEDA-FALL out-of-fold labels. The selected operating point and its metrics require independent external confirmation. The pre-specified threshold 0.5 result remains the primary leakage-resistant LOSO report."
+  }
+}

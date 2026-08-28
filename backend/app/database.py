@@ -13,6 +13,7 @@ from .contracts import (
     GroundTruthEvent,
     ImportRunContract,
     ModelKind,
+    ModelManifest,
     SensorQualityContract,
     SensorStreamContract,
     SourceReference,
@@ -879,6 +880,50 @@ COMMIT;
                                 "notes": event.notes,
                             },
                         )
+                connection.commit()
+            except Exception:
+                connection.rollback()
+                raise
+
+    def register_model_manifest(self, manifest: ModelManifest) -> None:
+        values: dict[str, object] = {
+            "manifest_id": manifest.manifest_id,
+            "model_id": manifest.model_id,
+            "model_kind": manifest.model_kind.value,
+            "version": manifest.version,
+            "format": manifest.format.value,
+            "source_commit": manifest.source_commit,
+            "artifact_relative_path": manifest.artifact_relative_path,
+            "artifact_sha256": manifest.artifact_sha256,
+            "contract_json": self._json(manifest.contract.model_dump(mode="json")),
+            "training_provenance_json": self._json(
+                {
+                    "truth_categories": [
+                        item.value for item in manifest.training_truth_categories
+                    ],
+                    "data_references": list(manifest.training_data_references),
+                }
+            ),
+            "evaluation_json": self._json(
+                {"reference": manifest.evaluation_reference}
+            ),
+            "limitations_json": self._json(list(manifest.limitations)),
+            "deployment_approved": int(manifest.deployment_approved),
+            "approval_status": manifest.approval_status.value,
+            "external_validation_completed": int(
+                manifest.external_validation_completed
+            ),
+            "created_at": self._timestamp(manifest.created_at),
+        }
+        with self.connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                self._insert_or_verify(
+                    connection,
+                    table="model_manifests",
+                    key_column="manifest_id",
+                    values=values,
+                )
                 connection.commit()
             except Exception:
                 connection.rollback()

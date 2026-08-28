@@ -25,6 +25,7 @@ data/processed/
 !data/catalog/
 !data/cases/
 !models/**/manifest.json
+!models/**/model.onnx
 
 # Desktop build outputs
 src-tauri/target/
@@ -42,4 +43,3 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
-
