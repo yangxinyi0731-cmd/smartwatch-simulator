@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tabler/core": "1.4.0",
+    "@tabler/icons-vue": "3.46.0",
     "vue": "^3.5.41"
   },
   "devDependencies": {

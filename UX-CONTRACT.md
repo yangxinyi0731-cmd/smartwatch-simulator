@@ -28,11 +28,13 @@
 
 - Project `DESIGN.md`：`DESIGN.md`。
 - Token ownership model：运行时 CSS 为 canonical；DESIGN.md 镜像并解释。
-- Runtime design-system/token source：`frontend/src/style.css` 的 `:root` 变量。
+- Runtime design-system/token source：Tabler Core 提供基础 CSS；`frontend/src/style.css` 的 `:root` 变量和共享组件提供本项目语义与最终覆盖。
 - Mapping/export/adapters：`DESIGN.md` Layout 映射表。
 - Token drift gate：`designmd lint`、静态审计、前端构建、浏览器检查。
 - Supported themes：首版浅色；系统 forced-colors；不自动启用暗色。
 - Design-context owner/review policy：任何全局颜色、字体、圆角和空间变化必须同时修改 CSS 与 DESIGN.md。
+- Typography：标题与正文统一使用简体中文无衬线系统字体；不再使用宋体展示标题。
+- Motion：不使用持续环境动画；只有表达交互状态的短过渡，并支持 `prefers-reduced-motion`。
 
 ## Canonical UI Map
 
@@ -46,12 +48,24 @@
 | Toast | 第 12 步共享 `AppToast` provider | 本合同 | success / warning / info / error | live-region test |
 | CRUD | 首版案例为只读；未来共享 route/service 行为 | 本合同 | return / stay | full-flow E2E |
 
+### 当前共享前端原语
+
+| 能力 | Canonical owner | 当前规则 |
+|---|---|---|
+| 页面壳与主导航 | `frontend/src/components/AppShell.vue` | 桌面固定侧栏；窄屏顶部品牌区和横向导航；未开放功能不是假链接 |
+| 内容分组 | `frontend/src/components/AppCard.vue` | 只包装真实信息组，不把每个数字做成独立卡片 |
+| 状态标签 | `frontend/src/components/StatusBadge.vue` | neutral / info / success / warning / danger；颜色必须配文字 |
+| 空状态 | `frontend/src/components/EmptyState.vue` | 说明缺少的内容和原因；不得提供无作用按钮或虚构数据 |
+| 全局滚动条 | `frontend/src/style.css` | 根级标准属性 + WebKit 回退；forced-colors 交还系统处理 |
+
 ## Component behavior
 
 | Component | Default | Hover | Focus | Active | Disabled | Busy | Error |
 |---|---|---|---|---|---|---|---|
-| Link | 明确文本 | 背景/文字变化 | 3px 可见轮廓 | 轻微色阶 | 不适用 | 不适用 | 不适用 |
+| Link | 明确文本与真实目标 | 背景/文字变化 | 3px 可见轮廓 | 轻微色阶 | 未开放功能改为非交互文字并说明原因 | 不适用 | 不适用 |
 | Button（未来） | 语义意图 | 色阶变化 | 3px 可见轮廓 | 按下反馈 | 不触发 | 尺寸稳定 | 邻近说明 |
+| StatusBadge | 状态点 + 文字 | 不交互 | 不获取焦点 | 不适用 | 不适用 | 文字显示处理中 | 文字说明错误对象 |
+| EmptyState | 缺少内容 + 原因 | 不交互 | 内部真实操作才获取焦点 | 不适用 | 不适用 | 与加载状态分开 | 失败状态提供恢复说明 |
 | Search（未来） | 清除按钮 + 300ms debounce | 共享字段状态 | IME 安全 | Enter 非合成态提交 | 说明原因 | 保留尺寸 | 区域内恢复 |
 | Table/list（未来） | 有标题/总数 | 行强调 | 行内目标可见 | 当前选择 | 说明原因 | 保留表框 | 重试状态 |
 
@@ -78,10 +92,11 @@
 
 ## Navigation and responsive behavior
 
-- Route document title policy：`{页面} — 模拟智能手表`；加载、错误、403/404 使用诚实标题。
+- Route document title policy：`{页面} — 模拟智能手表`；当前单页固定为“系统总览 — 模拟智能手表”，未来路由、加载、错误、403/404 使用各自诚实标题。
 - Route error / 403：首版本地单用户无 403；404 和 5xx 保留应用导航、说明原因与返回/重试。
 - Breadcrumb/tab/route state：顶层页面使用路由链接；同一案例的同级视图才使用 route-backed tabs。
-- Sidebar transformation：桌面固定侧栏；窄窗口转顶部可横向滚动导航，不隐藏当前项。
+- Sidebar transformation：桌面固定侧栏；小于 760px 转为顶部品牌区和可横向滚动导航，不隐藏当前项。三模型子项在窄屏收拢到“三模型中心”顶层入口，内容区仍保留三个模型锚点。
+- Unavailable navigation：尚未实现的案例库、告警记录和测试报告显示“未开放”，使用非交互元素并附原因，不使用空 `href`、`href="#"` 或无效果按钮。
 - Responsive table：优先横向滚动并保留案例 ID 与来源；详情页显示全部字段。
 - Truncation：来源、错误与真实性说明不截断；长哈希可显示短预览并提供复制。
 - Focus restoration：路由后聚焦主标题；对话框关闭回到触发器；sticky 区域不得遮挡焦点。
@@ -129,7 +144,7 @@
 - Required static commands：DESIGN lint、premium strict audit、anti-pattern rg、前端构建。
 - Browser matrix：Windows Chrome/Edge；1440×900、1024×768、窄窗口 390×844；200% zoom 为扩展检查。
 - Accessibility：键盘、可见焦点、语义、对比度、reduced motion、forced colors。
+- Current page states：总览必须验证后端未连接、0 案例、暂无回放数据、三模型未运行和来源未选择；当前没有成功、错误、搜索、表单或 CRUD 流程，不伪造这些状态。
 - Component-state：后续组件建立 Vitest、Playwright 与视觉状态覆盖。
 - Canonical sibling：第 1 步为新项目无 sibling；以后以守望台总览为视觉基线。
 - CRUD/failure evidence：当前无 CRUD；第 2 步开始记录 API 失败路径。
-
