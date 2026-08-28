@@ -1,0 +1,117 @@
+{
+  "artifact_version": "1.0.0",
+  "generator_source_commit": "efcfcc2a1b684c3f54d35dbad4b44c8dcedf0507",
+  "history_days": 100,
+  "profile_id": "synthetic-routine-100-v1",
+  "rules": [
+    {
+      "daily_count_max": 3,
+      "daily_count_min": 2,
+      "event_type": "meal",
+      "slots": [
+        {
+          "duration_interval_max_minutes": 36.932463199291405,
+          "duration_interval_min_minutes": 10.857702358488423,
+          "duration_mean_minutes": 23.895082778889915,
+          "duration_std_minutes": 6.518690210200746,
+          "sample_count": 93,
+          "slot_key": "breakfast",
+          "start_interval_max_hour": 8.298066830909999,
+          "start_interval_min_hour": 6.597900911025485,
+          "start_mean_hour": 7.447983870967742,
+          "start_std_hour": 0.4250414799711284
+        },
+        {
+          "duration_interval_max_minutes": 57.36943201692203,
+          "duration_interval_min_minutes": 22.043553467230964,
+          "duration_mean_minutes": 39.7064927420765,
+          "duration_std_minutes": 8.831469637422767,
+          "sample_count": 100,
+          "slot_key": "dinner",
+          "start_interval_max_hour": 19.242161014500674,
+          "start_interval_min_hour": 17.75928679694715,
+          "start_mean_hour": 18.500723905723913,
+          "start_std_hour": 0.37071855438838053
+        },
+        {
+          "duration_interval_max_minutes": 49.955827153134706,
+          "duration_interval_min_minutes": 19.550182040690217,
+          "duration_mean_minutes": 34.75300459691246,
+          "duration_std_minutes": 7.601411278111121,
+          "sample_count": 92,
+          "slot_key": "lunch",
+          "start_interval_max_hour": 13.224847418246492,
+          "start_interval_min_hour": 11.679224620825549,
+          "start_mean_hour": 12.45203601953602,
+          "start_std_hour": 0.38640569935523583
+        }
+      ]
+    },
+    {
+      "daily_count_max": 1,
+      "daily_count_min": 0,
+      "event_type": "nap",
+      "slots": [
+        {
+          "duration_interval_max_minutes": 72.55233200451444,
+          "duration_interval_min_minutes": 15.467994424348834,
+          "duration_mean_minutes": 44.010163214431635,
+          "duration_std_minutes": 14.2710843950414,
+          "sample_count": 62,
+          "slot_key": "nap",
+          "start_interval_max_hour": 14.618615570715766,
+          "start_interval_min_hour": 11.65650091673943,
+          "start_mean_hour": 13.137558243727598,
+          "start_std_hour": 0.740528663494084
+        }
+      ]
+    },
+    {
+      "daily_count_max": 3,
+      "daily_count_min": 1,
+      "event_type": "walk",
+      "slots": [
+        {
+          "duration_interval_max_minutes": 51.40628913830798,
+          "duration_interval_min_minutes": 10.236157032446865,
+          "duration_mean_minutes": 30.821223085377422,
+          "duration_std_minutes": 10.292533026465279,
+          "sample_count": 100,
+          "slot_key": "walk_1",
+          "start_interval_max_hour": 9.905761025408461,
+          "start_interval_min_hour": 8.044272988196981,
+          "start_mean_hour": 8.975017006802721,
+          "start_std_hour": 0.46537200930286976
+        },
+        {
+          "duration_interval_max_minutes": 49.676546802334,
+          "duration_interval_min_minutes": 12.725525823198613,
+          "duration_mean_minutes": 31.20103631276631,
+          "duration_std_minutes": 9.237755244783848,
+          "sample_count": 80,
+          "slot_key": "walk_2",
+          "start_interval_max_hour": 18.911370371962914,
+          "start_interval_min_hour": 11.525949072481529,
+          "start_mean_hour": 15.218659722222222,
+          "start_std_hour": 1.8463553248703464
+        },
+        {
+          "duration_interval_max_minutes": 47.82738587380438,
+          "duration_interval_min_minutes": 15.003793355339155,
+          "duration_mean_minutes": 31.41558961457177,
+          "duration_std_minutes": 8.205898129616306,
+          "sample_count": 24,
+          "slot_key": "walk_3",
+          "start_interval_max_hour": 17.793301016239727,
+          "start_interval_min_hour": 15.998607196320657,
+          "start_mean_hour": 16.895954106280193,
+          "start_std_hour": 0.4486734549797678
+        }
+      ]
+    }
+  ],
+  "seed": 20260828,
+  "source_archive_note": "本机用户提供的 anomaly_detection(1).zip 仅作需求与思路核验；未复制其中代码，规则由本项目独立、确定性实现。",
+  "source_archive_sha256": "dedd7d85dbaa982389bfa7fbed22cd24a616deeb6ad7fab329cae5d3222dfd1b",
+  "std_multiplier": 2.0
+}

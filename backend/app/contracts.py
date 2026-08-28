@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from enum import StrEnum
 from math import isclose
 from pathlib import PurePosixPath, PureWindowsPath
 from typing import Annotated, Literal
 
 from pydantic import (
-    AnyHttpUrl,
+    AnyUrl,
     BaseModel,
     ConfigDict,
     Field,
@@ -303,7 +303,7 @@ def model_contracts() -> tuple[ModelContract, ...]:
 class SourceReference(ContractModel):
     source_id: NonEmptyText
     dataset_name: NonEmptyText
-    source_url: AnyHttpUrl
+    source_url: AnyUrl
     fixed_version: NonEmptyText
     license_status: SourceLicenseStatus
     license_reference: NonEmptyText
@@ -353,6 +353,35 @@ class CaseContract(ContractModel):
             and self.derivation_parent_case_id is not None
         ):
             raise ValueError("非派生案例不能伪装成派生关系。")
+        return self
+
+
+class RoutineProfileContract(ContractModel):
+    profile_id: NonEmptyText
+    case: CaseContract
+    history_days: Literal[100] = 100
+    history_start: date
+    history_end: date
+    seed: int
+    event_count: int = Field(gt=0)
+    events_relative_path: NonEmptyText
+    events_sha256: Sha256Hex
+    created_at: datetime
+
+    @model_validator(mode="after")
+    def validate_profile(self) -> "RoutineProfileContract":
+        if self.case.case_id != self.profile_id:
+            raise ValueError("规律档案与案例标识必须一致。")
+        if self.case.truth_category is not TruthCategory.SYNTHETIC_ROUTINE:
+            raise ValueError("规律档案案例必须标记为 SYNTHETIC_ROUTINE。")
+        if self.case.allowed_models != (ModelKind.ROUTINE_ANOMALY,):
+            raise ValueError("合成规律案例只能进入 ROUTINE_ANOMALY。")
+        if self.case.has_accelerometer or self.case.has_gyroscope:
+            raise ValueError("合成规律案例不能伪装成传感器记录。")
+        if (self.history_end - self.history_start).days + 1 != self.history_days:
+            raise ValueError("规律档案日期范围必须恰好覆盖 100 天。")
+        if not _is_safe_relative_path(self.events_relative_path):
+            raise ValueError("规律事件文件路径必须是仓库内安全相对路径。")
         return self
 
 
@@ -743,7 +772,7 @@ ReplayEvent = Annotated[
 
 class ContractCatalog(ContractModel):
     contract_version: Literal["1.0.0"] = "1.0.0"
-    database_schema_version: int = 3
+    database_schema_version: int = 4
     truth_categories: tuple[TruthCategory, ...]
     model_contracts: tuple[ModelContract, ...]
     replay_event_types: tuple[ReplayEventType, ...]

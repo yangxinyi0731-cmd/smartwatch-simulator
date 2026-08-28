@@ -261,7 +261,7 @@ def test_contract_catalog_has_no_combined_health_risk() -> None:
     catalog = contract_catalog()
 
     assert catalog.contract_version == "1.0.0"
-    assert catalog.database_schema_version == 3
+    assert catalog.database_schema_version == 4
     assert len(catalog.model_contracts) == 3
     assert any("独立输出" in invariant for invariant in catalog.invariants)
     assert "combined" not in catalog.model_dump_json().lower()

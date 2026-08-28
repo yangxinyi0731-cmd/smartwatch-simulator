@@ -14,6 +14,8 @@ from .contracts import (
     ImportRunContract,
     ModelKind,
     ModelManifest,
+    RoutineEventContract,
+    RoutineProfileContract,
     SensorQualityContract,
     SensorStreamContract,
     SourceReference,
@@ -21,7 +23,7 @@ from .contracts import (
 )
 
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 _SCHEMA_V1 = """
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -454,6 +456,40 @@ CREATE INDEX idx_ground_truth_events_case_time
 ON ground_truth_events (case_id, start_offset_ms, end_offset_ms);
 """
 
+_SCHEMA_V4 = """
+CREATE TABLE routine_profiles (
+    profile_id TEXT PRIMARY KEY REFERENCES cases(case_id) ON DELETE RESTRICT,
+    history_days INTEGER NOT NULL CHECK (history_days = 100),
+    history_start TEXT NOT NULL,
+    history_end TEXT NOT NULL,
+    seed INTEGER NOT NULL,
+    event_count INTEGER NOT NULL CHECK (event_count > 0),
+    events_relative_path TEXT NOT NULL CHECK (
+        length(trim(events_relative_path)) > 0
+        AND substr(events_relative_path, 1, 1) NOT IN ('/', char(92))
+        AND instr(events_relative_path, ':') = 0
+        AND events_relative_path NOT LIKE '%..%'
+    ),
+    events_sha256 TEXT NOT NULL CHECK (
+        length(events_sha256) = 64 AND events_sha256 NOT GLOB '*[^0-9a-f]*'
+    ),
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE routine_events (
+    event_id TEXT PRIMARY KEY,
+    profile_id TEXT NOT NULL REFERENCES routine_profiles(profile_id) ON DELETE RESTRICT,
+    event_type TEXT NOT NULL CHECK (event_type IN ('meal', 'nap', 'walk')),
+    slot_key TEXT NOT NULL CHECK (length(trim(slot_key)) > 0),
+    started_at TEXT NOT NULL,
+    duration_minutes REAL NOT NULL CHECK (duration_minutes > 0),
+    truth_category TEXT NOT NULL CHECK (truth_category = 'SYNTHETIC_ROUTINE')
+);
+
+CREATE INDEX idx_routine_events_profile_time
+ON routine_events (profile_id, started_at, event_type);
+"""
+
 
 @dataclass(frozen=True, slots=True)
 class DatabaseSnapshot:
@@ -555,6 +591,10 @@ COMMIT;
 
             if current_version < 3:
                 self._apply_migration(connection, version=3, script=_SCHEMA_V3)
+                current_version = 3
+
+            if current_version < 4:
+                self._apply_migration(connection, version=4, script=_SCHEMA_V4)
 
     def snapshot(self) -> DatabaseSnapshot:
         with self.connect() as connection:
@@ -924,6 +964,113 @@ COMMIT;
                     key_column="manifest_id",
                     values=values,
                 )
+                connection.commit()
+            except Exception:
+                connection.rollback()
+                raise
+
+    def register_routine_profile(
+        self,
+        *,
+        source: SourceReference,
+        profile: RoutineProfileContract,
+        events: Sequence[RoutineEventContract],
+    ) -> None:
+        if len(events) != profile.event_count:
+            raise ValueError("规律事件实数与档案声明不一致。")
+        if len({event.event_id for event in events}) != len(events):
+            raise ValueError("规律事件标识不能重复。")
+        if any(event.profile_id != profile.profile_id for event in events):
+            raise ValueError("规律事件必须属于同一档案。")
+        if profile.case.source.source_id != source.source_id:
+            raise ValueError("规律案例与来源标识不一致。")
+        case = profile.case
+        source_values: dict[str, object] = {
+            "source_id": source.source_id,
+            "name": source.dataset_name,
+            "source_url": str(source.source_url),
+            "fixed_version": source.fixed_version,
+            "license_status": source.license_status.value,
+            "license_reference": source.license_reference,
+            "redistribution_allowed": (
+                None
+                if source.redistribution_allowed is None
+                else int(source.redistribution_allowed)
+            ),
+            "verified_at": self._timestamp(source.verified_at),
+            "notes": source.notes,
+        }
+        case_values: dict[str, object] = {
+            "case_id": case.case_id,
+            "title": case.title,
+            "description": case.description,
+            "truth_category": case.truth_category.value,
+            "source_id": case.source.source_id,
+            "source_record_path": case.source_record_path,
+            "source_sha256": case.source_sha256,
+            "participant_id": case.participant_id,
+            "age_group": case.age_group.value,
+            "device_name": case.device_name,
+            "wear_position": case.wear_position,
+            "original_sample_rate_hz": case.original_sample_rate_hz,
+            "activity_label": case.activity_label,
+            "has_accelerometer": int(case.has_accelerometer),
+            "has_gyroscope": int(case.has_gyroscope),
+            "allowed_models_json": self._json(
+                [model.value for model in case.allowed_models]
+            ),
+            "derivation_parent_case_id": case.derivation_parent_case_id,
+            "processing_command": case.processing_command,
+            "created_at": self._timestamp(case.created_at),
+            "updated_at": self._timestamp(case.updated_at),
+        }
+        profile_values: dict[str, object] = {
+            "profile_id": profile.profile_id,
+            "history_days": profile.history_days,
+            "history_start": profile.history_start.isoformat(),
+            "history_end": profile.history_end.isoformat(),
+            "seed": profile.seed,
+            "event_count": profile.event_count,
+            "events_relative_path": profile.events_relative_path,
+            "events_sha256": profile.events_sha256,
+            "created_at": self._timestamp(profile.created_at),
+        }
+        with self.connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                self._insert_or_verify(
+                    connection,
+                    table="data_sources",
+                    key_column="source_id",
+                    values=source_values,
+                )
+                self._insert_or_verify(
+                    connection,
+                    table="cases",
+                    key_column="case_id",
+                    values=case_values,
+                )
+                self._insert_or_verify(
+                    connection,
+                    table="routine_profiles",
+                    key_column="profile_id",
+                    values=profile_values,
+                )
+                for event in events:
+                    self._insert_or_verify(
+                        connection,
+                        table="routine_events",
+                        key_column="event_id",
+                        values={
+                            "event_id": event.event_id,
+                            "profile_id": event.profile_id,
+                            "event_type": event.event_type,
+                            "slot_key": event.slot_key,
+                            "started_at": self._timestamp(event.started_at),
+                            "duration_minutes": event.duration_minutes,
+                            "truth_category": event.truth_category.value,
+                        },
+                    )
                 connection.commit()
             except Exception:
                 connection.rollback()

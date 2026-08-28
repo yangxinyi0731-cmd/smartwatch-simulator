@@ -18,7 +18,7 @@
 | [fastapi/full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template) | `2ccfa25845dec4c70b8a7b653ed347b2905240b6` | MIT；未归档；最近推送 2026-08-27 | OpenAPI 生成前端类型、Pytest 与端到端验证路线 | 该模板使用 React、PostgreSQL、认证和容器部署；本项目保留 Vue、SQLite、本地单用户 |
 | [DevGurav/fall-detect-system](https://github.com/DevGurav/fall-detect-system) | `5879f92c5643f97a32302f4eb74b05a3fb07929a` | MIT；未归档；最近推送 2026-08-22 | 最相似的“腕部跌倒 + 虚拟设备回放 + 事件流”拆分，可作为回放边界检查清单 | 不复制其自报指标、目标阈值或数据许可结论；这些都不是本项目实测证据 |
 | [joaojtmarques/WEDA-FALL](https://github.com/joaojtmarques/WEDA-FALL) | `74e0b93cb061d4ecbca12628f2d47090e97fbeea` | GitHub API 未识别到许可证；最近推送 2026-08-24 | 腕部 50 Hz 六轴来源、年轻模拟跌倒与老人 ADL 误报分析 | 原始数据不进本仓库，不默认允许再分发或商用；老人没有执行跌倒 |
-| [OxWearables/capture24](https://github.com/OxWearables/capture24) | `f861b44f5675cb3e8294cd3d560d7a71a749616f` | GitHub API 返回 `NOASSERTION`；远程 HEAD 最近提交早于本次检索 | 参与者分组后切窗、腕部自由生活活动标签、活动识别基线 | 不把自由生活活动描述为真实老人跌倒；数据下载与再利用许可单独核验 |
+| [CAPTURE-24 数据与工具](https://doi.org/10.1038/s41597-024-03960-3) | 工具参考仓库 `f861b44f5675cb3e8294cd3d560d7a71a749616f` | 论文明确数据为 CC BY 4.0；GitHub 工具代码为 Oxford Academic Use Licence，不是同一许可 | 参与者分组后切窗、100 Hz 腕部自由生活活动标签、活动识别基线 | 不复制工具代码；不把以年轻参与者为主的自由生活活动描述为老人数据；原始数据不进 Git |
 | [OxWearables/pyfew](https://github.com/OxWearables/pyfew) | `21acc0ddd53dace211ab3a3bdea1d5d2586c147f` | MIT；未归档；远程 HEAD 较旧 | 轻量腕部加速度特征抽取的可复现接口 | 不把旧项目当作当前最佳模型，也不直接引入未验证特征 |
 
 ## 本阶段实际采用
@@ -27,9 +27,12 @@
 2. Pydantic 生成 OpenAPI 和独立领域 JSON Schema；Vue 端通过固定版本的生成器产出 TypeScript 类型，避免前后端手写字段漂移。
 3. 回放按 `session → ordered event → sensor window / model output / alert candidate` 分层；事件只表示候选和证据，不代表真实救援结论。
 4. 三模型各自保存输出，数据库没有综合医学风险字段或聚合表。
+5. 固定 WEDA-FALL 来源在本机导入 100 个案例；原始与处理数组均留在 Git 忽略目录，只提交哈希与合同。
+6. 用户自有跌倒 ONNX 已按来源提交与 SHA-256 接入；100 案例重放结果只作为同源行为核验。
+7. CAPTURE-24 数据使用论文与 ORA DOI 作为 CC BY 4.0 许可依据；本项目独立实现读取、低通降采样、参与者分组与 NumPy/ONNX 训练，不复制学术许可工具代码。
 
 ## 当前许可结论
 
-- 架构参考不等于复制代码；本阶段除已登记的 npm/Python 依赖外，没有复制上述仓库源码、模型权重或数据。
-- WEDA-FALL 与 CAPTURE-24 的“网页可访问”不构成重新上传许可。进入数据导入阶段前，仍需逐项保存数据下载页、引用要求、文件哈希和使用条件。
+- 架构参考不等于复制代码；当前新增的跌倒权重来自用户自己的固定模型仓库，不是把外部开源项目权重冒充为本项目成果。
+- WEDA-FALL 许可仍未核验，因此不重新上传其原始或处理数据。CAPTURE-24 数据许可已由数据论文明确核验为 CC BY 4.0；训练目录将保存 DOI、归因文本、完整压缩包哈希和实际处理配置。
 - FARSEEING 属于申请访问资料，且官方页面说明研究者需提出申请；本项目不会在未获用户本人申请与许可前下载或声称使用其真实跌倒数据。

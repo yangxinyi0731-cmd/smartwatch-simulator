@@ -1,0 +1,62 @@
+{
+  "approval_status": "RESEARCH_ONLY",
+  "artifact_relative_path": "models/routine_anomaly/statistical_v1/rules.json",
+  "artifact_sha256": "bf3b6c31c5b4a8fde3f68e888fe4b1f3a8a6bbf470502163bf1f87ee9611f3c1",
+  "contract": {
+    "model_kind": "ROUTINE_ANOMALY",
+    "name_zh_cn": "个人规律异常",
+    "output_labels": [
+      {
+        "code": "within_routine",
+        "label_zh_cn": "符合规律",
+        "meaning": "在当前合成规律合同的正常区间内。"
+      },
+      {
+        "code": "routine_deviation",
+        "label_zh_cn": "规律偏离",
+        "meaning": "时间、次数、时长或缺失至少一项偏离当前规则。"
+      }
+    ],
+    "routine_event_input": {
+      "event_types": [
+        "meal",
+        "nap",
+        "walk"
+      ],
+      "history_days": 100,
+      "required_fields": [
+        "event_id",
+        "event_type",
+        "started_at",
+        "duration_minutes",
+        "truth_category"
+      ]
+    },
+    "safety_boundary": "首版只基于 100 天合成生活事件，不得描述为真实老人训练结果。",
+    "task": "判断用餐、午睡和散步是否偏离个人长期规律",
+    "tensor_input": null
+  },
+  "created_at": "2026-08-28T19:14:26+08:00",
+  "deployment_approved": false,
+  "evaluation_reference": "reports/models/routine_anomaly_scenarios.json",
+  "external_validation_completed": false,
+  "format": "STATISTICAL_RULES",
+  "limitations": [
+    "训练历史是固定种子生成的 100 天合成生活事件，不是真实老人记录。",
+    "规则只覆盖用餐、午睡和散步的时间、次数与时长。",
+    "异常分数是规则距离的 0–1 归一化，不是医学风险概率。",
+    "尚未用真实长期生活数据做外部验证。"
+  ],
+  "manifest_id": "routine-anomaly-statistical-1.0.0",
+  "model_id": "routine_anomaly_statistical_rules",
+  "model_kind": "ROUTINE_ANOMALY",
+  "source_commit": "efcfcc2a1b684c3f54d35dbad4b44c8dcedf0507",
+  "training_data_references": [
+    "data/cases/synthetic_routine_100_v1.json sha256=066d134a927594c1a25edcdf68de8c768b463c1a62c62bde82adf5f37297ffe2",
+    "local source archive sha256=dedd7d85dbaa982389bfa7fbed22cd24a616deeb6ad7fab329cae5d3222dfd1b"
+  ],
+  "training_truth_categories": [
+    "SYNTHETIC_ROUTINE"
+  ],
+  "version": "1.0.0"
+}

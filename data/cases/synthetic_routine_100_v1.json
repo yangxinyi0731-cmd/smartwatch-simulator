@@ -1,0 +1,4970 @@
+{
+  "event_count": 551,
+  "events": [
+    {
+      "duration_minutes": 20.431858425995138,
+      "event_id": "routine-0001",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-01T07:31:41+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.37165016923995,
+      "event_id": "routine-0002",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-01T12:33:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.31649727755708,
+      "event_id": "routine-0003",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-01T18:58:13+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.163052320253517,
+      "event_id": "routine-0004",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-01T14:29:54+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.991348614950674,
+      "event_id": "routine-0005",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-01T08:35:28+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.536634091659,
+      "event_id": "routine-0006",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-01T16:31:24+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 18.42722483130786,
+      "event_id": "routine-0007",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-02T07:10:32+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.895037921543967,
+      "event_id": "routine-0008",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-02T12:44:23+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 51.272798206510956,
+      "event_id": "routine-0009",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-02T17:38:29+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 50.154120733332896,
+      "event_id": "routine-0010",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-02T13:46:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 18.56542643464054,
+      "event_id": "routine-0011",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-02T07:46:52+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.079800093740232,
+      "event_id": "routine-0012",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-02T12:14:38+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.31227154351314,
+      "event_id": "routine-0013",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-01-02T17:10:49+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.04051044526831,
+      "event_id": "routine-0014",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-03T07:15:42+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.69448256134978,
+      "event_id": "routine-0015",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-03T12:06:32+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.088636500412434,
+      "event_id": "routine-0016",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-03T18:55:09+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.90335912418535,
+      "event_id": "routine-0017",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-03T12:05:16+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.17568221678046,
+      "event_id": "routine-0018",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-03T08:16:27+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.98338125568979,
+      "event_id": "routine-0019",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-03T12:53:21+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 36.08346014397992,
+      "event_id": "routine-0020",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-01-03T17:08:43+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.11696485145146,
+      "event_id": "routine-0021",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-04T07:24:04+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.338809499855774,
+      "event_id": "routine-0022",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-04T12:34:16+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 48.914153126699105,
+      "event_id": "routine-0023",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-04T18:22:19+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 55.92834584757712,
+      "event_id": "routine-0024",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-04T13:31:33+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 22.82347178871839,
+      "event_id": "routine-0025",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-04T08:17:46+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 14.6233754660381,
+      "event_id": "routine-0026",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-04T12:05:29+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.904250105699308,
+      "event_id": "routine-0027",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-01-04T16:42:03+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 18.824808308340852,
+      "event_id": "routine-0028",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-05T07:08:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.665757913133376,
+      "event_id": "routine-0029",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-05T13:04:56+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.487009955886265,
+      "event_id": "routine-0030",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-05T18:23:35+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 64.2966460158768,
+      "event_id": "routine-0031",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-05T13:26:59+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.71864948751411,
+      "event_id": "routine-0032",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-05T08:58:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 37.371960142975105,
+      "event_id": "routine-0033",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-05T16:09:30+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.424149528203973,
+      "event_id": "routine-0034",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-06T06:27:01+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.06508386532417,
+      "event_id": "routine-0035",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-06T13:03:24+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 46.17544109127407,
+      "event_id": "routine-0036",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-06T18:51:29+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.188914861104344,
+      "event_id": "routine-0037",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-06T09:48:10+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 20.426006856403276,
+      "event_id": "routine-0038",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-06T16:38:30+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 26.581084721475673,
+      "event_id": "routine-0039",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-07T07:33:32+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.577884154691965,
+      "event_id": "routine-0040",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-07T12:43:09+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.4339636937117,
+      "event_id": "routine-0041",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-07T17:31:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.47967859665839,
+      "event_id": "routine-0042",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-07T12:26:15+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.859956880332387,
+      "event_id": "routine-0043",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-07T08:50:03+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 16.855054784417664,
+      "event_id": "routine-0044",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-07T11:46:37+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.861123823594642,
+      "event_id": "routine-0045",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-01-07T15:51:39+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 14.569489063062791,
+      "event_id": "routine-0046",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-08T07:49:35+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.20926933807581,
+      "event_id": "routine-0047",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-08T12:58:04+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 56.489083448970774,
+      "event_id": "routine-0048",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-08T18:49:47+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.35743060755556,
+      "event_id": "routine-0049",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-08T12:34:27+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 46.87615145621619,
+      "event_id": "routine-0050",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-08T08:26:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 21.742281739597086,
+      "event_id": "routine-0051",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-08T12:04:50+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.10307429484325,
+      "event_id": "routine-0052",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-01-08T18:15:28+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.73630367367258,
+      "event_id": "routine-0053",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-09T08:03:45+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 45.18494472931726,
+      "event_id": "routine-0054",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-09T12:03:23+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 36.72248226729412,
+      "event_id": "routine-0055",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-09T18:37:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.893169653662184,
+      "event_id": "routine-0056",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-09T08:51:48+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.646156223849665,
+      "event_id": "routine-0057",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-09T12:05:16+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.83912815899184,
+      "event_id": "routine-0058",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-01-09T16:13:32+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 45.32540493198422,
+      "event_id": "routine-0059",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-10T07:31:04+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.3982577129545,
+      "event_id": "routine-0060",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-10T12:26:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.405013459950503,
+      "event_id": "routine-0061",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-10T18:45:55+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 56.278716014349655,
+      "event_id": "routine-0062",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-10T12:14:55+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.06484496744735,
+      "event_id": "routine-0063",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-10T08:21:25+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 18.244601409341097,
+      "event_id": "routine-0064",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-10T16:44:04+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 11.543820341921483,
+      "event_id": "routine-0065",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-11T07:08:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 50.742205412775306,
+      "event_id": "routine-0066",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-11T12:32:36+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 22.488052361144845,
+      "event_id": "routine-0067",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-11T19:15:46+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 20.29251384352314,
+      "event_id": "routine-0068",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-11T08:23:54+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 18.427728423188583,
+      "event_id": "routine-0069",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-11T12:10:42+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.367071395789395,
+      "event_id": "routine-0070",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-01-11T16:56:29+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 26.195634079354996,
+      "event_id": "routine-0071",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-12T08:36:33+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.7010050045342,
+      "event_id": "routine-0072",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-12T12:34:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.32859617959936,
+      "event_id": "routine-0073",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-12T18:53:09+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 14.947219881406738,
+      "event_id": "routine-0074",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-12T09:23:08+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.839405703661235,
+      "event_id": "routine-0075",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-12T16:37:58+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.2031339059136,
+      "event_id": "routine-0076",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-13T07:53:52+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.47151165182546,
+      "event_id": "routine-0077",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-13T13:05:46+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.558588062941304,
+      "event_id": "routine-0078",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-13T18:17:01+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.481623522461064,
+      "event_id": "routine-0079",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-13T09:34:37+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.810164243626637,
+      "event_id": "routine-0080",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-13T16:45:41+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 26.50105200637273,
+      "event_id": "routine-0081",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-14T07:37:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.74325728527704,
+      "event_id": "routine-0082",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-14T13:29:45+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 37.27944231430851,
+      "event_id": "routine-0083",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-14T17:37:44+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 16.358576330774664,
+      "event_id": "routine-0084",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-14T13:23:20+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 37.750924659158805,
+      "event_id": "routine-0085",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-14T08:59:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.83169068495772,
+      "event_id": "routine-0086",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-14T15:46:51+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.35858274882487,
+      "event_id": "routine-0087",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-15T07:01:43+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 19.501464315675832,
+      "event_id": "routine-0088",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-15T13:05:17+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.90516575615907,
+      "event_id": "routine-0089",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-15T18:30:36+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.5848459739072,
+      "event_id": "routine-0090",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-15T12:37:34+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.54710823160023,
+      "event_id": "routine-0091",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-15T08:29:09+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.98857634793152,
+      "event_id": "routine-0092",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-15T13:30:16+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.3014213009798,
+      "event_id": "routine-0093",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-01-15T17:28:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.380302834890255,
+      "event_id": "routine-0094",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-16T07:31:29+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 36.803871421378595,
+      "event_id": "routine-0095",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-16T12:16:23+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 37.13096811894244,
+      "event_id": "routine-0096",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-16T18:42:08+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.758196960234827,
+      "event_id": "routine-0097",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-16T09:12:19+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.74451430984852,
+      "event_id": "routine-0098",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-16T16:18:02+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 21.22292897049685,
+      "event_id": "routine-0099",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-17T07:41:01+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.70975583055777,
+      "event_id": "routine-0100",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-17T12:48:30+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 49.69561334182187,
+      "event_id": "routine-0101",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-17T18:19:44+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.27388679794102,
+      "event_id": "routine-0102",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-17T12:15:11+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 36.67074285566264,
+      "event_id": "routine-0103",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-17T08:10:14+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 49.30763917713216,
+      "event_id": "routine-0104",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-17T16:01:27+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 19.04799272863466,
+      "event_id": "routine-0105",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-18T07:45:20+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 36.17763177325095,
+      "event_id": "routine-0106",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-18T12:33:40+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.630577186016865,
+      "event_id": "routine-0107",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-18T18:42:08+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 66.91692037919198,
+      "event_id": "routine-0108",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-18T13:05:02+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 16.792931130347068,
+      "event_id": "routine-0109",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-18T09:24:01+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.300864696213996,
+      "event_id": "routine-0110",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-19T07:29:55+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 37.4855910275907,
+      "event_id": "routine-0111",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-19T12:26:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 49.68694657338389,
+      "event_id": "routine-0112",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-19T18:43:04+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.4004155048789,
+      "event_id": "routine-0113",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-19T09:22:40+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 14.138667342165366,
+      "event_id": "routine-0114",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-20T06:52:55+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.25884251519106,
+      "event_id": "routine-0115",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-20T12:26:26+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.247793176237586,
+      "event_id": "routine-0116",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-20T18:31:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 45.32208788898902,
+      "event_id": "routine-0117",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-20T12:38:40+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.736608240236436,
+      "event_id": "routine-0118",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-20T09:32:31+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 11.924998307062873,
+      "event_id": "routine-0119",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-21T07:53:50+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 45.659895594222824,
+      "event_id": "routine-0120",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-21T12:26:01+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 44.5695293268125,
+      "event_id": "routine-0121",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-21T17:59:47+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.38919214448872,
+      "event_id": "routine-0122",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-21T09:08:31+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.73608524661822,
+      "event_id": "routine-0123",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-21T15:53:58+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.95807127907581,
+      "event_id": "routine-0124",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-22T07:49:39+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.592386166294794,
+      "event_id": "routine-0125",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-22T12:46:47+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.57679585097653,
+      "event_id": "routine-0126",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-22T17:28:28+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.58243908932875,
+      "event_id": "routine-0127",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-22T13:11:37+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.22192572246761,
+      "event_id": "routine-0128",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-22T07:57:51+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 50.18921834654225,
+      "event_id": "routine-0129",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-22T12:16:28+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.458326320244552,
+      "event_id": "routine-0130",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-01-22T17:04:03+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 20.380136295178318,
+      "event_id": "routine-0131",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-23T12:20:29+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 47.02118790869414,
+      "event_id": "routine-0132",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-23T18:12:38+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.17150345474693,
+      "event_id": "routine-0133",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-23T08:36:50+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.77317139851214,
+      "event_id": "routine-0134",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-23T13:27:45+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 21.287520165689223,
+      "event_id": "routine-0135",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-01-23T17:06:38+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.513914654811096,
+      "event_id": "routine-0136",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-24T07:35:37+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 36.8898477393475,
+      "event_id": "routine-0137",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-24T12:55:03+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.89410692850773,
+      "event_id": "routine-0138",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-24T18:29:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.530840284120316,
+      "event_id": "routine-0139",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-24T09:40:17+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.62268363129012,
+      "event_id": "routine-0140",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-24T17:01:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.653878085787607,
+      "event_id": "routine-0141",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-25T07:55:16+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.7352020055492,
+      "event_id": "routine-0142",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-25T12:18:01+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.72853368561811,
+      "event_id": "routine-0143",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-25T18:40:19+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.712400769151124,
+      "event_id": "routine-0144",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-25T13:50:32+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.708389387251863,
+      "event_id": "routine-0145",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-25T09:21:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 22.053004457452936,
+      "event_id": "routine-0146",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-25T16:24:44+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.430439503845612,
+      "event_id": "routine-0147",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-26T07:45:50+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.110519957746956,
+      "event_id": "routine-0148",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-26T12:00:33+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.742977122712254,
+      "event_id": "routine-0149",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-26T19:06:19+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 54.582304847348084,
+      "event_id": "routine-0150",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-26T13:44:08+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.97498487166787,
+      "event_id": "routine-0151",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-26T08:17:37+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.44971287632262,
+      "event_id": "routine-0152",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-26T12:33:37+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 20.44215566390578,
+      "event_id": "routine-0153",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-01-26T16:35:32+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.78165213815827,
+      "event_id": "routine-0154",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-27T11:59:27+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 46.14986204755998,
+      "event_id": "routine-0155",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-27T18:43:32+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.50945726414765,
+      "event_id": "routine-0156",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-27T09:29:10+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.0189821706879,
+      "event_id": "routine-0157",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-27T16:22:18+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 15.794608995168458,
+      "event_id": "routine-0158",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-28T07:26:47+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 44.86883298471198,
+      "event_id": "routine-0159",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-28T12:47:47+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.65635951513138,
+      "event_id": "routine-0160",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-28T18:15:11+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 58.27011876499771,
+      "event_id": "routine-0161",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-28T12:50:28+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.419176971339876,
+      "event_id": "routine-0162",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-28T08:59:11+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 26.948236418798754,
+      "event_id": "routine-0163",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-29T07:28:34+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.90745392761348,
+      "event_id": "routine-0164",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-29T12:19:26+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.70574026461542,
+      "event_id": "routine-0165",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-29T18:44:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 50.810910776916224,
+      "event_id": "routine-0166",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-29T13:46:11+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 12.776392978494965,
+      "event_id": "routine-0167",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-29T09:15:41+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 10.0,
+      "event_id": "routine-0168",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-29T16:18:54+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 15.993929410663009,
+      "event_id": "routine-0169",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-30T07:07:25+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 52.638964865142725,
+      "event_id": "routine-0170",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-30T12:35:48+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.41535606035334,
+      "event_id": "routine-0171",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-30T18:32:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 21.412026962399164,
+      "event_id": "routine-0172",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-30T08:35:25+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.895359068149038,
+      "event_id": "routine-0173",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-30T17:07:29+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 18.283371757672825,
+      "event_id": "routine-0174",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-01-31T06:59:27+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 19.57906857251411,
+      "event_id": "routine-0175",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-01-31T12:15:05+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 47.18276027200223,
+      "event_id": "routine-0176",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-01-31T18:25:56+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 46.414378824546404,
+      "event_id": "routine-0177",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-01-31T14:13:33+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.854549391827824,
+      "event_id": "routine-0178",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-01-31T09:02:38+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 21.155976974956033,
+      "event_id": "routine-0179",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-01-31T12:21:00+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 44.8487820370728,
+      "event_id": "routine-0180",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-01-31T17:43:46+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 22.327220847184996,
+      "event_id": "routine-0181",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-01T08:01:02+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 49.67444630192915,
+      "event_id": "routine-0182",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-01T18:39:42+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 20.876907971692994,
+      "event_id": "routine-0183",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-01T09:16:23+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.078756944242663,
+      "event_id": "routine-0184",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-01T16:02:23+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.626042345704885,
+      "event_id": "routine-0185",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-02T07:07:32+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.38901856223157,
+      "event_id": "routine-0186",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-02T12:30:59+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.44470539869295,
+      "event_id": "routine-0187",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-02T18:42:40+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.957850998162677,
+      "event_id": "routine-0188",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-02T08:50:56+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 45.45353319900457,
+      "event_id": "routine-0189",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-02T15:46:08+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.356714004680303,
+      "event_id": "routine-0190",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-03T07:43:48+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 45.15356450042242,
+      "event_id": "routine-0191",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-03T12:32:39+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 50.6540200925808,
+      "event_id": "routine-0192",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-03T18:40:38+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 10.0,
+      "event_id": "routine-0193",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-03T09:30:14+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.804494189556124,
+      "event_id": "routine-0194",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-04T07:25:36+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 26.54834596024648,
+      "event_id": "routine-0195",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-04T12:10:51+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.34654698596856,
+      "event_id": "routine-0196",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-04T18:24:35+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.38245482218807,
+      "event_id": "routine-0197",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-04T13:52:58+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.448352494474396,
+      "event_id": "routine-0198",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-04T09:06:48+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.63458525464442,
+      "event_id": "routine-0199",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-04T16:34:42+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.825149130980428,
+      "event_id": "routine-0200",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-05T06:37:47+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.293314633089135,
+      "event_id": "routine-0201",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-05T12:37:03+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.83501341905218,
+      "event_id": "routine-0202",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-05T19:13:16+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 36.83907497181707,
+      "event_id": "routine-0203",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-05T08:49:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.96683160136634,
+      "event_id": "routine-0204",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-05T16:31:22+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.25090850134797,
+      "event_id": "routine-0205",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-06T06:52:42+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.45511097868152,
+      "event_id": "routine-0206",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-06T11:56:41+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 47.08724689994781,
+      "event_id": "routine-0207",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-06T18:51:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.644309070200535,
+      "event_id": "routine-0208",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-06T13:02:49+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.84266674338367,
+      "event_id": "routine-0209",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-06T09:36:01+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.8601376305865,
+      "event_id": "routine-0210",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-06T16:40:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.204499796463118,
+      "event_id": "routine-0211",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-07T07:04:54+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 21.83219589200685,
+      "event_id": "routine-0212",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-07T12:56:22+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 45.42518592562857,
+      "event_id": "routine-0213",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-07T18:21:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.378796411633616,
+      "event_id": "routine-0214",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-07T08:12:28+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.27353132080242,
+      "event_id": "routine-0215",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-07T16:58:44+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 13.149324081504856,
+      "event_id": "routine-0216",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-08T06:42:19+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 37.78948056960592,
+      "event_id": "routine-0217",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-08T12:50:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.139575972160266,
+      "event_id": "routine-0218",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-08T18:29:32+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.859358149350683,
+      "event_id": "routine-0219",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-08T14:47:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.098509085983466,
+      "event_id": "routine-0220",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-08T08:21:47+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.77055892146493,
+      "event_id": "routine-0221",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-08T12:22:42+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 21.049470191634878,
+      "event_id": "routine-0222",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-02-08T17:12:43+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 19.471740291152305,
+      "event_id": "routine-0223",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-09T06:44:27+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.478150780144773,
+      "event_id": "routine-0224",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-09T12:14:03+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 46.406513675122234,
+      "event_id": "routine-0225",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-09T18:32:23+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.24928032556311,
+      "event_id": "routine-0226",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-09T08:23:17+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.595729761105844,
+      "event_id": "routine-0227",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-09T12:27:45+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.044487406982697,
+      "event_id": "routine-0228",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-02-09T16:18:24+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.83388858408261,
+      "event_id": "routine-0229",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-10T07:49:50+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.752232251765204,
+      "event_id": "routine-0230",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-10T12:06:52+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 51.12353708901087,
+      "event_id": "routine-0231",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-10T18:40:11+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.40236965857795,
+      "event_id": "routine-0232",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-10T12:29:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.477472497939427,
+      "event_id": "routine-0233",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-10T07:24:14+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.344934238967717,
+      "event_id": "routine-0234",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-10T13:09:15+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.1022924712064,
+      "event_id": "routine-0235",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-02-10T16:23:19+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.85276111816036,
+      "event_id": "routine-0236",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-11T07:47:41+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.89938080721871,
+      "event_id": "routine-0237",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-11T13:41:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.82286267976821,
+      "event_id": "routine-0238",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-11T18:47:35+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.93177135545219,
+      "event_id": "routine-0239",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-11T09:03:22+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.39165852456538,
+      "event_id": "routine-0240",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-12T07:59:49+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.524410663192768,
+      "event_id": "routine-0241",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-12T12:34:25+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.176566557322573,
+      "event_id": "routine-0242",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-12T18:42:36+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 26.042783114959228,
+      "event_id": "routine-0243",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-12T13:57:08+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.670562253053866,
+      "event_id": "routine-0244",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-12T09:33:54+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.324939094778784,
+      "event_id": "routine-0245",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-13T07:31:02+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 36.713749573875866,
+      "event_id": "routine-0246",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-13T12:29:52+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.102443866521405,
+      "event_id": "routine-0247",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-13T18:43:26+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 47.191119245875875,
+      "event_id": "routine-0248",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-13T13:12:38+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.15364319967246,
+      "event_id": "routine-0249",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-13T09:41:03+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.11367844235317,
+      "event_id": "routine-0250",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-13T16:19:21+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 19.644797370849762,
+      "event_id": "routine-0251",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-14T07:21:33+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.43108509368695,
+      "event_id": "routine-0252",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-14T18:14:52+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 44.38364063166525,
+      "event_id": "routine-0253",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-14T11:57:31+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.096243142499812,
+      "event_id": "routine-0254",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-14T09:01:19+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 47.63099363291303,
+      "event_id": "routine-0255",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-14T17:52:36+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.353983025597707,
+      "event_id": "routine-0256",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-15T07:48:32+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 45.109663684206566,
+      "event_id": "routine-0257",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-15T12:45:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 63.19986464484195,
+      "event_id": "routine-0258",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-15T18:21:25+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 10.0,
+      "event_id": "routine-0259",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-15T08:51:03+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.138820427582203,
+      "event_id": "routine-0260",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-15T16:04:35+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.402395802521255,
+      "event_id": "routine-0261",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-16T06:57:23+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.42406088922291,
+      "event_id": "routine-0262",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-16T12:14:49+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 56.58962240424475,
+      "event_id": "routine-0263",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-16T18:24:55+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.338996609244894,
+      "event_id": "routine-0264",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-16T09:33:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.579268597596283,
+      "event_id": "routine-0265",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-16T15:01:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 19.254846240130338,
+      "event_id": "routine-0266",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-17T07:01:49+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.59215086580498,
+      "event_id": "routine-0267",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-17T18:11:34+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.262894346691816,
+      "event_id": "routine-0268",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-17T13:01:00+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.711363462050855,
+      "event_id": "routine-0269",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-17T09:15:10+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 26.865208543009164,
+      "event_id": "routine-0270",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-17T12:45:37+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.214319851419646,
+      "event_id": "routine-0271",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-02-17T17:14:27+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 17.736485145196824,
+      "event_id": "routine-0272",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-18T06:32:23+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 37.32657180601096,
+      "event_id": "routine-0273",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-18T13:01:48+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 18.620094539000746,
+      "event_id": "routine-0274",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-18T18:09:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 19.943497867875653,
+      "event_id": "routine-0275",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-18T09:06:09+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.898645432315014,
+      "event_id": "routine-0276",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-19T08:08:14+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.25701284851242,
+      "event_id": "routine-0277",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-19T12:47:24+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 54.24027103883563,
+      "event_id": "routine-0278",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-19T18:38:22+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 54.542918388273364,
+      "event_id": "routine-0279",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-19T13:14:01+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.89041052758661,
+      "event_id": "routine-0280",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-19T08:26:46+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 20.84772460371736,
+      "event_id": "routine-0281",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-19T11:36:59+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 44.85622115321793,
+      "event_id": "routine-0282",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-02-19T16:59:56+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.567402671724764,
+      "event_id": "routine-0283",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-20T12:43:36+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 55.96427682146503,
+      "event_id": "routine-0284",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-20T18:58:13+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.404693087115845,
+      "event_id": "routine-0285",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-20T12:52:25+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.707234793342828,
+      "event_id": "routine-0286",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-20T09:02:45+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.68299607019313,
+      "event_id": "routine-0287",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-20T15:22:45+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.5228120875784,
+      "event_id": "routine-0288",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-21T08:24:25+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.461407941477844,
+      "event_id": "routine-0289",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-21T12:39:31+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.391896879916054,
+      "event_id": "routine-0290",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-21T17:44:31+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.367356232146626,
+      "event_id": "routine-0291",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-21T09:09:33+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 17.930912447213426,
+      "event_id": "routine-0292",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-22T07:45:01+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.488001947400022,
+      "event_id": "routine-0293",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-22T12:37:49+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.21043378475715,
+      "event_id": "routine-0294",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-22T18:39:21+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 22.163058430815408,
+      "event_id": "routine-0295",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-22T09:24:52+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.321228028345836,
+      "event_id": "routine-0296",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-23T06:48:14+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.445378382273326,
+      "event_id": "routine-0297",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-23T12:09:59+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.18477743791261,
+      "event_id": "routine-0298",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-23T18:50:13+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 26.105324597749313,
+      "event_id": "routine-0299",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-23T12:29:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.640988258093984,
+      "event_id": "routine-0300",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-23T09:18:17+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.497855303193226,
+      "event_id": "routine-0301",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-23T16:05:05+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 19.452809893046393,
+      "event_id": "routine-0302",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-24T07:37:44+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.703803353470907,
+      "event_id": "routine-0303",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-24T12:04:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.7212578057421,
+      "event_id": "routine-0304",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-24T18:22:03+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.025694399766415,
+      "event_id": "routine-0305",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-24T12:56:49+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.387902471264134,
+      "event_id": "routine-0306",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-24T08:58:25+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.189023596331424,
+      "event_id": "routine-0307",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-24T16:08:21+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.16430611246052,
+      "event_id": "routine-0308",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-25T07:10:19+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.70857640357201,
+      "event_id": "routine-0309",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-25T12:58:52+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 44.4874424055359,
+      "event_id": "routine-0310",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-25T18:14:15+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 58.99673046823851,
+      "event_id": "routine-0311",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-25T14:41:18+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.760973808386908,
+      "event_id": "routine-0312",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-25T08:24:42+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.450265552270842,
+      "event_id": "routine-0313",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-25T16:55:41+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 10.041373699240511,
+      "event_id": "routine-0314",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-26T07:42:35+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.05525976399277,
+      "event_id": "routine-0315",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-26T12:08:17+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 52.90946846482592,
+      "event_id": "routine-0316",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-26T18:46:39+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.17896873550785,
+      "event_id": "routine-0317",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-26T09:08:45+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.02033164756574,
+      "event_id": "routine-0318",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-26T15:59:52+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.938650242609015,
+      "event_id": "routine-0319",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-27T12:16:13+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.35155972974451,
+      "event_id": "routine-0320",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-27T18:34:33+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.22127215303924,
+      "event_id": "routine-0321",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-27T12:07:31+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.57099575387531,
+      "event_id": "routine-0322",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-27T08:56:35+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 46.844982997113455,
+      "event_id": "routine-0323",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-27T16:12:18+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 15.14511117532307,
+      "event_id": "routine-0324",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-02-28T07:12:15+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 44.423587700141915,
+      "event_id": "routine-0325",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-02-28T12:29:39+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.8535223477128,
+      "event_id": "routine-0326",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-02-28T18:25:33+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 61.43568263261736,
+      "event_id": "routine-0327",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-02-28T13:52:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 10.0,
+      "event_id": "routine-0328",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-02-28T08:39:42+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 22.628448752622674,
+      "event_id": "routine-0329",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-02-28T16:08:25+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 22.61993677878124,
+      "event_id": "routine-0330",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-01T06:46:10+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 37.13070246794124,
+      "event_id": "routine-0331",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-01T12:33:36+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.95304637855811,
+      "event_id": "routine-0332",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-01T17:50:21+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 51.42308973233214,
+      "event_id": "routine-0333",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-01T13:59:31+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.62058438652071,
+      "event_id": "routine-0334",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-01T09:16:02+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.78550889623341,
+      "event_id": "routine-0335",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-01T16:17:11+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 20.441808618502975,
+      "event_id": "routine-0336",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-02T07:22:38+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.67994913609322,
+      "event_id": "routine-0337",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-02T12:19:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.30155556194549,
+      "event_id": "routine-0338",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-02T18:18:45+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 51.82304373606234,
+      "event_id": "routine-0339",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-02T13:14:16+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.06237353599797,
+      "event_id": "routine-0340",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-02T09:09:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.35552715914827,
+      "event_id": "routine-0341",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-03T07:47:03+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.947615114094944,
+      "event_id": "routine-0342",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-03T12:21:20+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.170765644425646,
+      "event_id": "routine-0343",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-03T18:10:22+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.341550440935826,
+      "event_id": "routine-0344",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-03T09:10:16+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 18.904306791416424,
+      "event_id": "routine-0345",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-04T07:13:36+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.541191941643994,
+      "event_id": "routine-0346",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-04T18:38:23+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 51.574458306385964,
+      "event_id": "routine-0347",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-04T14:07:33+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 11.130026458113072,
+      "event_id": "routine-0348",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-04T08:39:27+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.56631977915371,
+      "event_id": "routine-0349",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-04T16:29:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 26.33464245297163,
+      "event_id": "routine-0350",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-05T07:14:53+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 45.06079724326958,
+      "event_id": "routine-0351",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-05T12:15:33+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.297910140670936,
+      "event_id": "routine-0352",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-05T18:51:22+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 60.40153612371992,
+      "event_id": "routine-0353",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-05T11:37:41+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.434796259161534,
+      "event_id": "routine-0354",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-05T09:15:41+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.76499910540941,
+      "event_id": "routine-0355",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-05T16:13:00+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.36878605019399,
+      "event_id": "routine-0356",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-06T12:36:26+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 36.6913976956172,
+      "event_id": "routine-0357",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-06T18:39:26+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.34602372560923,
+      "event_id": "routine-0358",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-06T13:22:44+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 16.268061304968867,
+      "event_id": "routine-0359",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-06T09:03:05+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.191816204034822,
+      "event_id": "routine-0360",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-06T12:26:52+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.434605729286446,
+      "event_id": "routine-0361",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-03-06T17:21:15+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.50920663568523,
+      "event_id": "routine-0362",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-07T07:37:27+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.529597030086094,
+      "event_id": "routine-0363",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-07T12:55:01+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.77120485722389,
+      "event_id": "routine-0364",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-07T18:12:31+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.78126652660937,
+      "event_id": "routine-0365",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-07T09:37:34+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.853479377409826,
+      "event_id": "routine-0366",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-08T07:25:17+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 37.218635051990226,
+      "event_id": "routine-0367",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-08T12:24:55+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 37.501180412574456,
+      "event_id": "routine-0368",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-08T18:29:30+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 53.96884706087255,
+      "event_id": "routine-0369",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-08T13:51:35+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.854204801552424,
+      "event_id": "routine-0370",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-08T08:43:45+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.71396473211402,
+      "event_id": "routine-0371",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-08T16:34:02+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 15.12868245305983,
+      "event_id": "routine-0372",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-09T07:27:21+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 17.702706839568425,
+      "event_id": "routine-0373",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-09T11:22:35+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 52.61015031260689,
+      "event_id": "routine-0374",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-09T18:12:45+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 15.0,
+      "event_id": "routine-0375",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-09T12:53:55+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 13.830629726946839,
+      "event_id": "routine-0376",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-09T09:06:09+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.21792928663264,
+      "event_id": "routine-0377",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-09T13:30:02+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.206927232874616,
+      "event_id": "routine-0378",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-03-09T17:16:58+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 20.074680147845925,
+      "event_id": "routine-0379",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-10T07:23:21+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.63741638960847,
+      "event_id": "routine-0380",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-10T12:12:59+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.37823813636388,
+      "event_id": "routine-0381",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-10T19:18:54+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 48.61150626941331,
+      "event_id": "routine-0382",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-10T08:54:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.56926152801428,
+      "event_id": "routine-0383",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-10T17:14:42+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 21.163804354054125,
+      "event_id": "routine-0384",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-11T07:51:38+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 37.4589636615871,
+      "event_id": "routine-0385",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-11T11:54:08+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.24665592740409,
+      "event_id": "routine-0386",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-11T18:24:49+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 44.980401879093094,
+      "event_id": "routine-0387",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-11T12:37:44+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.55727733784978,
+      "event_id": "routine-0388",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-11T09:44:35+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.460593704536095,
+      "event_id": "routine-0389",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-11T16:31:44+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 20.440077651599186,
+      "event_id": "routine-0390",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-12T07:22:27+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.88506750944423,
+      "event_id": "routine-0391",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-12T12:10:15+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.47318743221072,
+      "event_id": "routine-0392",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-12T18:52:45+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 56.22079082666552,
+      "event_id": "routine-0393",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-12T09:57:55+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.045655740498344,
+      "event_id": "routine-0394",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-13T07:13:11+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 44.85591587871784,
+      "event_id": "routine-0395",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-13T12:39:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.574933415751644,
+      "event_id": "routine-0396",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-13T18:12:11+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 52.25483642475743,
+      "event_id": "routine-0397",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-13T14:04:26+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 18.54869100446009,
+      "event_id": "routine-0398",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-13T08:13:11+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 15.67466532996856,
+      "event_id": "routine-0399",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-13T12:28:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.36861912617493,
+      "event_id": "routine-0400",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-03-13T16:22:54+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 18.570530763922786,
+      "event_id": "routine-0401",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-14T08:04:15+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.35957016169798,
+      "event_id": "routine-0402",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-14T18:29:04+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 48.54016638283285,
+      "event_id": "routine-0403",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-14T09:04:54+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.304710425850296,
+      "event_id": "routine-0404",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-14T12:32:48+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.24428273649455,
+      "event_id": "routine-0405",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-03-14T16:55:44+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 22.80195767104605,
+      "event_id": "routine-0406",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-15T07:54:20+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 37.804158986312025,
+      "event_id": "routine-0407",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-15T12:25:20+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 47.22828114965563,
+      "event_id": "routine-0408",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-15T19:08:44+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.26732509735688,
+      "event_id": "routine-0409",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-15T12:21:14+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.27023394896001,
+      "event_id": "routine-0410",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-15T08:34:58+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 18.962287281190203,
+      "event_id": "routine-0411",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-15T16:35:21+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.66031293761794,
+      "event_id": "routine-0412",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-16T07:41:13+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.078132775750692,
+      "event_id": "routine-0413",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-16T11:55:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.01359534105639,
+      "event_id": "routine-0414",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-16T17:58:11+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 45.7964095621177,
+      "event_id": "routine-0415",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-16T12:34:02+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 19.71332264401972,
+      "event_id": "routine-0416",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-16T09:08:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.444656425529185,
+      "event_id": "routine-0417",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-16T16:57:20+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 17.972410322681643,
+      "event_id": "routine-0418",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-17T07:48:39+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.46115821614527,
+      "event_id": "routine-0419",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-17T19:15:56+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.812653018454185,
+      "event_id": "routine-0420",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-17T09:06:37+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.967241608046812,
+      "event_id": "routine-0421",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-17T15:51:42+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 10.559784759788117,
+      "event_id": "routine-0422",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-18T08:00:00+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.43339149219228,
+      "event_id": "routine-0423",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-18T12:21:56+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.83267159433142,
+      "event_id": "routine-0424",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-18T19:03:05+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 20.597819442832765,
+      "event_id": "routine-0425",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-18T12:00:09+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 12.637841547447067,
+      "event_id": "routine-0426",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-18T08:16:00+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.526152363052084,
+      "event_id": "routine-0427",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-18T12:11:37+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 21.04090371772429,
+      "event_id": "routine-0428",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-03-18T16:55:27+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.82046664141068,
+      "event_id": "routine-0429",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-19T07:14:15+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.29961409358088,
+      "event_id": "routine-0430",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-19T12:06:49+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.314219227554133,
+      "event_id": "routine-0431",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-19T18:38:22+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.12111744341147,
+      "event_id": "routine-0432",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-19T12:46:28+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.385888109955587,
+      "event_id": "routine-0433",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-19T08:33:20+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.56494995309686,
+      "event_id": "routine-0434",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-19T16:30:19+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 22.237023049921348,
+      "event_id": "routine-0435",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-20T07:29:59+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 26.3453259166714,
+      "event_id": "routine-0436",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-20T12:10:30+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 37.44223403922793,
+      "event_id": "routine-0437",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-20T18:11:35+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.12158978363753,
+      "event_id": "routine-0438",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-20T08:32:21+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 47.07779851569393,
+      "event_id": "routine-0439",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-20T15:47:19+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 14.807848553026338,
+      "event_id": "routine-0440",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-21T06:45:16+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 45.544408967581894,
+      "event_id": "routine-0441",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-21T18:30:53+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.400030798234337,
+      "event_id": "routine-0442",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-21T13:02:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.95882073175625,
+      "event_id": "routine-0443",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-21T10:31:08+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.259196246307106,
+      "event_id": "routine-0444",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-22T07:17:00+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.75003161525393,
+      "event_id": "routine-0445",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-22T11:45:15+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.01094501926262,
+      "event_id": "routine-0446",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-22T18:00:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 72.62437595654703,
+      "event_id": "routine-0447",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-22T12:00:22+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 14.922206527807118,
+      "event_id": "routine-0448",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-22T08:11:26+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 21.702478512521516,
+      "event_id": "routine-0449",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-22T17:36:05+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.54843482938124,
+      "event_id": "routine-0450",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-23T06:38:00+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.97096547437057,
+      "event_id": "routine-0451",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-23T11:46:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.548429002907675,
+      "event_id": "routine-0452",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-23T18:27:09+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 54.458240424052896,
+      "event_id": "routine-0453",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-23T12:28:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.792705944347944,
+      "event_id": "routine-0454",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-23T08:47:05+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 44.05675355449507,
+      "event_id": "routine-0455",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-23T16:25:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 18.983802329373734,
+      "event_id": "routine-0456",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-24T08:03:31+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.58781081718145,
+      "event_id": "routine-0457",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-24T12:03:49+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.797690916562964,
+      "event_id": "routine-0458",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-24T18:19:23+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 58.32007716136124,
+      "event_id": "routine-0459",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-24T13:27:24+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.593567369564155,
+      "event_id": "routine-0460",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-24T09:22:38+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.53798597347169,
+      "event_id": "routine-0461",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-24T16:44:09+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 26.309309702649827,
+      "event_id": "routine-0462",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-25T07:02:29+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.87516549641487,
+      "event_id": "routine-0463",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-25T12:45:50+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 54.12646015448102,
+      "event_id": "routine-0464",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-25T18:23:26+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.581032213933966,
+      "event_id": "routine-0465",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-25T14:26:53+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.32529443281315,
+      "event_id": "routine-0466",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-25T09:37:35+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.618732573109583,
+      "event_id": "routine-0467",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-26T07:34:04+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.654234853665606,
+      "event_id": "routine-0468",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-26T12:01:22+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 49.136769046681735,
+      "event_id": "routine-0469",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-26T18:08:51+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 80.26293673688875,
+      "event_id": "routine-0470",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-26T13:20:40+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.982055044255,
+      "event_id": "routine-0471",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-26T09:03:19+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.683213849931796,
+      "event_id": "routine-0472",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-26T16:11:59+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.710750204760295,
+      "event_id": "routine-0473",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-27T07:25:37+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.089812259363132,
+      "event_id": "routine-0474",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-27T13:00:56+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.815223575410485,
+      "event_id": "routine-0475",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-27T18:26:19+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 54.33523551516839,
+      "event_id": "routine-0476",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-27T12:48:41+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 13.702528223604137,
+      "event_id": "routine-0477",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-27T09:03:31+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.4900523215462,
+      "event_id": "routine-0478",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-27T16:03:53+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.754676371706864,
+      "event_id": "routine-0479",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-28T07:29:08+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.459145836522623,
+      "event_id": "routine-0480",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-28T11:52:44+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.87551012535212,
+      "event_id": "routine-0481",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-28T18:30:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 18.92141368402867,
+      "event_id": "routine-0482",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-28T13:38:55+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.818105382608465,
+      "event_id": "routine-0483",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-28T08:53:58+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.651548007207694,
+      "event_id": "routine-0484",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-28T15:55:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.152906695488326,
+      "event_id": "routine-0485",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-29T07:51:00+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.19561051753508,
+      "event_id": "routine-0486",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-29T11:40:21+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 36.05674252133375,
+      "event_id": "routine-0487",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-29T17:59:51+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 46.09368663857174,
+      "event_id": "routine-0488",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-29T09:14:27+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.68697831543056,
+      "event_id": "routine-0489",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-30T07:26:21+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.65298760914846,
+      "event_id": "routine-0490",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-30T12:48:21+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 48.61943673466885,
+      "event_id": "routine-0491",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-30T18:31:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.23475958535734,
+      "event_id": "routine-0492",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-03-30T13:31:59+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.281242120562403,
+      "event_id": "routine-0493",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-30T08:31:00+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 17.051585063449465,
+      "event_id": "routine-0494",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-30T16:02:55+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 30.256518075914194,
+      "event_id": "routine-0495",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-03-31T07:26:52+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.677354576844195,
+      "event_id": "routine-0496",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-03-31T12:20:08+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 39.53054699521504,
+      "event_id": "routine-0497",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-03-31T19:07:29+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.866656873276483,
+      "event_id": "routine-0498",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-03-31T09:14:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 17.478115341748346,
+      "event_id": "routine-0499",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-03-31T11:55:44+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 47.95349603830215,
+      "event_id": "routine-0500",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-03-31T17:08:13+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 24.540387848555138,
+      "event_id": "routine-0501",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-04-01T07:06:51+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.51342665421195,
+      "event_id": "routine-0502",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-04-01T19:06:09+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.630822522774864,
+      "event_id": "routine-0503",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-04-01T09:32:53+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.73791019770531,
+      "event_id": "routine-0504",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-04-01T15:59:18+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 21.934364142945682,
+      "event_id": "routine-0505",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-04-02T07:06:56+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.447234085257122,
+      "event_id": "routine-0506",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-04-02T12:51:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 43.945939410122456,
+      "event_id": "routine-0507",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-04-02T18:25:23+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 28.620839347551723,
+      "event_id": "routine-0508",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-04-02T12:50:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 48.19591196407906,
+      "event_id": "routine-0509",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-04-02T08:59:19+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 20.902085684954763,
+      "event_id": "routine-0510",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-04-02T16:49:13+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 23.393006767757875,
+      "event_id": "routine-0511",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-04-03T07:36:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.13140703640675,
+      "event_id": "routine-0512",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-04-03T12:14:46+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 17.870146660497195,
+      "event_id": "routine-0513",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-04-03T17:52:55+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.95712771627208,
+      "event_id": "routine-0514",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-04-03T12:14:32+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 46.358174970948724,
+      "event_id": "routine-0515",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-04-03T08:12:34+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 38.10998567805553,
+      "event_id": "routine-0516",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-04-03T16:10:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 19.640812574765476,
+      "event_id": "routine-0517",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-04-04T07:36:12+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 21.507115564274628,
+      "event_id": "routine-0518",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-04-04T13:02:42+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.05943401525068,
+      "event_id": "routine-0519",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-04-04T18:40:45+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 59.89976380265567,
+      "event_id": "routine-0520",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-04-04T12:19:40+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 25.23614398067971,
+      "event_id": "routine-0521",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-04-04T09:21:14+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 22.783490401268878,
+      "event_id": "routine-0522",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-04-05T08:05:20+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 40.22197752160157,
+      "event_id": "routine-0523",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-04-05T12:22:05+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 42.90228800127145,
+      "event_id": "routine-0524",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-04-05T18:04:31+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 58.645882250426865,
+      "event_id": "routine-0525",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-04-05T13:42:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 50.3479012492145,
+      "event_id": "routine-0526",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-04-05T09:24:15+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.099353792676723,
+      "event_id": "routine-0527",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-04-05T16:20:57+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.909574742994273,
+      "event_id": "routine-0528",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-04-06T07:27:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 44.60537426948543,
+      "event_id": "routine-0529",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-04-06T12:22:50+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 34.79991425640328,
+      "event_id": "routine-0530",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-04-06T17:59:56+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 48.68792542409867,
+      "event_id": "routine-0531",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-04-06T13:40:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 13.918657656227815,
+      "event_id": "routine-0532",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-04-06T08:28:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.514447708204365,
+      "event_id": "routine-0533",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-04-06T13:06:48+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.649940140100234,
+      "event_id": "routine-0534",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_3",
+      "started_at": "2026-04-06T16:25:45+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 32.34659327264905,
+      "event_id": "routine-0535",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-04-07T11:43:24+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 35.75529611754913,
+      "event_id": "routine-0536",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-04-07T18:06:13+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 36.60076969598757,
+      "event_id": "routine-0537",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-04-07T09:29:24+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 20.782085531105267,
+      "event_id": "routine-0538",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-04-08T12:58:16+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 26.088211903396903,
+      "event_id": "routine-0539",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-04-08T18:32:28+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 41.0985665053918,
+      "event_id": "routine-0540",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-04-08T09:03:15+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 31.892595838914374,
+      "event_id": "routine-0541",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-04-08T16:03:40+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 11.595291287116533,
+      "event_id": "routine-0542",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-04-09T07:11:46+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 36.02175531996171,
+      "event_id": "routine-0543",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-04-09T12:17:26+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.64890028301589,
+      "event_id": "routine-0544",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-04-09T18:11:41+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 63.83410567444175,
+      "event_id": "routine-0545",
+      "event_type": "nap",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "nap",
+      "started_at": "2026-04-09T12:40:49+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 36.87940223106984,
+      "event_id": "routine-0546",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-04-09T08:47:26+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 29.13137080152353,
+      "event_id": "routine-0547",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "breakfast",
+      "started_at": "2026-04-10T06:57:06+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 33.98437846468221,
+      "event_id": "routine-0548",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "lunch",
+      "started_at": "2026-04-10T12:05:41+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 51.95398605026766,
+      "event_id": "routine-0549",
+      "event_type": "meal",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "dinner",
+      "started_at": "2026-04-10T18:09:07+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 51.58841513234961,
+      "event_id": "routine-0550",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_1",
+      "started_at": "2026-04-10T09:17:36+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    },
+    {
+      "duration_minutes": 27.560576194629615,
+      "event_id": "routine-0551",
+      "event_type": "walk",
+      "profile_id": "synthetic-routine-100-v1",
+      "slot_key": "walk_2",
+      "started_at": "2026-04-10T16:33:51+08:00",
+      "truth_category": "SYNTHETIC_ROUTINE"
+    }
+  ],
+  "format_version": "1.0.0",
+  "history_days": 100,
+  "history_start": "2026-01-01",
+  "profile_id": "synthetic-routine-100-v1",
+  "seed": 20260828,
+  "truth_category": "SYNTHETIC_ROUTINE"
+}

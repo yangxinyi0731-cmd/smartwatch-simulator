@@ -53,14 +53,14 @@ def test_v2_migration_preserves_v1_case_without_inventing_metadata(
 
     with sqlite3.connect(database_path) as connection:
         connection.row_factory = sqlite3.Row
-        assert int(connection.execute("PRAGMA user_version").fetchone()[0]) == 3
+        assert int(connection.execute("PRAGMA user_version").fetchone()[0]) == 4
         migration_versions = tuple(
             row[0]
             for row in connection.execute(
                 "SELECT version FROM schema_migrations ORDER BY version"
             )
         )
-        assert migration_versions == (1, 2, 3)
+        assert migration_versions == (1, 2, 3, 4)
 
         case = connection.execute(
             "SELECT * FROM cases WHERE case_id = 'legacy-001'"
@@ -102,7 +102,7 @@ def test_v2_creates_all_contract_tables(tmp_path: Path) -> None:
             )
         }
 
-    assert SCHEMA_VERSION == 3
+    assert SCHEMA_VERSION == 4
     assert {
         "schema_migrations",
         "data_sources",
@@ -117,6 +117,8 @@ def test_v2_creates_all_contract_tables(tmp_path: Path) -> None:
         "case_source_files",
         "sensor_quality",
         "ground_truth_events",
+        "routine_profiles",
+        "routine_events",
     } <= tables
 
 

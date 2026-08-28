@@ -2064,6 +2064,333 @@
       "title": "RoutineEventContract",
       "type": "object"
     },
+    "RoutineProfileContract": {
+      "$defs": {
+        "AgeGroup": {
+          "enum": [
+            "YOUNG_ADULT",
+            "OLDER_ADULT",
+            "MIXED",
+            "UNKNOWN",
+            "NOT_APPLICABLE"
+          ],
+          "title": "AgeGroup",
+          "type": "string"
+        },
+        "CaseContract": {
+          "additionalProperties": false,
+          "properties": {
+            "activity_label": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Activity Label"
+            },
+            "age_group": {
+              "$ref": "#/$defs/AgeGroup"
+            },
+            "allowed_models": {
+              "items": {
+                "$ref": "#/$defs/ModelKind"
+              },
+              "title": "Allowed Models",
+              "type": "array"
+            },
+            "case_id": {
+              "minLength": 1,
+              "title": "Case Id",
+              "type": "string"
+            },
+            "created_at": {
+              "format": "date-time",
+              "title": "Created At",
+              "type": "string"
+            },
+            "derivation_parent_case_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Derivation Parent Case Id"
+            },
+            "description": {
+              "default": "",
+              "title": "Description",
+              "type": "string"
+            },
+            "device_name": {
+              "minLength": 1,
+              "title": "Device Name",
+              "type": "string"
+            },
+            "has_accelerometer": {
+              "title": "Has Accelerometer",
+              "type": "boolean"
+            },
+            "has_gyroscope": {
+              "title": "Has Gyroscope",
+              "type": "boolean"
+            },
+            "original_sample_rate_hz": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Original Sample Rate Hz"
+            },
+            "participant_id": {
+              "anyOf": [
+                {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Participant Id"
+            },
+            "processing_command": {
+              "minLength": 1,
+              "title": "Processing Command",
+              "type": "string"
+            },
+            "source": {
+              "$ref": "#/$defs/SourceReference"
+            },
+            "source_record_path": {
+              "minLength": 1,
+              "title": "Source Record Path",
+              "type": "string"
+            },
+            "source_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Source Sha256",
+              "type": "string"
+            },
+            "title": {
+              "minLength": 1,
+              "title": "Title",
+              "type": "string"
+            },
+            "truth_category": {
+              "$ref": "#/$defs/TruthCategory"
+            },
+            "updated_at": {
+              "format": "date-time",
+              "title": "Updated At",
+              "type": "string"
+            },
+            "wear_position": {
+              "minLength": 1,
+              "title": "Wear Position",
+              "type": "string"
+            }
+          },
+          "required": [
+            "case_id",
+            "title",
+            "truth_category",
+            "source",
+            "source_record_path",
+            "source_sha256",
+            "age_group",
+            "device_name",
+            "wear_position",
+            "has_accelerometer",
+            "has_gyroscope",
+            "allowed_models",
+            "processing_command",
+            "created_at",
+            "updated_at"
+          ],
+          "title": "CaseContract",
+          "type": "object"
+        },
+        "ModelKind": {
+          "enum": [
+            "FALL_DETECTION",
+            "ROUTINE_ANOMALY",
+            "ACTIVITY_RECOGNITION"
+          ],
+          "title": "ModelKind",
+          "type": "string"
+        },
+        "SourceLicenseStatus": {
+          "enum": [
+            "VERIFIED_OPEN",
+            "LOCAL_RESEARCH_ONLY",
+            "APPLICATION_REQUIRED",
+            "UNVERIFIED"
+          ],
+          "title": "SourceLicenseStatus",
+          "type": "string"
+        },
+        "SourceReference": {
+          "additionalProperties": false,
+          "properties": {
+            "dataset_name": {
+              "minLength": 1,
+              "title": "Dataset Name",
+              "type": "string"
+            },
+            "fixed_version": {
+              "minLength": 1,
+              "title": "Fixed Version",
+              "type": "string"
+            },
+            "license_reference": {
+              "minLength": 1,
+              "title": "License Reference",
+              "type": "string"
+            },
+            "license_status": {
+              "$ref": "#/$defs/SourceLicenseStatus"
+            },
+            "notes": {
+              "minLength": 1,
+              "title": "Notes",
+              "type": "string"
+            },
+            "redistribution_allowed": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Redistribution Allowed"
+            },
+            "source_id": {
+              "minLength": 1,
+              "title": "Source Id",
+              "type": "string"
+            },
+            "source_url": {
+              "format": "uri",
+              "minLength": 1,
+              "title": "Source Url",
+              "type": "string"
+            },
+            "verified_at": {
+              "format": "date-time",
+              "title": "Verified At",
+              "type": "string"
+            }
+          },
+          "required": [
+            "source_id",
+            "dataset_name",
+            "source_url",
+            "fixed_version",
+            "license_status",
+            "license_reference",
+            "redistribution_allowed",
+            "verified_at",
+            "notes"
+          ],
+          "title": "SourceReference",
+          "type": "object"
+        },
+        "TruthCategory": {
+          "enum": [
+            "REAL_FREE_LIVING",
+            "REAL_LAB_ACTIVITY",
+            "SIMULATED_FALL",
+            "SYNTHETIC_ROUTINE",
+            "DERIVED_PERTURBATION"
+          ],
+          "title": "TruthCategory",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "case": {
+          "$ref": "#/$defs/CaseContract"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "event_count": {
+          "exclusiveMinimum": 0,
+          "title": "Event Count",
+          "type": "integer"
+        },
+        "events_relative_path": {
+          "minLength": 1,
+          "title": "Events Relative Path",
+          "type": "string"
+        },
+        "events_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Events Sha256",
+          "type": "string"
+        },
+        "history_days": {
+          "const": 100,
+          "default": 100,
+          "title": "History Days",
+          "type": "integer"
+        },
+        "history_end": {
+          "format": "date",
+          "title": "History End",
+          "type": "string"
+        },
+        "history_start": {
+          "format": "date",
+          "title": "History Start",
+          "type": "string"
+        },
+        "profile_id": {
+          "minLength": 1,
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "seed": {
+          "title": "Seed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "profile_id",
+        "case",
+        "history_start",
+        "history_end",
+        "seed",
+        "event_count",
+        "events_relative_path",
+        "events_sha256",
+        "created_at"
+      ],
+      "title": "RoutineProfileContract",
+      "type": "object"
+    },
     "SensorQualityContract": {
       "additionalProperties": false,
       "properties": {
