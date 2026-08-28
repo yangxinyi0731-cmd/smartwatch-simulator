@@ -3,9 +3,10 @@
   "sourceRoots": ["frontend/src"],
   "locale": "zh-CN",
   "canonicalMap": "UX-CONTRACT.md",
-  "requiredCapabilities": ["Scrollbar"],
+  "requiredCapabilities": ["Scrollbar", "Select/Listbox"],
   "ownership": {
-    "Scrollbar": "global-application-stylesheet"
+    "Scrollbar": "global-application-stylesheet",
+    "Select/Listbox": "native"
   },
   "requiredCommands": ["contract-export", "generate-api", "backend-tests", "build"],
   "commands": {

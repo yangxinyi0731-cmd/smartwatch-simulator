@@ -2,7 +2,7 @@
 
 英文仓库名：`smartwatch-health-simulator`
 
-这是一个只在 Windows 电脑上运行的三模型模拟智能手表研究平台。当前已经具备 Tabler 风格 Vue 前端、FastAPI 本地后端、100 个可追溯 WEDA 案例、1 个合成规律案例、4 个 CAPTURE-24 真实自由生活活动窗口、WebSocket 实时状态通道、真实回放界面，以及统一案例/来源/回放/三模型合同。跌倒检测、个人规律异常和腕部活动识别三个研究模型均已接入；三者仍未完成外部验证，也不获部署批准。
+这是一个只在 Windows 电脑上运行的三模型模拟智能手表研究平台。当前已经具备 Tabler 风格 Vue 前端、FastAPI 本地后端、100 个可追溯 WEDA 案例、1 个合成规律案例、4 个 CAPTURE-24 真实自由生活活动窗口、WebSocket 实时状态通道、真实回放、可恢复批量回放和一键本地交付。跌倒检测、个人规律异常和腕部活动识别三个研究模型均已接入；三者仍未完成外部验证，也不获部署批准。
 
 ## 当前真实状态
 
@@ -34,7 +34,7 @@
 尚未完成：
 
 - 真实设备接入；
-- Windows 一键交付包和 GitHub 远程发布。
+- GitHub 远程发布。
 
 当前 SQLite 案例总数为 105：40 条年轻参与者受控床垫模拟跌倒、30 条老年参与者受控日常活动、30 条年轻参与者受控日常活动、1 个明确标记为合成数据的 100 天生活规律案例，以及 4 个从固定评估参与者真实三轴窗口生成的 CAPTURE-24 自由生活活动演示案例。它们不是“100 个真实老人跌倒”。CAPTURE-24 来源只是逐成员核验的 48 人恢复前缀子集，不是完整 151 人数据包，也不能描述为老人专项数据。
 
@@ -51,6 +51,18 @@ npm --prefix frontend install
 依赖锁定清单来自 Windows CPython 3.14 环境。直接依赖声明分别保存在 `backend/requirements.txt` 和 `backend/requirements-dev.txt`。
 
 ## 本地运行
+
+### 最简单：双击启动
+
+完成一次“首次安装”后，打开 `scripts\windows` 文件夹：
+
+1. 双击 `start-smartwatch.cmd`：自动构建前端、启动只监听本机的服务并打开页面；
+2. 双击 `stop-smartwatch.cmd`：只停止该脚本记录的本项目进程，保留 SQLite 和日志；
+3. 双击 `diagnose-smartwatch.cmd`：检查 Python、Node.js、依赖、前端构建、数据库、三个模型资产和服务健康状态。
+
+一键版只使用一个后台进程，同时提供前端、API 和 WebSocket，地址固定为 `http://127.0.0.1:8000/`。运行状态与日志保存在 Git 忽略目录 `backend/runtime/local-delivery/`。
+
+### 开发模式
 
 打开第一个 PowerShell 窗口，在项目根目录启动后端：
 

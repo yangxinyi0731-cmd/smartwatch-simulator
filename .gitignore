@@ -33,6 +33,7 @@ dist-desktop/
 
 # Logs and local settings
 *.log
+backend/runtime/local-delivery/
 .env
 .env.*
 !.env.example

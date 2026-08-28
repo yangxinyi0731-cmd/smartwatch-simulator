@@ -39,7 +39,7 @@ batch_replay_tasks / batch_replay_items
 ## 当前数据流
 
 1. 前端加载后向同源 `/api/health` 发起真实健康检查；
-2. Vite 开发服务器将 `/api` 转发到 `127.0.0.1:8000`；
+2. 一键交付时由 FastAPI 同一进程提供生产前端、API 与 WebSocket；开发时由 Vite 把 `/api` 和 `/ws` 转发到 `127.0.0.1:8000`；
 3. FastAPI 读取 SQLite 的 `PRAGMA user_version` 和 `cases` 实际数量；
 4. 健康检查成功后，前端连接同源 `/ws/system`；
 5. WebSocket 立即发送一次状态，并每 15 秒发送新快照；
@@ -169,6 +169,8 @@ npm --prefix frontend run generate:api
 - 默认数据库：`backend/runtime/smartwatch.sqlite3`，不进入 Git；
 - 可用 `SMARTWATCH_DATABASE_PATH` 指定绝对路径；
 - Uvicorn 只监听 `127.0.0.1`；
+- Windows 一键脚本先构建 `frontend/dist`，再启动单一隐藏 Uvicorn 进程；状态文件记录 PID、进程路径和启动时间，停止前必须全部匹配；
+- 一键服务把生产前端、API 与 WebSocket 放在同一个 `http://127.0.0.1:8000/` 来源下；
 - 当前无账号、权限、局域网服务或互联网发布；
 - 当前已有三个研究版模型推理和本机案例文件，但无真实设备流；WebSocket 只发送系统状态；
 - GitHub 远程仓库仍未配置，本阶段只有公开资料检索，没有发布项目。

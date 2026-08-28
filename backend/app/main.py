@@ -13,8 +13,9 @@ from uuid import uuid4
 
 from fastapi import FastAPI, Query, Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
-from .config import Settings
+from .config import PROJECT_ROOT, Settings
 from .batch_replay import (
     batch_replay_worker,
     batch_task_response,
@@ -42,7 +43,7 @@ from .schemas import (
 )
 
 
-SERVICE_VERSION = "0.7.0"
+SERVICE_VERSION = "0.8.0"
 STATUS_INTERVAL_SECONDS = 15
 
 
@@ -84,6 +85,7 @@ def create_app(
     settings: Settings | None = None,
     *,
     database_path: Path | None = None,
+    frontend_dist_path: Path | None = None,
 ) -> FastAPI:
     if settings is not None and database_path is not None:
         raise ValueError("settings 和 database_path 不能同时提供。")
@@ -94,6 +96,11 @@ def create_app(
         else Settings.from_environment()
     )
     database = Database(resolved_settings.database_path)
+    resolved_frontend_dist = (
+        frontend_dist_path
+        if frontend_dist_path is not None
+        else PROJECT_ROOT / "frontend" / "dist"
+    ).resolve()
 
     @asynccontextmanager
     async def lifespan(application: FastAPI) -> AsyncIterator[None]:
@@ -505,6 +512,13 @@ def create_app(
                     continue
         except WebSocketDisconnect:
             return
+
+    if (resolved_frontend_dist / "index.html").is_file():
+        application.mount(
+            "/",
+            StaticFiles(directory=resolved_frontend_dist, html=True),
+            name="frontend",
+        )
 
     return application
 

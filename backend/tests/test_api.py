@@ -279,3 +279,26 @@ def test_startup_rejects_newer_database_schema(tmp_path: Path) -> None:
         assert "拒绝自动降级" in str(error)
     else:
         raise AssertionError("应用不应接受高于当前程序支持版本的数据库。")
+
+
+def test_built_frontend_can_be_served_by_same_local_process(tmp_path: Path) -> None:
+    database_path = tmp_path / "frontend.sqlite3"
+    frontend_dist_path = tmp_path / "frontend-dist"
+    frontend_dist_path.mkdir()
+    (frontend_dist_path / "index.html").write_text(
+        "<!doctype html><html><body>本地交付前端</body></html>",
+        encoding="utf-8",
+    )
+
+    with TestClient(
+        create_app(
+            database_path=database_path,
+            frontend_dist_path=frontend_dist_path,
+        )
+    ) as client:
+        frontend = client.get("/")
+        health = client.get("/api/health")
+
+    assert frontend.status_code == 200
+    assert "本地交付前端" in frontend.text
+    assert health.status_code == 200

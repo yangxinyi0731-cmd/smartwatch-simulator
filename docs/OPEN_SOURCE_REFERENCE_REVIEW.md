@@ -2,6 +2,19 @@
 
 核验日期：2026-08-28
 
+## 2026-08-29 关键项目继续复核
+
+在批量回放与 Windows 一键交付完成后，再次对六个最直接相关项目执行只读 `git ls-remote <url> HEAD`：
+
+- Open Wearables：`f766b5a0a45b091828317d30c5e516574adfbe61`，与上一日一致；
+- WEDA-FALL：`74e0b93cb061d4ecbca12628f2d47090e97fbeea`，与本项目固定来源一致；
+- DevGurav/fall-detect-system：`5879f92c5643f97a32302f4eb74b05a3fb07929a`，与上一日一致；
+- Forsad/Stable-Polynomial-Train：`9a6fee44f84a7eeb941e731e9d960c66297fd655`，与上一日一致；
+- FastAPI/full-stack-fastapi-template：`486f054cc8d1aead59ec96cc0a16933d06c10e0d`，已不同于下表 2026-08-28 快照；本项目仍只参考其合同生成与测试路线，没有同步复制上游代码；
+- OxWearables/capture24：`f861b44f5675cb3e8294cd3d560d7a71a749616f`，与本项目固定工具参考一致。
+
+这次继续复核不会改变数据真实性和许可判断：远程 HEAD 更新不等于数据许可更新，也不会自动替换本项目已固定、已测试的来源与模型资产。
+
 ## 为什么做这次检索
 
 本项目需要同时处理传感器来源、案例回放、三个独立模型、研究真实性和 Windows 本地演示。没有一个开源项目能原样满足全部边界，因此采用“核验后组合思路”的方式：只吸收成熟架构与合同设计，不复制未经验证的指标，也不把公开下载误写成可重新分发。

@@ -10,6 +10,7 @@
 - `POST /api/batch-replays`：用客户端请求标识幂等创建 1–200 个案例的持久化任务；
 - `GET /api/batch-replays` 与 `GET /api/batch-replays/{task_id}`：读取任务进度和逐案例独立结果摘要；
 - `WS /ws/system`：连接后立即发送状态，此后每 15 秒更新；
+- 前端生产构建存在时，FastAPI 同一进程从 `/` 提供页面、静态资源、API 与 WebSocket；
 - SQLite 结构版本 5：来源、案例、传感器流、导入批次、原始文件哈希、质量记录、真实标签、合成规律、manifest、回放事件、三模型独立输出和批量任务；
 - WEDA-FALL 确定性导入器：40 条年轻参与者受控模拟跌倒、30 条老人日常活动、30 条年轻人日常活动；
 - Pydantic 合同导出为 OpenAPI、JSON Schema 和前端 TypeScript 类型；
@@ -48,6 +49,8 @@ backend/
 ```
 
 后端明确绑定 `127.0.0.1`，避免在没有认证和发布安全设计的情况下暴露到局域网。
+
+Windows 普通使用者优先双击 `scripts/windows/start-smartwatch.cmd`。该脚本先执行前端生产构建，再用隐藏的单一 Uvicorn 进程提供页面、API 与 WebSocket；停止脚本会核对进程路径和启动时间，避免 PID 被复用后误停其他程序。
 
 ## SQLite 结构版本 5 的边界
 

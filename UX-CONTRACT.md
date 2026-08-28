@@ -41,7 +41,7 @@
 | Capability | Canonical owner | Source of truth | Allowed variants | Verification |
 |---|---|---|---|---|
 | Table Selection | 第 12 步 `DataTable` 共享组件 | 本合同 | page / all-results | component + E2E |
-| Select/Listbox | 第 12 步 `AppSelect` 共享组件 | DESIGN + 本合同 | authored | keyboard + popup |
+| Select/Listbox | 当前版本使用浏览器原生 `select` | `premium-ui.json` + 本合同 | native | keyboard + popup |
 | Date | 第 12 步 `DateField`，优先键盘输入 | 本合同 | typed | locale + keyboard + E2E |
 | Form | 第 12 步共享 `FormField` 与 schema 适配器 | 本合同 | create / edit | validation E2E |
 | Scrollbar | `frontend/src/style.css` 全局基线 | DESIGN.md | stable-gutter | computed style |
