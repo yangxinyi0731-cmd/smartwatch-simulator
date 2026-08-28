@@ -16,6 +16,7 @@ import StatusBadge from './StatusBadge.vue'
 defineProps<{
   connectionLabel: string
   connectionTone: 'neutral' | 'info' | 'success' | 'warning' | 'danger'
+  connectionDetail: string
   isRefreshing: boolean
 }>()
 
@@ -47,8 +48,8 @@ const navigation = [
   <a class="skip-link" href="#main-content">跳到主要内容</a>
 
   <div class="page app-layout">
-    <header class="app-shell-header" aria-label="应用页眉">
-      <div class="container-xl app-shell-header__inner">
+    <aside class="navbar navbar-vertical app-sidebar" aria-label="主导航">
+      <div class="app-sidebar__inner">
         <a class="app-brand" href="#overview" aria-label="模拟智能手表系统总览">
           <span class="app-brand__mark" aria-hidden="true">
             <IconActivityHeartbeat :size="24" :stroke-width="1.8" />
@@ -78,25 +79,46 @@ const navigation = [
                 <component :is="item.icon" :size="19" :stroke-width="1.8" aria-hidden="true" />
                 <span>{{ item.label }}</span>
               </a>
+
+              <ul v-if="item.children" class="app-nav__sublist">
+                <li v-for="child in item.children" :key="child.label">
+                  <a :href="child.href">{{ child.label }}</a>
+                </li>
+              </ul>
             </li>
           </ul>
         </nav>
 
-        <div class="app-shell-header__actions" aria-live="polite">
-          <StatusBadge :tone="connectionTone">{{ connectionLabel }}</StatusBadge>
-          <AppButton
-            intent="primary"
-            emphasis="solid"
-            :busy="isRefreshing"
-            @click="emit('refresh')"
-          >
-            {{ isRefreshing ? '检查中' : '刷新状态' }}
-          </AppButton>
+        <div class="app-sidebar__status">
+          <p>当前阶段</p>
+          <strong>本地数据闭环</strong>
+          <span>{{ connectionDetail }}</span>
         </div>
       </div>
-    </header>
+    </aside>
 
     <div class="page-wrapper app-workspace">
+      <header class="navbar navbar-expand-md app-topbar" aria-label="系统工具栏">
+        <div class="container-xl app-topbar__inner">
+          <div>
+            <span class="app-topbar__label">研究演示环境</span>
+            <span class="app-topbar__separator" aria-hidden="true"></span>
+            <span class="app-topbar__meta">本地 Windows 运行</span>
+          </div>
+          <div class="app-topbar__status" aria-live="polite">
+            <StatusBadge :tone="connectionTone">{{ connectionLabel }}</StatusBadge>
+            <AppButton
+              intent="neutral"
+              emphasis="outline"
+              :busy="isRefreshing"
+              @click="emit('refresh')"
+            >
+              {{ isRefreshing ? '检查中' : '刷新状态' }}
+            </AppButton>
+          </div>
+        </div>
+      </header>
+
       <main id="main-content" class="page-body app-main" tabindex="-1">
         <div class="container-xl">
           <slot />

@@ -12,7 +12,7 @@ const props = defineProps<{
 const width = 800
 const height = 156
 const padding = 14
-const colors = ['#4fb9dc', '#138b59', '#d95b68', '#8067a8', '#c98d24', '#168d82']
+const colors = ['#206bc4', '#2fb344', '#d63939', '#7b61a8', '#f59f00', '#0ca678']
 
 const panels = computed(() => {
   const groups = props.channels.length >= 6

@@ -197,6 +197,16 @@ const connectionLabel = computed(() => {
   return '后端未连接'
 })
 
+const connectionDetail = computed(() => {
+  if (phase.value === 'connected') {
+    return `后端、SQLite 与实时通道已连接；已读取 ${cases.value.length} 个案例和 ${models.value.length} 个模型。`
+  }
+  if (phase.value === 'checking' || phase.value === 'connecting') {
+    return '正在核对后端、SQLite 与实时通道的真实状态。'
+  }
+  return '本地服务当前不可完整使用；页面会保留最后一次成功读取的清单。'
+})
+
 const connectionMessage = computed(() => {
   if (phase.value === 'connected') {
     return `本地后端、SQLite 和 WebSocket 已连通；案例库实读 ${cases.value.length} 个，模型清单实读 ${models.value.length} 个。`
@@ -396,24 +406,19 @@ const replayOutputs = computed(() => [
   <AppShell
     :connection-label="connectionLabel"
     :connection-tone="connectionTone"
+    :connection-detail="connectionDetail"
     :is-refreshing="isRefreshing"
     @refresh="refresh"
   >
     <div id="overview" class="page-header app-page-header">
-      <div class="app-page-header__copy">
-        <p class="page-pretitle">本地优先 · 三模型研究平台</p>
-        <h1 class="page-title">
-          系统总览
-          <span>健康数据，有据可查</span>
-        </h1>
+      <div>
+        <p class="page-pretitle">老年人 AI 模拟智能手表</p>
+        <h1 class="page-title">系统总览</h1>
         <p class="app-page-header__summary">
-          在一个页面中选择可追溯案例、回放真实或明确标注的合成数据，并查看三个模型彼此独立的研究结果。
+          查看数据接入、模拟回放和三个模型的当前真实状态。
         </p>
       </div>
-      <div class="app-page-header__aside">
-        <StatusBadge tone="info">研究与比赛演示</StatusBadge>
-        <p>非医疗器械 · 不提供诊断或正式救援</p>
-      </div>
+      <StatusBadge tone="info">研究与比赛演示</StatusBadge>
     </div>
 
     <section class="card system-strip" aria-labelledby="system-status-title">
