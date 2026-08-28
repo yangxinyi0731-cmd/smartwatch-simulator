@@ -77,6 +77,23 @@ class SensorKind(StrEnum):
     IMU_6AXIS = "IMU_6AXIS"
 
 
+class StorageFormat(StrEnum):
+    CSV = "CSV"
+    NPY = "NPY"
+    NPZ = "NPZ"
+
+
+class SourceFileRole(StrEnum):
+    ACCELEROMETER = "ACCELEROMETER"
+    GYROSCOPE = "GYROSCOPE"
+    ANNOTATION = "ANNOTATION"
+
+
+class GroundTruthEventType(StrEnum):
+    ACTIVITY_INTERVAL = "ACTIVITY_INTERVAL"
+    FALL_INTERVAL = "FALL_INTERVAL"
+
+
 class ReplayState(StrEnum):
     CREATED = "CREATED"
     RUNNING = "RUNNING"
@@ -367,6 +384,130 @@ class SensorWindow(ContractModel):
         return self
 
 
+class SensorStreamContract(ContractModel):
+    stream_id: NonEmptyText
+    case_id: NonEmptyText
+    sensor_kind: SensorKind
+    sample_rate_hz: float = Field(gt=0)
+    channels: tuple[NonEmptyText, ...] = Field(min_length=1)
+    units: tuple[NonEmptyText, ...] = Field(min_length=1)
+    sample_count: int = Field(gt=0)
+    duration_ms: int = Field(gt=0)
+    storage_format: StorageFormat
+    relative_path: NonEmptyText
+    content_sha256: Sha256Hex
+    created_at: datetime
+
+    @model_validator(mode="after")
+    def validate_stream_contract(self) -> "SensorStreamContract":
+        if not _is_safe_relative_path(self.relative_path):
+            raise ValueError("传感器文件路径必须是仓库内安全相对路径。")
+        if len(self.channels) != len(self.units):
+            raise ValueError("通道和单位数量必须一致。")
+        if self.sensor_kind is SensorKind.IMU_6AXIS:
+            if tuple(self.channels) != ("ax", "ay", "az", "gx", "gy", "gz"):
+                raise ValueError("六轴 IMU 通道顺序必须为 ax, ay, az, gx, gy, gz。")
+            if tuple(self.units) != (
+                "m/s^2",
+                "m/s^2",
+                "m/s^2",
+                "rad/s",
+                "rad/s",
+                "rad/s",
+            ):
+                raise ValueError("六轴 IMU 单位必须为三轴 m/s^2 和三轴 rad/s。")
+        return self
+
+
+class SensorQualityContract(ContractModel):
+    stream_id: NonEmptyText
+    accel_rows: int = Field(gt=1)
+    accel_unique_timestamps: int = Field(gt=1)
+    gyro_rows: int = Field(gt=1)
+    gyro_unique_timestamps: int = Field(gt=1)
+    accel_effective_rate_hz: float = Field(gt=0)
+    gyro_effective_rate_hz: float = Field(gt=0)
+    accel_median_dt_ms: float = Field(gt=0)
+    gyro_median_dt_ms: float = Field(gt=0)
+    accel_max_gap_ms: float = Field(gt=0)
+    gyro_max_gap_ms: float = Field(gt=0)
+    flags: tuple[NonEmptyText, ...]
+
+
+class CaseSourceFile(ContractModel):
+    file_id: NonEmptyText
+    case_id: NonEmptyText
+    role: SourceFileRole
+    source_relative_path: NonEmptyText
+    source_sha256: Sha256Hex
+
+    @model_validator(mode="after")
+    def validate_source_path(self) -> "CaseSourceFile":
+        if not _is_safe_relative_path(self.source_relative_path):
+            raise ValueError("原始来源文件路径必须是来源仓库内安全相对路径。")
+        return self
+
+
+class GroundTruthEvent(ContractModel):
+    event_id: NonEmptyText
+    case_id: NonEmptyText
+    event_type: GroundTruthEventType
+    label: NonEmptyText
+    start_offset_ms: NonNegativeMilliseconds
+    end_offset_ms: NonNegativeMilliseconds
+    truth_category: TruthCategory
+    annotation_source_sha256: Sha256Hex
+    notes: NonEmptyText
+
+    @model_validator(mode="after")
+    def validate_event_bounds(self) -> "GroundTruthEvent":
+        if self.end_offset_ms <= self.start_offset_ms:
+            raise ValueError("真实标签事件结束位置必须晚于开始位置。")
+        if (
+            self.event_type is GroundTruthEventType.FALL_INTERVAL
+            and self.truth_category is not TruthCategory.SIMULATED_FALL
+        ):
+            raise ValueError("受控跌倒区间必须标记为 SIMULATED_FALL。")
+        return self
+
+
+class SelectionRule(ContractModel):
+    age_group: AgeGroup
+    truth_category: TruthCategory
+    count: int = Field(gt=0)
+
+
+class SelectionPolicy(ContractModel):
+    policy_id: NonEmptyText
+    total_count: int = Field(gt=0)
+    rules: tuple[SelectionRule, ...] = Field(min_length=1)
+    ordering: NonEmptyText
+
+    @model_validator(mode="after")
+    def validate_total(self) -> "SelectionPolicy":
+        if sum(rule.count for rule in self.rules) != self.total_count:
+            raise ValueError("分层选择规则数量之和必须等于总案例数。")
+        return self
+
+
+class ImportRunContract(ContractModel):
+    run_id: NonEmptyText
+    source_id: NonEmptyText
+    importer_version: NonEmptyText
+    source_commit: GitCommitHex
+    processing_source_commit: GitCommitHex
+    selection_policy: SelectionPolicy
+    catalog_relative_path: NonEmptyText
+    catalog_sha256: Sha256Hex
+    created_at: datetime
+
+    @model_validator(mode="after")
+    def validate_catalog_path(self) -> "ImportRunContract":
+        if not _is_safe_relative_path(self.catalog_relative_path):
+            raise ValueError("案例目录路径必须是仓库内安全相对路径。")
+        return self
+
+
 class InferenceContext(ContractModel):
     output_id: NonEmptyText
     case_id: NonEmptyText
@@ -590,7 +731,7 @@ ReplayEvent = Annotated[
 
 class ContractCatalog(ContractModel):
     contract_version: Literal["1.0.0"] = "1.0.0"
-    database_schema_version: int = 2
+    database_schema_version: int = 3
     truth_categories: tuple[TruthCategory, ...]
     model_contracts: tuple[ModelContract, ...]
     replay_event_types: tuple[ReplayEventType, ...]

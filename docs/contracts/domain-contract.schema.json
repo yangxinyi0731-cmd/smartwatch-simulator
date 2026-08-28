@@ -263,6 +263,278 @@
       "title": "CaseContract",
       "type": "object"
     },
+    "CaseSourceFile": {
+      "$defs": {
+        "SourceFileRole": {
+          "enum": [
+            "ACCELEROMETER",
+            "GYROSCOPE",
+            "ANNOTATION"
+          ],
+          "title": "SourceFileRole",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "minLength": 1,
+          "title": "Case Id",
+          "type": "string"
+        },
+        "file_id": {
+          "minLength": 1,
+          "title": "File Id",
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/SourceFileRole"
+        },
+        "source_relative_path": {
+          "minLength": 1,
+          "title": "Source Relative Path",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "file_id",
+        "case_id",
+        "role",
+        "source_relative_path",
+        "source_sha256"
+      ],
+      "title": "CaseSourceFile",
+      "type": "object"
+    },
+    "GroundTruthEvent": {
+      "$defs": {
+        "GroundTruthEventType": {
+          "enum": [
+            "ACTIVITY_INTERVAL",
+            "FALL_INTERVAL"
+          ],
+          "title": "GroundTruthEventType",
+          "type": "string"
+        },
+        "TruthCategory": {
+          "enum": [
+            "REAL_FREE_LIVING",
+            "REAL_LAB_ACTIVITY",
+            "SIMULATED_FALL",
+            "SYNTHETIC_ROUTINE",
+            "DERIVED_PERTURBATION"
+          ],
+          "title": "TruthCategory",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "annotation_source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Annotation Source Sha256",
+          "type": "string"
+        },
+        "case_id": {
+          "minLength": 1,
+          "title": "Case Id",
+          "type": "string"
+        },
+        "end_offset_ms": {
+          "minimum": 0,
+          "title": "End Offset Ms",
+          "type": "integer"
+        },
+        "event_id": {
+          "minLength": 1,
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "$ref": "#/$defs/GroundTruthEventType"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "notes": {
+          "minLength": 1,
+          "title": "Notes",
+          "type": "string"
+        },
+        "start_offset_ms": {
+          "minimum": 0,
+          "title": "Start Offset Ms",
+          "type": "integer"
+        },
+        "truth_category": {
+          "$ref": "#/$defs/TruthCategory"
+        }
+      },
+      "required": [
+        "event_id",
+        "case_id",
+        "event_type",
+        "label",
+        "start_offset_ms",
+        "end_offset_ms",
+        "truth_category",
+        "annotation_source_sha256",
+        "notes"
+      ],
+      "title": "GroundTruthEvent",
+      "type": "object"
+    },
+    "ImportRunContract": {
+      "$defs": {
+        "AgeGroup": {
+          "enum": [
+            "YOUNG_ADULT",
+            "OLDER_ADULT",
+            "MIXED",
+            "UNKNOWN",
+            "NOT_APPLICABLE"
+          ],
+          "title": "AgeGroup",
+          "type": "string"
+        },
+        "SelectionPolicy": {
+          "additionalProperties": false,
+          "properties": {
+            "ordering": {
+              "minLength": 1,
+              "title": "Ordering",
+              "type": "string"
+            },
+            "policy_id": {
+              "minLength": 1,
+              "title": "Policy Id",
+              "type": "string"
+            },
+            "rules": {
+              "items": {
+                "$ref": "#/$defs/SelectionRule"
+              },
+              "minItems": 1,
+              "title": "Rules",
+              "type": "array"
+            },
+            "total_count": {
+              "exclusiveMinimum": 0,
+              "title": "Total Count",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "policy_id",
+            "total_count",
+            "rules",
+            "ordering"
+          ],
+          "title": "SelectionPolicy",
+          "type": "object"
+        },
+        "SelectionRule": {
+          "additionalProperties": false,
+          "properties": {
+            "age_group": {
+              "$ref": "#/$defs/AgeGroup"
+            },
+            "count": {
+              "exclusiveMinimum": 0,
+              "title": "Count",
+              "type": "integer"
+            },
+            "truth_category": {
+              "$ref": "#/$defs/TruthCategory"
+            }
+          },
+          "required": [
+            "age_group",
+            "truth_category",
+            "count"
+          ],
+          "title": "SelectionRule",
+          "type": "object"
+        },
+        "TruthCategory": {
+          "enum": [
+            "REAL_FREE_LIVING",
+            "REAL_LAB_ACTIVITY",
+            "SIMULATED_FALL",
+            "SYNTHETIC_ROUTINE",
+            "DERIVED_PERTURBATION"
+          ],
+          "title": "TruthCategory",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "catalog_relative_path": {
+          "minLength": 1,
+          "title": "Catalog Relative Path",
+          "type": "string"
+        },
+        "catalog_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Catalog Sha256",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "importer_version": {
+          "minLength": 1,
+          "title": "Importer Version",
+          "type": "string"
+        },
+        "processing_source_commit": {
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+          "title": "Processing Source Commit",
+          "type": "string"
+        },
+        "run_id": {
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "selection_policy": {
+          "$ref": "#/$defs/SelectionPolicy"
+        },
+        "source_commit": {
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+          "title": "Source Commit",
+          "type": "string"
+        },
+        "source_id": {
+          "minLength": 1,
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "source_id",
+        "importer_version",
+        "source_commit",
+        "processing_source_commit",
+        "selection_policy",
+        "catalog_relative_path",
+        "catalog_sha256",
+        "created_at"
+      ],
+      "title": "ImportRunContract",
+      "type": "object"
+    },
     "ModelManifest": {
       "$defs": {
         "ApprovalStatus": {
@@ -1736,6 +2008,195 @@
           "$ref": "#/$defs/ReplayErrorEvent"
         }
       ]
+    },
+    "SensorQualityContract": {
+      "additionalProperties": false,
+      "properties": {
+        "accel_effective_rate_hz": {
+          "exclusiveMinimum": 0,
+          "title": "Accel Effective Rate Hz",
+          "type": "number"
+        },
+        "accel_max_gap_ms": {
+          "exclusiveMinimum": 0,
+          "title": "Accel Max Gap Ms",
+          "type": "number"
+        },
+        "accel_median_dt_ms": {
+          "exclusiveMinimum": 0,
+          "title": "Accel Median Dt Ms",
+          "type": "number"
+        },
+        "accel_rows": {
+          "exclusiveMinimum": 1,
+          "title": "Accel Rows",
+          "type": "integer"
+        },
+        "accel_unique_timestamps": {
+          "exclusiveMinimum": 1,
+          "title": "Accel Unique Timestamps",
+          "type": "integer"
+        },
+        "flags": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Flags",
+          "type": "array"
+        },
+        "gyro_effective_rate_hz": {
+          "exclusiveMinimum": 0,
+          "title": "Gyro Effective Rate Hz",
+          "type": "number"
+        },
+        "gyro_max_gap_ms": {
+          "exclusiveMinimum": 0,
+          "title": "Gyro Max Gap Ms",
+          "type": "number"
+        },
+        "gyro_median_dt_ms": {
+          "exclusiveMinimum": 0,
+          "title": "Gyro Median Dt Ms",
+          "type": "number"
+        },
+        "gyro_rows": {
+          "exclusiveMinimum": 1,
+          "title": "Gyro Rows",
+          "type": "integer"
+        },
+        "gyro_unique_timestamps": {
+          "exclusiveMinimum": 1,
+          "title": "Gyro Unique Timestamps",
+          "type": "integer"
+        },
+        "stream_id": {
+          "minLength": 1,
+          "title": "Stream Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stream_id",
+        "accel_rows",
+        "accel_unique_timestamps",
+        "gyro_rows",
+        "gyro_unique_timestamps",
+        "accel_effective_rate_hz",
+        "gyro_effective_rate_hz",
+        "accel_median_dt_ms",
+        "gyro_median_dt_ms",
+        "accel_max_gap_ms",
+        "gyro_max_gap_ms",
+        "flags"
+      ],
+      "title": "SensorQualityContract",
+      "type": "object"
+    },
+    "SensorStreamContract": {
+      "$defs": {
+        "SensorKind": {
+          "enum": [
+            "ACCELEROMETER",
+            "GYROSCOPE",
+            "IMU_6AXIS"
+          ],
+          "title": "SensorKind",
+          "type": "string"
+        },
+        "StorageFormat": {
+          "enum": [
+            "CSV",
+            "NPY",
+            "NPZ"
+          ],
+          "title": "StorageFormat",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "minLength": 1,
+          "title": "Case Id",
+          "type": "string"
+        },
+        "channels": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Channels",
+          "type": "array"
+        },
+        "content_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Sha256",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "duration_ms": {
+          "exclusiveMinimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "relative_path": {
+          "minLength": 1,
+          "title": "Relative Path",
+          "type": "string"
+        },
+        "sample_count": {
+          "exclusiveMinimum": 0,
+          "title": "Sample Count",
+          "type": "integer"
+        },
+        "sample_rate_hz": {
+          "exclusiveMinimum": 0,
+          "title": "Sample Rate Hz",
+          "type": "number"
+        },
+        "sensor_kind": {
+          "$ref": "#/$defs/SensorKind"
+        },
+        "storage_format": {
+          "$ref": "#/$defs/StorageFormat"
+        },
+        "stream_id": {
+          "minLength": 1,
+          "title": "Stream Id",
+          "type": "string"
+        },
+        "units": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Units",
+          "type": "array"
+        }
+      },
+      "required": [
+        "stream_id",
+        "case_id",
+        "sensor_kind",
+        "sample_rate_hz",
+        "channels",
+        "units",
+        "sample_count",
+        "duration_ms",
+        "storage_format",
+        "relative_path",
+        "content_sha256",
+        "created_at"
+      ],
+      "title": "SensorStreamContract",
+      "type": "object"
     },
     "SensorWindow": {
       "$defs": {

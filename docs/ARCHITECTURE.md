@@ -1,4 +1,4 @@
-# 系统结构（统一合同与 SQLite 结构版本 2）
+# 系统结构（可追溯导入与 SQLite 结构版本 3）
 
 ```text
 Windows 浏览器中的 Vue 前端
@@ -12,13 +12,15 @@ Windows 浏览器中的 Vue 前端
                                         │
                 Pydantic 统一合同 ───────┤
                                         ↓
-                             SQLite 结构版本 2
+                             SQLite 结构版本 3
        ┌────────────────────────────────┼────────────────────────────┐
        ↓                                ↓                            ↓
 来源与案例                       回放会话与有序事件               三模型独立输出
 data_sources                     replay_sessions                  model_manifests
 cases                            replay_events                    model_outputs
 sensor_streams
+import_runs / case_import_runs
+case_source_files / sensor_quality / ground_truth_events
 
 模型适配器（尚未接入）
 ├─ 跌倒检测 ONNX
@@ -35,8 +37,9 @@ sensor_streams
 5. WebSocket 立即发送一次状态，并每 15 秒发送新快照；
 6. 前端断线后使用 1/2/5/10 秒有上限退避自动重试，旧请求会被取消或忽略；
 7. `/api/contracts` 返回五种真实性类别、三模型固定输入输出职责和回放事件类型；
-8. `/api/cases` 使用服务端分页与白名单排序；当前数据库仍为 0 个案例；
-9. 传感器回放和模型事件表已建立，但没有数据就不发送随机波形或模型结果。
+8. `/api/cases` 使用服务端分页与白名单排序；当前数据库已导入 100 个可追溯 WEDA-FALL 来源案例；
+9. 原始文件保持只读，处理后的 50 Hz 六轴数组保存在 Git 忽略目录，SQLite 只保存相对路径、哈希、质量和标签；
+10. 传感器回放和模型事件表已建立，但尚未运行模型，因此不发送随机波形或模型结果。
 
 ## HTTP 合同
 
@@ -74,7 +77,7 @@ SQLite 正常时返回 HTTP 200；后端仍能响应但数据库不可用时返�
 - 过大页码会收敛到最后有效页；空库固定返回第 1 页、总页数 0；
 - 查询参数始终绑定，不把用户输入拼进 SQL。
 
-## SQLite 结构版本 2
+## SQLite 结构版本 3
 
 ### `data_sources`
 
@@ -87,6 +90,14 @@ SQLite 正常时返回 HTTP 200；后端仍能响应但数据库不可用时返�
 ### `sensor_streams`
 
 保存流的采样率、通道、单位、样本数、时长、存储格式、仓库相对路径和内容哈希。数据库拒绝绝对路径和明显的父目录逃逸路径。大数组后续保存在经过哈希核验的 CSV/NPY/NPZ 文件中，不塞进 SQLite 单元格。
+
+### `import_runs`、`case_import_runs` 与 `case_source_files`
+
+保存固定来源提交、导入器版本、处理代码来源提交、分层选择策略、目录哈希和每个案例的原始加速度/陀螺仪/标注文件哈希。同一标识的等价导入可安全重跑；内容冲突会让整批事务回滚。
+
+### `sensor_quality` 与 `ground_truth_events`
+
+保存原始行数、去重后时间戳数、有效回调频率、中位间隔、最大间隙、质量标记，以及日常活动或受控模拟跌倒的明确区间。质量标记是数据事实，不会被自动解释成医学结论。
 
 ### `model_manifests`
 
@@ -102,11 +113,11 @@ SQLite 正常时返回 HTTP 200；后端仍能响应但数据库不可用时返�
 
 ## 迁移与生成物
 
-- 新数据库依次应用结构版本 1 和 2；
+- 新数据库依次应用结构版本 1、2 和 3；
 - 真实存在的结构版本 1 案例会被保留，但缺失信息明确迁移为 `UNKNOWN / UNVERIFIED / legacy-unrecorded`，不会编造设备、许可或处理命令；
 - 发现高于程序支持版本的数据库时拒绝自动降级；
 - `backend/app/contracts.py` 是领域合同代码源；
-- `docs/contracts/domain-contract.schema.json` 是案例、窗口、manifest、三模型输出和回放事件的 JSON Schema；
+- `docs/contracts/domain-contract.schema.json` 是案例、导入批次、传感器流、质量、来源文件、标签、窗口、manifest、三模型输出和回放事件的 JSON Schema；
 - `docs/contracts/openapi.json` 是 HTTP OpenAPI 快照；
 - `frontend/src/api/generated/` 从 OpenAPI 自动生成，禁止手工修改。
 
@@ -123,5 +134,5 @@ npm --prefix frontend run generate:api
 - 可用 `SMARTWATCH_DATABASE_PATH` 指定绝对路径；
 - Uvicorn 只监听 `127.0.0.1`；
 - 当前无账号、权限、局域网服务或互联网发布；
-- 当前仍无模型推理和真实设备流，WebSocket 只发送系统状态；
+- 当前已有本机案例文件但仍无模型推理和真实设备流，WebSocket 只发送系统状态；
 - GitHub 远程仓库仍未配置，本阶段只有公开资料检索，没有发布项目。

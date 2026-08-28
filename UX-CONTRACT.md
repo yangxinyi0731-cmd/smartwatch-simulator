@@ -18,7 +18,7 @@
 | 数据与模型真实性 | `DATA_AND_MODEL_NOTICE.md` | 真实性合同 | 2026-08-28 |
 | 跌倒模型输入与审批状态 | 现有跌倒模型仓库 `models/fall_detector/tcn_final_candidate/manifest.json` | 模型合同，待第 11 步复制并固定哈希 | 2026-08-28 |
 | 权限模型 | 本地单用户演示，首版无账号和角色 | 产品决定 | 2026-08-28 |
-| 数据生命周期 | `docs/ARCHITECTURE.md` 的 SQLite 结构版本 2；来源、案例、传感器、manifest、回放和三模型独立输出 | 已实现合同 | 2026-08-28 |
+| 数据生命周期 | `docs/ARCHITECTURE.md` 的 SQLite 结构版本 3；来源、案例、导入批次、质量、真实标签、manifest、回放和三模型独立输出 | 已实现并导入案例 | 2026-08-28 |
 | 删除 / 保留 | 首版不提供删除原始来源数据的界面 | 产品决定 | 2026-08-28 |
 | 计费 / 支付 | 不适用 | 不在范围 | 2026-08-28 |
 | 法律 / 监管文案 | `DATA_AND_MODEL_NOTICE.md`；非医疗诊断 | 产品边界 | 2026-08-28 |
@@ -148,7 +148,7 @@
 - Required static commands：DESIGN lint、premium strict audit、anti-pattern rg、前端构建。
 - Browser matrix：Windows Chrome/Edge；1440×900、1024×768、窄窗口 390×844；200% zoom 为扩展检查。
 - Accessibility：键盘、可见焦点、语义、对比度、reduced motion、forced colors。
-- Current page states：总览必须验证检查中、后端未连接、HTTP 成功但实时通道断开、完整连接、SQLite 结构版本 2、0 案例、暂无回放数据、三模型未运行和来源未选择；当前没有案例搜索界面、表单或 CRUD 流程，不伪造这些状态。
+- Current page states：总览必须验证检查中、后端未连接、HTTP 成功但实时通道断开、完整连接、SQLite 结构版本 3、100 案例、暂无回放数据、三模型未运行和来源未选择；案例搜索与回放界面将在下一界面关实现，当前不伪造这些交互。
 - Component-state：后续组件建立 Vitest、Playwright 与视觉状态覆盖。
 - Canonical sibling：第 1 步为新项目无 sibling；以后以守望台总览为视觉基线。
 - CRUD/failure evidence：当前无 CRUD；第 2 步开始记录 API 失败路径。

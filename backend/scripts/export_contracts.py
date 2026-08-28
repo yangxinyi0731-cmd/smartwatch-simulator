@@ -8,9 +8,14 @@ from pydantic import TypeAdapter
 
 from backend.app.contracts import (
     CaseContract,
+    CaseSourceFile,
+    GroundTruthEvent,
+    ImportRunContract,
     ModelManifest,
     ModelOutput,
     ReplayEvent,
+    SensorQualityContract,
+    SensorStreamContract,
     SensorWindow,
     contract_catalog,
 )
@@ -38,6 +43,11 @@ def build_domain_schema() -> dict[str, Any]:
         "contract_version": contract_catalog().contract_version,
         "schemas": {
             "CaseContract": CaseContract.model_json_schema(),
+            "CaseSourceFile": CaseSourceFile.model_json_schema(),
+            "GroundTruthEvent": GroundTruthEvent.model_json_schema(),
+            "ImportRunContract": ImportRunContract.model_json_schema(),
+            "SensorQualityContract": SensorQualityContract.model_json_schema(),
+            "SensorStreamContract": SensorStreamContract.model_json_schema(),
             "SensorWindow": SensorWindow.model_json_schema(),
             "ModelManifest": ModelManifest.model_json_schema(),
             "ModelOutput": TypeAdapter(ModelOutput).json_schema(),
