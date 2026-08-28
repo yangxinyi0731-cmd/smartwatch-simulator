@@ -35,8 +35,18 @@ class ParticipantWindows:
     participant_id: str
     windows: np.ndarray
     labels: np.ndarray
+    references: tuple["WindowReference", ...]
     label_counts: dict[str, int]
     raw_annotation_counts: dict[str, int]
+
+
+@dataclass(frozen=True, slots=True)
+class WindowReference:
+    participant_id: str
+    mapped_label: str
+    source_member: str
+    source_start_row: int
+    source_end_row: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -108,15 +118,18 @@ def load_participant_windows(
     member = f"capture24/{participant_id}.csv.gz"
     windows: list[np.ndarray] = []
     labels: list[int] = []
+    references: list[WindowReference] = []
     label_counts: Counter[str] = Counter()
     raw_counts: Counter[str] = Counter()
     current_label: str | None = None
     current_samples: list[tuple[float, float, float]] = []
+    current_source_rows: list[int] = []
 
     def flush_complete_windows() -> None:
-        nonlocal current_samples
+        nonlocal current_samples, current_source_rows
         if current_label is None:
             current_samples = []
+            current_source_rows = []
             return
         while (
             len(current_samples) >= SOURCE_WINDOW_SAMPLES
@@ -125,12 +138,24 @@ def load_participant_windows(
             source_window = np.asarray(
                 current_samples[:SOURCE_WINDOW_SAMPLES], dtype=np.float32
             )
+            source_rows = current_source_rows[:SOURCE_WINDOW_SAMPLES]
             del current_samples[:SOURCE_WINDOW_SAMPLES]
+            del current_source_rows[:SOURCE_WINDOW_SAMPLES]
             windows.append(downsample_window(source_window))
             labels.append(LABEL_TO_INDEX[current_label])
+            references.append(
+                WindowReference(
+                    participant_id=participant_id,
+                    mapped_label=current_label,
+                    source_member=member,
+                    source_start_row=source_rows[0],
+                    source_end_row=source_rows[-1],
+                )
+            )
             label_counts[current_label] += 1
         if label_counts[current_label] >= per_class_limit:
             current_samples = []
+            current_source_rows = []
 
     with zipfile.ZipFile(archive_path) as archive:
         if member not in archive.namelist():
@@ -141,7 +166,7 @@ def load_participant_windows(
             required = {"x", "y", "z", "annotation"}
             if reader.fieldnames is None or not required <= set(reader.fieldnames):
                 raise ValueError(f"{member} 缺少列：{sorted(required)}")
-            for row in reader:
+            for row_index, row in enumerate(reader, start=2):
                 annotation = row["annotation"] or ""
                 target = map_annotation(annotation)
                 if annotation:
@@ -149,6 +174,7 @@ def load_participant_windows(
                 if target != current_label:
                     flush_complete_windows()
                     current_samples = []
+                    current_source_rows = []
                     current_label = target
                 if target is None or label_counts[target] >= per_class_limit:
                     continue
@@ -156,13 +182,16 @@ def load_participant_windows(
                     sample = (float(row["x"]), float(row["y"]), float(row["z"]))
                 except (TypeError, ValueError):
                     current_samples = []
+                    current_source_rows = []
                     current_label = None
                     continue
                 if not all(np.isfinite(value) for value in sample):
                     current_samples = []
+                    current_source_rows = []
                     current_label = None
                     continue
                 current_samples.append(sample)
+                current_source_rows.append(row_index)
                 if len(current_samples) >= SOURCE_WINDOW_SAMPLES:
                     flush_complete_windows()
             flush_complete_windows()
@@ -174,6 +203,7 @@ def load_participant_windows(
         participant_id=participant_id,
         windows=array,
         labels=np.asarray(labels, dtype=np.int64),
+        references=tuple(references),
         label_counts=dict(sorted(label_counts.items())),
         raw_annotation_counts=dict(sorted(raw_counts.items())),
     )
@@ -229,13 +259,25 @@ def train_softmax(
             normalized.T @ error / len(labels) + l2 * weights
         )
         bias -= learning_rate * error.mean(axis=0)
-        final_loss = float(
-            -np.mean(
-                sample_weights
-                * np.log(np.clip(probabilities[np.arange(len(labels)), labels], 1e-9, 1))
+    # Recompute after the final optimizer update so the reported value describes
+    # the persisted coefficients rather than the penultimate step.
+    final_logits = normalized @ weights + bias
+    final_logits -= final_logits.max(axis=1, keepdims=True)
+    final_probabilities = np.exp(final_logits)
+    final_probabilities /= final_probabilities.sum(axis=1, keepdims=True)
+    final_loss = float(
+        -np.mean(
+            sample_weights
+            * np.log(
+                np.clip(
+                    final_probabilities[np.arange(len(labels)), labels],
+                    1e-9,
+                    1,
+                )
             )
-            + 0.5 * l2 * np.sum(weights * weights)
         )
+        + 0.5 * l2 * np.sum(weights * weights)
+    )
     return SoftmaxModel(
         feature_mean=mean.astype(np.float32),
         feature_scale=scale.astype(np.float32),

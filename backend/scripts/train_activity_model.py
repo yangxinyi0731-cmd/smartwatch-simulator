@@ -38,6 +38,7 @@ DATA_LICENSE = "CC BY 4.0"
 MODEL_DIRECTORY = Path("models/activity_recognition/capture24_linear_v1")
 CATALOG_PATH = Path("data/catalog/capture24_activity_training_v1.json")
 REPORT_PATH = Path("reports/models/activity_capture24_group_holdout.json")
+DEMO_DIRECTORY = Path("data/processed/capture24_activity_demo")
 DEFAULT_TRAIN_PARTICIPANTS = tuple(f"P{index:03d}" for index in range(1, 25))
 DEFAULT_EVALUATION_PARTICIPANTS = tuple(f"P{index:03d}" for index in range(102, 114))
 
@@ -116,6 +117,68 @@ def _group_summary(participants) -> dict[str, object]:
     }
 
 
+def _write_demo_cases(
+    participants,
+    session: ort.InferenceSession,
+    *,
+    source_zip_sha256: str,
+) -> list[dict[str, object]]:
+    selected: dict[str, tuple[object, int]] = {}
+    for participant in participants:
+        for index, label_index in enumerate(participant.labels):
+            label = LABELS[int(label_index)]
+            if label not in selected:
+                selected[label] = (participant, index)
+    missing = [label for label in LABELS if label not in selected]
+    if missing:
+        raise ValueError(f"评估参与者缺少活动演示窗口：{missing}")
+
+    demo_directory = PROJECT_ROOT / DEMO_DIRECTORY
+    demo_directory.mkdir(parents=True, exist_ok=True)
+    records: list[dict[str, object]] = []
+    for label in LABELS:
+        participant, index = selected[label]
+        window = participant.windows[index].astype(np.float32)
+        reference = participant.references[index]
+        relative_path = DEMO_DIRECTORY / f"{label}-{participant.participant_id}.npy"
+        output_path = PROJECT_ROOT / relative_path
+        np.save(output_path, window, allow_pickle=False)
+        probabilities = session.run(
+            ["activity_probabilities"],
+            {"acceleration_window": window[None, ...]},
+        )[0][0]
+        prediction_index = int(np.argmax(probabilities))
+        records.append(
+            {
+                "case_id": f"capture24-{label.replace('_', '-')}-{participant.participant_id.lower()}",
+                "participant_id": participant.participant_id,
+                "truth_category": "REAL_FREE_LIVING",
+                "mapped_activity_label": label,
+                "selection_policy": (
+                    "固定评估参与者顺序中该映射类别的第一个完整 20 秒窗口；"
+                    "不按预测正确与否或置信度挑选。"
+                ),
+                "source_zip_sha256": source_zip_sha256,
+                "source_member": reference.source_member,
+                "source_start_row": reference.source_start_row,
+                "source_end_row": reference.source_end_row,
+                "processed_relative_path": relative_path.as_posix(),
+                "processed_sha256": _sha256(output_path),
+                "processed_shape": list(window.shape),
+                "processed_rate_hz": 20,
+                "processed_units": ["m/s^2", "m/s^2", "m/s^2"],
+                "model_output": {
+                    "predicted_label": LABELS[prediction_index],
+                    "probabilities": {
+                        name: float(probabilities[class_index])
+                        for class_index, name in enumerate(LABELS)
+                    },
+                },
+            }
+        )
+    return records
+
+
 def train(
     *,
     source_zip: Path,
@@ -181,6 +244,11 @@ def train(
     metrics = classification_metrics(eval_y, runtime_probabilities)
     training_metrics = classification_metrics(train_y, predict_softmax(model, train_x))
     artifact_hash = _sha256(artifact_path)
+    demo_cases = _write_demo_cases(
+        evaluation,
+        session,
+        source_zip_sha256=source_hash,
+    )
     catalog = {
         "format_version": "1.0.0",
         "dataset": "CAPTURE-24",
@@ -212,6 +280,7 @@ def train(
         },
         "training_group": _group_summary(training),
         "evaluation_group": _group_summary(evaluation),
+        "demo_cases": demo_cases,
         "raw_or_window_data_committed": False,
     }
     catalog_path = PROJECT_ROOT / CATALOG_PATH

@@ -8,14 +8,16 @@ from pathlib import Path
 
 import numpy as np
 
-from .contracts import ModelKind
+from .contracts import ActivityProbabilities, ModelKind
 from .database import CaseRuntimeBundle
+from .models.activity import ActivityModelAdapter
 from .models.fall import FallModelAdapter
 from .models.fall_evaluation import SAMPLE_RATE_HZ, WINDOW_SAMPLES, make_windows, merge_alarm_windows
 from .models.routine import RoutineModelAdapter
 from .schemas import (
     FallAlarmEpisodeItem,
     FallWindowResult,
+    ActivityPreviewResult,
     ReplayPreviewResponse,
     RoutineDayResult,
     RoutineProfileSummary,
@@ -26,6 +28,7 @@ from .schemas import (
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 FALL_MANIFEST_PATH = PROJECT_ROOT / "models/fall_detector/tcn_final_candidate/manifest.json"
 ROUTINE_MANIFEST_PATH = PROJECT_ROOT / "models/routine_anomaly/statistical_v1/manifest.json"
+ACTIVITY_MANIFEST_PATH = PROJECT_ROOT / "models/activity_recognition/capture24_linear_v1/manifest.json"
 MAX_SENSOR_POINTS = 900
 
 
@@ -127,6 +130,29 @@ def _routine_results(bundle: CaseRuntimeBundle) -> tuple[RoutineProfileSummary |
     )
 
 
+def _activity_result(values: np.ndarray) -> ActivityPreviewResult:
+    from .training.activity import LABELS
+
+    adapter = ActivityModelAdapter(
+        project_root=PROJECT_ROOT,
+        manifest_path=ACTIVITY_MANIFEST_PATH,
+    )
+    if values.shape != (400, 3):
+        raise ValueError("活动案例传感器数组必须是 [400, 3]。")
+    probabilities = adapter.predict_probabilities(values[None, ...])[0]
+    prediction_index = int(np.argmax(probabilities))
+    return ActivityPreviewResult(
+        manifest_id=adapter.manifest.manifest_id,
+        probabilities=ActivityProbabilities(
+            walking=float(probabilities[0]),
+            eating_candidate=float(probabilities[1]),
+            sleep_or_lying_candidate=float(probabilities[2]),
+            other_unknown=float(probabilities[3]),
+        ),
+        predicted_label=LABELS[prediction_index],
+    )
+
+
 def build_replay_preview(bundle: CaseRuntimeBundle) -> ReplayPreviewResponse:
     sensor_payload = _load_sensor_array(bundle)
     stream = sensor_payload[1] if sensor_payload is not None else None
@@ -154,6 +180,11 @@ def build_replay_preview(bundle: CaseRuntimeBundle) -> ReplayPreviewResponse:
         ) = _fall_results(values)
 
     routine_profile, routine_days = _routine_results(bundle)
+    activity_result = None
+    if ModelKind.ACTIVITY_RECOGNITION in bundle.case.allowed_models:
+        if values is None:
+            raise ValueError("活动案例缺少已登记的真实三轴传感器流。")
+        activity_result = _activity_result(values)
     messages = [
         "所有波形点均来自已登记本地文件；页面不生成随机传感器数据。",
         "三个模型保持独立输出，不生成综合医学风险分数。",
@@ -166,6 +197,8 @@ def build_replay_preview(bundle: CaseRuntimeBundle) -> ReplayPreviewResponse:
         messages.append("该来源记录存在已保存的数据质量标记，回放时必须同时展示。")
     if routine_profile is not None:
         messages.append("100 天生活规律为固定种子合成事件，不代表真实老人行为。")
+    if activity_result is not None:
+        messages.append("活动标签来自自由生活注释映射；进食和睡眠或躺卧只表示候选类别。")
 
     return ReplayPreviewResponse(
         case=bundle.case,
@@ -180,6 +213,7 @@ def build_replay_preview(bundle: CaseRuntimeBundle) -> ReplayPreviewResponse:
         fall_alarm_episodes=fall_episodes,
         routine_profile=routine_profile,
         routine_days=routine_days,
+        activity_result=activity_result,
         messages=tuple(messages),
         generated_at=datetime.now(UTC),
     )

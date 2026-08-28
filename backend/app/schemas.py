@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .contracts import (
     AgeGroup,
+    ActivityProbabilities,
     ApprovalStatus,
     CaseContract,
     GroundTruthEvent,
@@ -168,6 +169,15 @@ class RoutineDayResult(ApiModel):
     assessments: tuple[RoutineAssessment, ...]
 
 
+class ActivityPreviewResult(ApiModel):
+    manifest_id: str
+    probabilities: ActivityProbabilities
+    predicted_label: Literal[
+        "walking", "eating_candidate", "sleep_or_lying_candidate", "other_unknown"
+    ]
+    deployment_approved: Literal[False] = False
+
+
 class ReplayPreviewResponse(ApiModel):
     case: CaseContract
     duration_ms: int = Field(ge=0)
@@ -181,5 +191,6 @@ class ReplayPreviewResponse(ApiModel):
     fall_alarm_episodes: tuple[FallAlarmEpisodeItem, ...]
     routine_profile: RoutineProfileSummary | None
     routine_days: tuple[RoutineDayResult, ...]
+    activity_result: ActivityPreviewResult | None
     messages: tuple[str, ...]
     generated_at: datetime

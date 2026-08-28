@@ -534,14 +534,16 @@ class ModelListRecord:
 class ImportCaseBundle:
     case: CaseContract
     stream: SensorStreamContract
-    quality: SensorQualityContract
+    quality: SensorQualityContract | None
     source_files: tuple[CaseSourceFile, ...]
     ground_truth_events: tuple[GroundTruthEvent, ...]
 
     def __post_init__(self) -> None:
         case_id = self.case.case_id
-        if self.stream.case_id != case_id or self.quality.stream_id != self.stream.stream_id:
+        if self.stream.case_id != case_id:
             raise ValueError("案例、传感器流与质量记录的标识不一致。")
+        if self.quality is not None and self.quality.stream_id != self.stream.stream_id:
+            raise ValueError("传感器质量记录必须属于同一条传感器流。")
         if not self.source_files:
             raise ValueError("导入案例必须记录至少一个原始来源文件。")
         if not self.ground_truth_events:
@@ -1092,26 +1094,27 @@ COMMIT;
                     )
 
                     quality = bundle.quality
-                    quality_values: dict[str, object] = {
-                        "stream_id": quality.stream_id,
-                        "accel_rows": quality.accel_rows,
-                        "accel_unique_timestamps": quality.accel_unique_timestamps,
-                        "gyro_rows": quality.gyro_rows,
-                        "gyro_unique_timestamps": quality.gyro_unique_timestamps,
-                        "accel_effective_rate_hz": quality.accel_effective_rate_hz,
-                        "gyro_effective_rate_hz": quality.gyro_effective_rate_hz,
-                        "accel_median_dt_ms": quality.accel_median_dt_ms,
-                        "gyro_median_dt_ms": quality.gyro_median_dt_ms,
-                        "accel_max_gap_ms": quality.accel_max_gap_ms,
-                        "gyro_max_gap_ms": quality.gyro_max_gap_ms,
-                        "flags_json": self._json(list(quality.flags)),
-                    }
-                    self._insert_or_verify(
-                        connection,
-                        table="sensor_quality",
-                        key_column="stream_id",
-                        values=quality_values,
-                    )
+                    if quality is not None:
+                        quality_values: dict[str, object] = {
+                            "stream_id": quality.stream_id,
+                            "accel_rows": quality.accel_rows,
+                            "accel_unique_timestamps": quality.accel_unique_timestamps,
+                            "gyro_rows": quality.gyro_rows,
+                            "gyro_unique_timestamps": quality.gyro_unique_timestamps,
+                            "accel_effective_rate_hz": quality.accel_effective_rate_hz,
+                            "gyro_effective_rate_hz": quality.gyro_effective_rate_hz,
+                            "accel_median_dt_ms": quality.accel_median_dt_ms,
+                            "gyro_median_dt_ms": quality.gyro_median_dt_ms,
+                            "accel_max_gap_ms": quality.accel_max_gap_ms,
+                            "gyro_max_gap_ms": quality.gyro_max_gap_ms,
+                            "flags_json": self._json(list(quality.flags)),
+                        }
+                        self._insert_or_verify(
+                            connection,
+                            table="sensor_quality",
+                            key_column="stream_id",
+                            values=quality_values,
+                        )
 
                     for source_file in bundle.source_files:
                         self._insert_or_verify(

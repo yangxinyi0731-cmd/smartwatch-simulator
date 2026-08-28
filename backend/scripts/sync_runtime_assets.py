@@ -3,26 +3,40 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 from backend.app.contracts import (
     AgeGroup,
     CaseContract,
+    CaseSourceFile,
+    GroundTruthEvent,
+    GroundTruthEventType,
+    ImportRunContract,
     ModelKind,
     ModelManifest,
     RoutineEventContract,
     RoutineProfileContract,
+    SelectionPolicy,
+    SelectionRule,
+    SensorKind,
+    SensorStreamContract,
     SourceLicenseStatus,
+    SourceFileRole,
     SourceReference,
+    StorageFormat,
     TruthCategory,
 )
-from backend.app.database import Database
+from backend.app.database import Database, ImportCaseBundle
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ROUTINE_EVENTS_PATH = Path("data/cases/synthetic_routine_100_v1.json")
 ROUTINE_MANIFEST_PATH = Path("models/routine_anomaly/statistical_v1/manifest.json")
+ACTIVITY_CATALOG_PATH = Path("data/catalog/capture24_activity_training_v1.json")
+ACTIVITY_MANIFEST_PATH = Path(
+    "models/activity_recognition/capture24_linear_v1/manifest.json"
+)
 
 
 def _sha256(path: Path) -> str:
@@ -31,6 +45,154 @@ def _sha256(path: Path) -> str:
 
 def _load_manifest(path: Path) -> ModelManifest:
     return ModelManifest.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+def _sync_activity_demo_cases(database: Database) -> int:
+    catalog_path = PROJECT_ROOT / ACTIVITY_CATALOG_PATH
+    manifest_path = PROJECT_ROOT / ACTIVITY_MANIFEST_PATH
+    if not catalog_path.is_file() or not manifest_path.is_file():
+        return 0
+    catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+    records = catalog.get("demo_cases", [])
+    if len(records) != 4:
+        raise ValueError("CAPTURE-24 活动演示案例必须恰好覆盖四个映射类别。")
+    manifest = _load_manifest(manifest_path)
+    source_hash = catalog["source_zip_sha256"]
+    source = SourceReference(
+        source_id=f"capture24-{source_hash[:12]}",
+        dataset_name="CAPTURE-24",
+        source_url="https://doi.org/10.5287/bodleian:NGx0JOMP5",
+        fixed_version=f"sha256:{source_hash}",
+        license_status=SourceLicenseStatus.VERIFIED_OPEN,
+        license_reference=(
+            "Scientific Data 2024 数据论文和 Oxford Research Archive 均声明数据为 CC BY 4.0。"
+        ),
+        redistribution_allowed=True,
+        verified_at=manifest.created_at,
+        notes=(
+            "自由生活腕部加速度数据；以年轻参与者为主，案例年龄保持 UNKNOWN，"
+            "不得描述为老人活动数据。"
+        ),
+    )
+    catalog_hash = _sha256(catalog_path)
+    import_run = ImportRunContract(
+        run_id=f"capture24-activity-demo-v1-{source_hash[:12]}",
+        source_id=source.source_id,
+        importer_version="1.0.0",
+        source_commit=manifest.source_commit,
+        processing_source_commit=manifest.source_commit,
+        selection_policy=SelectionPolicy(
+            policy_id="fixed-first-evaluation-window-per-mapped-class-v1",
+            total_count=4,
+            rules=(
+                SelectionRule(
+                    age_group=AgeGroup.UNKNOWN,
+                    truth_category=TruthCategory.REAL_FREE_LIVING,
+                    count=4,
+                ),
+            ),
+            ordering=(
+                "固定评估参与者顺序中每个映射类别的第一个完整 20 秒窗口；"
+                "不按预测是否正确或概率大小选择。"
+            ),
+        ),
+        catalog_relative_path=ACTIVITY_CATALOG_PATH.as_posix(),
+        catalog_sha256=catalog_hash,
+        created_at=manifest.created_at,
+    )
+    bundles = []
+    label_titles = {
+        "walking": "走路",
+        "eating_candidate": "进食候选",
+        "sleep_or_lying_candidate": "睡眠或躺卧候选",
+        "other_unknown": "其他或未知活动",
+    }
+    for record in records:
+        case_id = record["case_id"]
+        label = record["mapped_activity_label"]
+        stream_id = f"{case_id}-accel"
+        source_path = (
+            f"{record['source_member']}#rows-"
+            f"{record['source_start_row']}-{record['source_end_row']}"
+        )
+        case = CaseContract(
+            case_id=case_id,
+            title=f"CAPTURE-24 自由生活活动：{label_titles[label]}",
+            description=(
+                "从固定评估参与者组按预先声明顺序选出的真实自由生活腕部加速度窗口；"
+                "标签是候选映射，不代表医学状态，也不代表老人数据。"
+            ),
+            truth_category=TruthCategory.REAL_FREE_LIVING,
+            source=source,
+            source_record_path=source_path,
+            source_sha256=source_hash,
+            participant_id=record["participant_id"],
+            age_group=AgeGroup.UNKNOWN,
+            device_name="Axivity AX3",
+            wear_position="wrist_unspecified_side",
+            original_sample_rate_hz=100,
+            activity_label=label,
+            has_accelerometer=True,
+            has_gyroscope=False,
+            allowed_models=(ModelKind.ACTIVITY_RECOGNITION,),
+            processing_command=(
+                "python -m backend.scripts.train_activity_model "
+                "--source-zip data/raw/capture24/capture24.zip "
+                f"--source-commit {manifest.source_commit}"
+            ),
+            created_at=manifest.created_at,
+            updated_at=manifest.created_at,
+        )
+        stream = SensorStreamContract(
+            stream_id=stream_id,
+            case_id=case_id,
+            sensor_kind=SensorKind.ACCELEROMETER,
+            sample_rate_hz=20,
+            channels=("ax", "ay", "az"),
+            units=("m/s^2", "m/s^2", "m/s^2"),
+            sample_count=400,
+            duration_ms=20_000,
+            storage_format=StorageFormat.NPY,
+            relative_path=record["processed_relative_path"],
+            content_sha256=record["processed_sha256"],
+            created_at=manifest.created_at,
+        )
+        source_file = CaseSourceFile(
+            file_id=f"{case_id}-source",
+            case_id=case_id,
+            role=SourceFileRole.ACCELEROMETER,
+            source_relative_path=record["source_member"],
+            source_sha256=source_hash,
+        )
+        event = GroundTruthEvent(
+            event_id=f"{case_id}-activity",
+            case_id=case_id,
+            event_type=GroundTruthEventType.ACTIVITY_INTERVAL,
+            label=label,
+            start_offset_ms=0,
+            end_offset_ms=20_000,
+            truth_category=TruthCategory.REAL_FREE_LIVING,
+            annotation_source_sha256=source_hash,
+            notes=(
+                "标签来自 CAPTURE-24 自由生活注释和本项目保存的保守关键词映射；"
+                "进食、睡眠或躺卧均保留候选含义。"
+            ),
+        )
+        bundles.append(
+            ImportCaseBundle(
+                case=case,
+                stream=stream,
+                quality=None,
+                source_files=(source_file,),
+                ground_truth_events=(event,),
+            )
+        )
+    database.import_case_bundles(
+        source=source,
+        import_run=import_run,
+        bundles=tuple(bundles),
+    )
+    return len(bundles)
 
 
 def sync(database_path: Path) -> dict[str, object]:
@@ -94,7 +256,7 @@ def sync(database_path: Path) -> dict[str, object]:
         profile_id=events_payload["profile_id"],
         case=case,
         history_start=history_start,
-        history_end=history_start.fromordinal(history_start.toordinal() + 99),
+        history_end=history_start + timedelta(days=99),
         seed=events_payload["seed"],
         event_count=events_payload["event_count"],
         events_relative_path=ROUTINE_EVENTS_PATH.as_posix(),
@@ -102,6 +264,7 @@ def sync(database_path: Path) -> dict[str, object]:
         created_at=routine_manifest.created_at,
     )
     database.register_routine_profile(source=source, profile=profile, events=events)
+    activity_demo_case_count = _sync_activity_demo_cases(database)
     snapshot = database.snapshot()
     return {
         "database": str(database.path),
@@ -110,6 +273,7 @@ def sync(database_path: Path) -> dict[str, object]:
         "registered_manifests": [manifest.manifest_id for manifest in manifests],
         "routine_profile": profile.profile_id,
         "routine_event_count": len(events),
+        "activity_demo_case_count": activity_demo_case_count,
     }
 
 

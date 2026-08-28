@@ -1,6 +1,78 @@
 {
   "components": {
     "schemas": {
+      "ActivityPreviewResult": {
+        "additionalProperties": false,
+        "properties": {
+          "deployment_approved": {
+            "const": false,
+            "default": false,
+            "title": "Deployment Approved",
+            "type": "boolean"
+          },
+          "manifest_id": {
+            "title": "Manifest Id",
+            "type": "string"
+          },
+          "predicted_label": {
+            "enum": [
+              "walking",
+              "eating_candidate",
+              "sleep_or_lying_candidate",
+              "other_unknown"
+            ],
+            "title": "Predicted Label",
+            "type": "string"
+          },
+          "probabilities": {
+            "$ref": "#/components/schemas/ActivityProbabilities"
+          }
+        },
+        "required": [
+          "manifest_id",
+          "probabilities",
+          "predicted_label"
+        ],
+        "title": "ActivityPreviewResult",
+        "type": "object"
+      },
+      "ActivityProbabilities": {
+        "additionalProperties": false,
+        "properties": {
+          "eating_candidate": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Eating Candidate",
+            "type": "number"
+          },
+          "other_unknown": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Other Unknown",
+            "type": "number"
+          },
+          "sleep_or_lying_candidate": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Sleep Or Lying Candidate",
+            "type": "number"
+          },
+          "walking": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Walking",
+            "type": "number"
+          }
+        },
+        "required": [
+          "walking",
+          "eating_candidate",
+          "sleep_or_lying_candidate",
+          "other_unknown"
+        ],
+        "title": "ActivityProbabilities",
+        "type": "object"
+      },
       "AgeGroup": {
         "enum": [
           "YOUNG_ADULT",
@@ -863,6 +935,16 @@
       "ReplayPreviewResponse": {
         "additionalProperties": false,
         "properties": {
+          "activity_result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ActivityPreviewResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "case": {
             "$ref": "#/components/schemas/CaseContract"
           },
@@ -985,6 +1067,7 @@
           "fall_alarm_episodes",
           "routine_profile",
           "routine_days",
+          "activity_result",
           "messages",
           "generated_at"
         ],

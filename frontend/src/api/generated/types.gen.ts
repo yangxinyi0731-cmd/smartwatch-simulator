@@ -5,6 +5,47 @@ export type ClientOptions = {
 };
 
 /**
+ * ActivityPreviewResult
+ */
+export type ActivityPreviewResult = {
+    /**
+     * Deployment Approved
+     */
+    deployment_approved?: false;
+    /**
+     * Manifest Id
+     */
+    manifest_id: string;
+    /**
+     * Predicted Label
+     */
+    predicted_label: 'walking' | 'eating_candidate' | 'sleep_or_lying_candidate' | 'other_unknown';
+    probabilities: ActivityProbabilities;
+};
+
+/**
+ * ActivityProbabilities
+ */
+export type ActivityProbabilities = {
+    /**
+     * Eating Candidate
+     */
+    eating_candidate: number;
+    /**
+     * Other Unknown
+     */
+    other_unknown: number;
+    /**
+     * Sleep Or Lying Candidate
+     */
+    sleep_or_lying_candidate: number;
+    /**
+     * Walking
+     */
+    walking: number;
+};
+
+/**
  * AgeGroup
  */
 export type AgeGroup = 'YOUNG_ADULT' | 'OLDER_ADULT' | 'MIXED' | 'UNKNOWN' | 'NOT_APPLICABLE';
@@ -497,6 +538,7 @@ export type ReplayEventType = 'replay.state_changed' | 'sensor.window' | 'model.
  * ReplayPreviewResponse
  */
 export type ReplayPreviewResponse = {
+    activity_result: ActivityPreviewResult | null;
     case: CaseContract;
     /**
      * Duration Ms

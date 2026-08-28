@@ -304,6 +304,16 @@ function routineStatusText(status: string): string {
   return labels[status] ?? status
 }
 
+function activityLabelText(label: string): string {
+  const labels: Record<string, string> = {
+    walking: '走路',
+    eating_candidate: '进食候选',
+    sleep_or_lying_candidate: '睡眠或躺卧候选',
+    other_unknown: '其他或未知',
+  }
+  return labels[label] ?? label
+}
+
 const replayOutputs = computed(() => [
   {
     label: '六轴 / 三轴波形',
@@ -329,6 +339,8 @@ const replayOutputs = computed(() => [
       ? `${visibleAlarmEpisodes.value.length} / ${preview.value.fall_alarm_episodes.length} 段已到达`
       : currentRoutineDay.value
         ? `${currentRoutineDay.value.assessments.filter((item) => item.status !== 'WITHIN_ROUTINE').length} 项规律偏离`
+        : preview.value?.activity_result
+          ? activityLabelText(preview.value.activity_result.predicted_label)
         : '暂无数据',
     icon: IconActivityHeartbeat,
   },
@@ -628,6 +640,44 @@ const replayOutputs = computed(() => [
               <strong>{{ routineStatusText(assessment.status) }}</strong>
               <p>{{ assessment.evidence[0] }}</p>
             </article>
+          </div>
+        </section>
+
+        <section v-if="preview?.activity_result" class="replay-evidence" aria-labelledby="activity-result-title">
+          <div class="replay-evidence__header">
+            <div>
+              <h3 id="activity-result-title">腕部活动识别结果</h3>
+              <p>一个 20 秒真实自由生活三轴窗口；四类概率独立显示。</p>
+            </div>
+            <StatusBadge tone="info">研究版 · 未完成外部验证</StatusBadge>
+          </div>
+          <div class="activity-result-summary">
+            <div>
+              <span>最高概率候选</span>
+              <strong>{{ activityLabelText(preview.activity_result.predicted_label) }}</strong>
+            </div>
+            <div>
+              <span>来源映射标签</span>
+              <strong>{{ activityLabelText(preview.case.activity_label ?? 'other_unknown') }}</strong>
+            </div>
+          </div>
+          <div class="model-evidence-grid">
+            <div>
+              <span>走路</span>
+              <strong>{{ (preview.activity_result.probabilities.walking * 100).toFixed(1) }}%</strong>
+            </div>
+            <div>
+              <span>进食候选</span>
+              <strong>{{ (preview.activity_result.probabilities.eating_candidate * 100).toFixed(1) }}%</strong>
+            </div>
+            <div>
+              <span>睡眠或躺卧候选</span>
+              <strong>{{ (preview.activity_result.probabilities.sleep_or_lying_candidate * 100).toFixed(1) }}%</strong>
+            </div>
+            <div>
+              <span>其他或未知</span>
+              <strong>{{ (preview.activity_result.probabilities.other_unknown * 100).toFixed(1) }}%</strong>
+            </div>
           </div>
         </section>
 
