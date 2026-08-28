@@ -1,0 +1,1840 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "contract_version": "1.0.0",
+  "schemas": {
+    "CaseContract": {
+      "$defs": {
+        "AgeGroup": {
+          "enum": [
+            "YOUNG_ADULT",
+            "OLDER_ADULT",
+            "MIXED",
+            "UNKNOWN",
+            "NOT_APPLICABLE"
+          ],
+          "title": "AgeGroup",
+          "type": "string"
+        },
+        "ModelKind": {
+          "enum": [
+            "FALL_DETECTION",
+            "ROUTINE_ANOMALY",
+            "ACTIVITY_RECOGNITION"
+          ],
+          "title": "ModelKind",
+          "type": "string"
+        },
+        "SourceLicenseStatus": {
+          "enum": [
+            "VERIFIED_OPEN",
+            "LOCAL_RESEARCH_ONLY",
+            "APPLICATION_REQUIRED",
+            "UNVERIFIED"
+          ],
+          "title": "SourceLicenseStatus",
+          "type": "string"
+        },
+        "SourceReference": {
+          "additionalProperties": false,
+          "properties": {
+            "dataset_name": {
+              "minLength": 1,
+              "title": "Dataset Name",
+              "type": "string"
+            },
+            "fixed_version": {
+              "minLength": 1,
+              "title": "Fixed Version",
+              "type": "string"
+            },
+            "license_reference": {
+              "minLength": 1,
+              "title": "License Reference",
+              "type": "string"
+            },
+            "license_status": {
+              "$ref": "#/$defs/SourceLicenseStatus"
+            },
+            "notes": {
+              "minLength": 1,
+              "title": "Notes",
+              "type": "string"
+            },
+            "redistribution_allowed": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Redistribution Allowed"
+            },
+            "source_id": {
+              "minLength": 1,
+              "title": "Source Id",
+              "type": "string"
+            },
+            "source_url": {
+              "format": "uri",
+              "minLength": 1,
+              "title": "Source Url",
+              "type": "string"
+            },
+            "verified_at": {
+              "format": "date-time",
+              "title": "Verified At",
+              "type": "string"
+            }
+          },
+          "required": [
+            "source_id",
+            "dataset_name",
+            "source_url",
+            "fixed_version",
+            "license_status",
+            "license_reference",
+            "redistribution_allowed",
+            "verified_at",
+            "notes"
+          ],
+          "title": "SourceReference",
+          "type": "object"
+        },
+        "TruthCategory": {
+          "enum": [
+            "REAL_FREE_LIVING",
+            "REAL_LAB_ACTIVITY",
+            "SIMULATED_FALL",
+            "SYNTHETIC_ROUTINE",
+            "DERIVED_PERTURBATION"
+          ],
+          "title": "TruthCategory",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "activity_label": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Activity Label"
+        },
+        "age_group": {
+          "$ref": "#/$defs/AgeGroup"
+        },
+        "allowed_models": {
+          "items": {
+            "$ref": "#/$defs/ModelKind"
+          },
+          "title": "Allowed Models",
+          "type": "array"
+        },
+        "case_id": {
+          "minLength": 1,
+          "title": "Case Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "derivation_parent_case_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derivation Parent Case Id"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "device_name": {
+          "minLength": 1,
+          "title": "Device Name",
+          "type": "string"
+        },
+        "has_accelerometer": {
+          "title": "Has Accelerometer",
+          "type": "boolean"
+        },
+        "has_gyroscope": {
+          "title": "Has Gyroscope",
+          "type": "boolean"
+        },
+        "original_sample_rate_hz": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Original Sample Rate Hz"
+        },
+        "participant_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Participant Id"
+        },
+        "processing_command": {
+          "minLength": 1,
+          "title": "Processing Command",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceReference"
+        },
+        "source_record_path": {
+          "minLength": 1,
+          "title": "Source Record Path",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "truth_category": {
+          "$ref": "#/$defs/TruthCategory"
+        },
+        "updated_at": {
+          "format": "date-time",
+          "title": "Updated At",
+          "type": "string"
+        },
+        "wear_position": {
+          "minLength": 1,
+          "title": "Wear Position",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "title",
+        "truth_category",
+        "source",
+        "source_record_path",
+        "source_sha256",
+        "age_group",
+        "device_name",
+        "wear_position",
+        "has_accelerometer",
+        "has_gyroscope",
+        "allowed_models",
+        "processing_command",
+        "created_at",
+        "updated_at"
+      ],
+      "title": "CaseContract",
+      "type": "object"
+    },
+    "ModelManifest": {
+      "$defs": {
+        "ApprovalStatus": {
+          "enum": [
+            "RESEARCH_ONLY",
+            "EXTERNAL_VALIDATION_REQUIRED",
+            "APPROVED"
+          ],
+          "title": "ApprovalStatus",
+          "type": "string"
+        },
+        "ChannelDefinition": {
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "minLength": 1,
+              "title": "Name",
+              "type": "string"
+            },
+            "quantity": {
+              "enum": [
+                "acceleration",
+                "angular_velocity"
+              ],
+              "title": "Quantity",
+              "type": "string"
+            },
+            "unit": {
+              "enum": [
+                "m/s^2",
+                "rad/s"
+              ],
+              "title": "Unit",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "quantity",
+            "unit"
+          ],
+          "title": "ChannelDefinition",
+          "type": "object"
+        },
+        "LabelDefinition": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "minLength": 1,
+              "title": "Code",
+              "type": "string"
+            },
+            "label_zh_cn": {
+              "minLength": 1,
+              "title": "Label Zh Cn",
+              "type": "string"
+            },
+            "meaning": {
+              "minLength": 1,
+              "title": "Meaning",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "label_zh_cn",
+            "meaning"
+          ],
+          "title": "LabelDefinition",
+          "type": "object"
+        },
+        "ManifestFormat": {
+          "enum": [
+            "ONNX",
+            "STATISTICAL_RULES"
+          ],
+          "title": "ManifestFormat",
+          "type": "string"
+        },
+        "ModelContract": {
+          "additionalProperties": false,
+          "properties": {
+            "model_kind": {
+              "$ref": "#/$defs/ModelKind"
+            },
+            "name_zh_cn": {
+              "minLength": 1,
+              "title": "Name Zh Cn",
+              "type": "string"
+            },
+            "output_labels": {
+              "items": {
+                "$ref": "#/$defs/LabelDefinition"
+              },
+              "minItems": 1,
+              "title": "Output Labels",
+              "type": "array"
+            },
+            "routine_event_input": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/RoutineEventInputContract"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "safety_boundary": {
+              "minLength": 1,
+              "title": "Safety Boundary",
+              "type": "string"
+            },
+            "task": {
+              "minLength": 1,
+              "title": "Task",
+              "type": "string"
+            },
+            "tensor_input": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/TensorInputContract"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "required": [
+            "model_kind",
+            "name_zh_cn",
+            "task",
+            "output_labels",
+            "safety_boundary"
+          ],
+          "title": "ModelContract",
+          "type": "object"
+        },
+        "ModelKind": {
+          "enum": [
+            "FALL_DETECTION",
+            "ROUTINE_ANOMALY",
+            "ACTIVITY_RECOGNITION"
+          ],
+          "title": "ModelKind",
+          "type": "string"
+        },
+        "RoutineEventInputContract": {
+          "additionalProperties": false,
+          "properties": {
+            "event_types": {
+              "items": {
+                "enum": [
+                  "meal",
+                  "nap",
+                  "walk"
+                ],
+                "type": "string"
+              },
+              "title": "Event Types",
+              "type": "array"
+            },
+            "history_days": {
+              "exclusiveMinimum": 0,
+              "title": "History Days",
+              "type": "integer"
+            },
+            "required_fields": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "title": "Required Fields",
+              "type": "array"
+            }
+          },
+          "required": [
+            "history_days",
+            "event_types",
+            "required_fields"
+          ],
+          "title": "RoutineEventInputContract",
+          "type": "object"
+        },
+        "TensorInputContract": {
+          "additionalProperties": false,
+          "properties": {
+            "channels": {
+              "items": {
+                "$ref": "#/$defs/ChannelDefinition"
+              },
+              "minItems": 1,
+              "title": "Channels",
+              "type": "array"
+            },
+            "input_shape": {
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "title": "Input Shape",
+              "type": "array"
+            },
+            "sample_count": {
+              "exclusiveMinimum": 0,
+              "title": "Sample Count",
+              "type": "integer"
+            },
+            "sample_rate_hz": {
+              "exclusiveMinimum": 0,
+              "title": "Sample Rate Hz",
+              "type": "number"
+            },
+            "window_seconds": {
+              "exclusiveMinimum": 0,
+              "title": "Window Seconds",
+              "type": "number"
+            }
+          },
+          "required": [
+            "sample_rate_hz",
+            "window_seconds",
+            "sample_count",
+            "channels",
+            "input_shape"
+          ],
+          "title": "TensorInputContract",
+          "type": "object"
+        },
+        "TruthCategory": {
+          "enum": [
+            "REAL_FREE_LIVING",
+            "REAL_LAB_ACTIVITY",
+            "SIMULATED_FALL",
+            "SYNTHETIC_ROUTINE",
+            "DERIVED_PERTURBATION"
+          ],
+          "title": "TruthCategory",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "approval_status": {
+          "$ref": "#/$defs/ApprovalStatus"
+        },
+        "artifact_relative_path": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Artifact Relative Path"
+        },
+        "artifact_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Artifact Sha256"
+        },
+        "contract": {
+          "$ref": "#/$defs/ModelContract"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "deployment_approved": {
+          "title": "Deployment Approved",
+          "type": "boolean"
+        },
+        "evaluation_reference": {
+          "minLength": 1,
+          "title": "Evaluation Reference",
+          "type": "string"
+        },
+        "external_validation_completed": {
+          "title": "External Validation Completed",
+          "type": "boolean"
+        },
+        "format": {
+          "$ref": "#/$defs/ManifestFormat"
+        },
+        "limitations": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Limitations",
+          "type": "array"
+        },
+        "manifest_id": {
+          "minLength": 1,
+          "title": "Manifest Id",
+          "type": "string"
+        },
+        "model_id": {
+          "minLength": 1,
+          "title": "Model Id",
+          "type": "string"
+        },
+        "model_kind": {
+          "$ref": "#/$defs/ModelKind"
+        },
+        "source_commit": {
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+          "title": "Source Commit",
+          "type": "string"
+        },
+        "training_data_references": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Training Data References",
+          "type": "array"
+        },
+        "training_truth_categories": {
+          "items": {
+            "$ref": "#/$defs/TruthCategory"
+          },
+          "title": "Training Truth Categories",
+          "type": "array"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "manifest_id",
+        "model_id",
+        "model_kind",
+        "version",
+        "format",
+        "source_commit",
+        "contract",
+        "training_truth_categories",
+        "training_data_references",
+        "evaluation_reference",
+        "limitations",
+        "deployment_approved",
+        "approval_status",
+        "external_validation_completed",
+        "created_at"
+      ],
+      "title": "ModelManifest",
+      "type": "object"
+    },
+    "ModelOutput": {
+      "$defs": {
+        "ActivityModelOutput": {
+          "additionalProperties": false,
+          "properties": {
+            "context": {
+              "$ref": "#/$defs/InferenceContext"
+            },
+            "explanation": {
+              "minLength": 1,
+              "title": "Explanation",
+              "type": "string"
+            },
+            "model_kind": {
+              "const": "ACTIVITY_RECOGNITION",
+              "default": "ACTIVITY_RECOGNITION",
+              "title": "Model Kind",
+              "type": "string"
+            },
+            "predicted_label": {
+              "enum": [
+                "walking",
+                "eating_candidate",
+                "sleep_or_lying_candidate",
+                "other_unknown"
+              ],
+              "title": "Predicted Label",
+              "type": "string"
+            },
+            "probabilities": {
+              "$ref": "#/$defs/ActivityProbabilities"
+            }
+          },
+          "required": [
+            "context",
+            "probabilities",
+            "predicted_label",
+            "explanation"
+          ],
+          "title": "ActivityModelOutput",
+          "type": "object"
+        },
+        "ActivityProbabilities": {
+          "additionalProperties": false,
+          "properties": {
+            "eating_candidate": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Eating Candidate",
+              "type": "number"
+            },
+            "other_unknown": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Other Unknown",
+              "type": "number"
+            },
+            "sleep_or_lying_candidate": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Sleep Or Lying Candidate",
+              "type": "number"
+            },
+            "walking": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Walking",
+              "type": "number"
+            }
+          },
+          "required": [
+            "walking",
+            "eating_candidate",
+            "sleep_or_lying_candidate",
+            "other_unknown"
+          ],
+          "title": "ActivityProbabilities",
+          "type": "object"
+        },
+        "BinaryProbabilities": {
+          "additionalProperties": false,
+          "properties": {
+            "adl": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Adl",
+              "type": "number"
+            },
+            "fall": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Fall",
+              "type": "number"
+            }
+          },
+          "required": [
+            "adl",
+            "fall"
+          ],
+          "title": "BinaryProbabilities",
+          "type": "object"
+        },
+        "FallModelOutput": {
+          "additionalProperties": false,
+          "properties": {
+            "context": {
+              "$ref": "#/$defs/InferenceContext"
+            },
+            "deployment_approved": {
+              "title": "Deployment Approved",
+              "type": "boolean"
+            },
+            "event_state": {
+              "enum": [
+                "NO_CANDIDATE",
+                "CANDIDATE_STARTED",
+                "CANDIDATE_ACTIVE",
+                "CANDIDATE_ENDED"
+              ],
+              "title": "Event State",
+              "type": "string"
+            },
+            "explanation": {
+              "minLength": 1,
+              "title": "Explanation",
+              "type": "string"
+            },
+            "model_kind": {
+              "const": "FALL_DETECTION",
+              "default": "FALL_DETECTION",
+              "title": "Model Kind",
+              "type": "string"
+            },
+            "probabilities": {
+              "$ref": "#/$defs/BinaryProbabilities"
+            },
+            "threshold": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Threshold",
+              "type": "number"
+            },
+            "window_above_threshold": {
+              "title": "Window Above Threshold",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "context",
+            "probabilities",
+            "threshold",
+            "window_above_threshold",
+            "event_state",
+            "deployment_approved",
+            "explanation"
+          ],
+          "title": "FallModelOutput",
+          "type": "object"
+        },
+        "InferenceContext": {
+          "additionalProperties": false,
+          "properties": {
+            "case_id": {
+              "minLength": 1,
+              "title": "Case Id",
+              "type": "string"
+            },
+            "created_at": {
+              "format": "date-time",
+              "title": "Created At",
+              "type": "string"
+            },
+            "end_offset_ms": {
+              "minimum": 0,
+              "title": "End Offset Ms",
+              "type": "integer"
+            },
+            "input_window_id": {
+              "minLength": 1,
+              "title": "Input Window Id",
+              "type": "string"
+            },
+            "model_id": {
+              "minLength": 1,
+              "title": "Model Id",
+              "type": "string"
+            },
+            "model_version": {
+              "minLength": 1,
+              "title": "Model Version",
+              "type": "string"
+            },
+            "output_id": {
+              "minLength": 1,
+              "title": "Output Id",
+              "type": "string"
+            },
+            "session_id": {
+              "minLength": 1,
+              "title": "Session Id",
+              "type": "string"
+            },
+            "start_offset_ms": {
+              "minimum": 0,
+              "title": "Start Offset Ms",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "output_id",
+            "case_id",
+            "session_id",
+            "model_id",
+            "model_version",
+            "input_window_id",
+            "start_offset_ms",
+            "end_offset_ms",
+            "created_at"
+          ],
+          "title": "InferenceContext",
+          "type": "object"
+        },
+        "RoutineAssessment": {
+          "additionalProperties": false,
+          "properties": {
+            "anomaly_score": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Anomaly Score"
+            },
+            "event_type": {
+              "enum": [
+                "meal",
+                "nap",
+                "walk"
+              ],
+              "title": "Event Type",
+              "type": "string"
+            },
+            "evidence": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minItems": 1,
+              "title": "Evidence",
+              "type": "array"
+            },
+            "status": {
+              "enum": [
+                "WITHIN_ROUTINE",
+                "EARLY",
+                "LATE",
+                "MISSING",
+                "COUNT_DEVIATION",
+                "DURATION_DEVIATION"
+              ],
+              "title": "Status",
+              "type": "string"
+            }
+          },
+          "required": [
+            "event_type",
+            "status",
+            "evidence"
+          ],
+          "title": "RoutineAssessment",
+          "type": "object"
+        },
+        "RoutineModelOutput": {
+          "additionalProperties": false,
+          "properties": {
+            "assessments": {
+              "items": {
+                "$ref": "#/$defs/RoutineAssessment"
+              },
+              "minItems": 1,
+              "title": "Assessments",
+              "type": "array"
+            },
+            "context": {
+              "$ref": "#/$defs/InferenceContext"
+            },
+            "explanation": {
+              "minLength": 1,
+              "title": "Explanation",
+              "type": "string"
+            },
+            "model_kind": {
+              "const": "ROUTINE_ANOMALY",
+              "default": "ROUTINE_ANOMALY",
+              "title": "Model Kind",
+              "type": "string"
+            },
+            "truth_category": {
+              "const": "SYNTHETIC_ROUTINE",
+              "title": "Truth Category",
+              "type": "string"
+            }
+          },
+          "required": [
+            "context",
+            "assessments",
+            "truth_category",
+            "explanation"
+          ],
+          "title": "RoutineModelOutput",
+          "type": "object"
+        }
+      },
+      "discriminator": {
+        "mapping": {
+          "ACTIVITY_RECOGNITION": "#/$defs/ActivityModelOutput",
+          "FALL_DETECTION": "#/$defs/FallModelOutput",
+          "ROUTINE_ANOMALY": "#/$defs/RoutineModelOutput"
+        },
+        "propertyName": "model_kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/FallModelOutput"
+        },
+        {
+          "$ref": "#/$defs/RoutineModelOutput"
+        },
+        {
+          "$ref": "#/$defs/ActivityModelOutput"
+        }
+      ]
+    },
+    "ReplayEvent": {
+      "$defs": {
+        "ActivityModelOutput": {
+          "additionalProperties": false,
+          "properties": {
+            "context": {
+              "$ref": "#/$defs/InferenceContext"
+            },
+            "explanation": {
+              "minLength": 1,
+              "title": "Explanation",
+              "type": "string"
+            },
+            "model_kind": {
+              "const": "ACTIVITY_RECOGNITION",
+              "default": "ACTIVITY_RECOGNITION",
+              "title": "Model Kind",
+              "type": "string"
+            },
+            "predicted_label": {
+              "enum": [
+                "walking",
+                "eating_candidate",
+                "sleep_or_lying_candidate",
+                "other_unknown"
+              ],
+              "title": "Predicted Label",
+              "type": "string"
+            },
+            "probabilities": {
+              "$ref": "#/$defs/ActivityProbabilities"
+            }
+          },
+          "required": [
+            "context",
+            "probabilities",
+            "predicted_label",
+            "explanation"
+          ],
+          "title": "ActivityModelOutput",
+          "type": "object"
+        },
+        "ActivityProbabilities": {
+          "additionalProperties": false,
+          "properties": {
+            "eating_candidate": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Eating Candidate",
+              "type": "number"
+            },
+            "other_unknown": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Other Unknown",
+              "type": "number"
+            },
+            "sleep_or_lying_candidate": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Sleep Or Lying Candidate",
+              "type": "number"
+            },
+            "walking": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Walking",
+              "type": "number"
+            }
+          },
+          "required": [
+            "walking",
+            "eating_candidate",
+            "sleep_or_lying_candidate",
+            "other_unknown"
+          ],
+          "title": "ActivityProbabilities",
+          "type": "object"
+        },
+        "AlertCandidateEvent": {
+          "additionalProperties": false,
+          "properties": {
+            "candidate_type": {
+              "enum": [
+                "FALL_CANDIDATE",
+                "ROUTINE_DEVIATION"
+              ],
+              "title": "Candidate Type",
+              "type": "string"
+            },
+            "emitted_at": {
+              "format": "date-time",
+              "title": "Emitted At",
+              "type": "string"
+            },
+            "event": {
+              "const": "alert.candidate",
+              "default": "alert.candidate",
+              "title": "Event",
+              "type": "string"
+            },
+            "event_id": {
+              "minLength": 1,
+              "title": "Event Id",
+              "type": "string"
+            },
+            "explanation": {
+              "minLength": 1,
+              "title": "Explanation",
+              "type": "string"
+            },
+            "offset_ms": {
+              "minimum": 0,
+              "title": "Offset Ms",
+              "type": "integer"
+            },
+            "requires_human_review": {
+              "const": true,
+              "default": true,
+              "title": "Requires Human Review",
+              "type": "boolean"
+            },
+            "sequence": {
+              "minimum": 0,
+              "title": "Sequence",
+              "type": "integer"
+            },
+            "session_id": {
+              "minLength": 1,
+              "title": "Session Id",
+              "type": "string"
+            },
+            "source_output_id": {
+              "minLength": 1,
+              "title": "Source Output Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "event_id",
+            "session_id",
+            "sequence",
+            "offset_ms",
+            "emitted_at",
+            "source_output_id",
+            "candidate_type",
+            "explanation"
+          ],
+          "title": "AlertCandidateEvent",
+          "type": "object"
+        },
+        "BinaryProbabilities": {
+          "additionalProperties": false,
+          "properties": {
+            "adl": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Adl",
+              "type": "number"
+            },
+            "fall": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Fall",
+              "type": "number"
+            }
+          },
+          "required": [
+            "adl",
+            "fall"
+          ],
+          "title": "BinaryProbabilities",
+          "type": "object"
+        },
+        "FallModelOutput": {
+          "additionalProperties": false,
+          "properties": {
+            "context": {
+              "$ref": "#/$defs/InferenceContext"
+            },
+            "deployment_approved": {
+              "title": "Deployment Approved",
+              "type": "boolean"
+            },
+            "event_state": {
+              "enum": [
+                "NO_CANDIDATE",
+                "CANDIDATE_STARTED",
+                "CANDIDATE_ACTIVE",
+                "CANDIDATE_ENDED"
+              ],
+              "title": "Event State",
+              "type": "string"
+            },
+            "explanation": {
+              "minLength": 1,
+              "title": "Explanation",
+              "type": "string"
+            },
+            "model_kind": {
+              "const": "FALL_DETECTION",
+              "default": "FALL_DETECTION",
+              "title": "Model Kind",
+              "type": "string"
+            },
+            "probabilities": {
+              "$ref": "#/$defs/BinaryProbabilities"
+            },
+            "threshold": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Threshold",
+              "type": "number"
+            },
+            "window_above_threshold": {
+              "title": "Window Above Threshold",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "context",
+            "probabilities",
+            "threshold",
+            "window_above_threshold",
+            "event_state",
+            "deployment_approved",
+            "explanation"
+          ],
+          "title": "FallModelOutput",
+          "type": "object"
+        },
+        "InferenceContext": {
+          "additionalProperties": false,
+          "properties": {
+            "case_id": {
+              "minLength": 1,
+              "title": "Case Id",
+              "type": "string"
+            },
+            "created_at": {
+              "format": "date-time",
+              "title": "Created At",
+              "type": "string"
+            },
+            "end_offset_ms": {
+              "minimum": 0,
+              "title": "End Offset Ms",
+              "type": "integer"
+            },
+            "input_window_id": {
+              "minLength": 1,
+              "title": "Input Window Id",
+              "type": "string"
+            },
+            "model_id": {
+              "minLength": 1,
+              "title": "Model Id",
+              "type": "string"
+            },
+            "model_version": {
+              "minLength": 1,
+              "title": "Model Version",
+              "type": "string"
+            },
+            "output_id": {
+              "minLength": 1,
+              "title": "Output Id",
+              "type": "string"
+            },
+            "session_id": {
+              "minLength": 1,
+              "title": "Session Id",
+              "type": "string"
+            },
+            "start_offset_ms": {
+              "minimum": 0,
+              "title": "Start Offset Ms",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "output_id",
+            "case_id",
+            "session_id",
+            "model_id",
+            "model_version",
+            "input_window_id",
+            "start_offset_ms",
+            "end_offset_ms",
+            "created_at"
+          ],
+          "title": "InferenceContext",
+          "type": "object"
+        },
+        "ModelOutputEvent": {
+          "additionalProperties": false,
+          "properties": {
+            "emitted_at": {
+              "format": "date-time",
+              "title": "Emitted At",
+              "type": "string"
+            },
+            "event": {
+              "const": "model.output",
+              "default": "model.output",
+              "title": "Event",
+              "type": "string"
+            },
+            "event_id": {
+              "minLength": 1,
+              "title": "Event Id",
+              "type": "string"
+            },
+            "offset_ms": {
+              "minimum": 0,
+              "title": "Offset Ms",
+              "type": "integer"
+            },
+            "output": {
+              "discriminator": {
+                "mapping": {
+                  "ACTIVITY_RECOGNITION": "#/$defs/ActivityModelOutput",
+                  "FALL_DETECTION": "#/$defs/FallModelOutput",
+                  "ROUTINE_ANOMALY": "#/$defs/RoutineModelOutput"
+                },
+                "propertyName": "model_kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/FallModelOutput"
+                },
+                {
+                  "$ref": "#/$defs/RoutineModelOutput"
+                },
+                {
+                  "$ref": "#/$defs/ActivityModelOutput"
+                }
+              ],
+              "title": "Output"
+            },
+            "sequence": {
+              "minimum": 0,
+              "title": "Sequence",
+              "type": "integer"
+            },
+            "session_id": {
+              "minLength": 1,
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "event_id",
+            "session_id",
+            "sequence",
+            "offset_ms",
+            "emitted_at",
+            "output"
+          ],
+          "title": "ModelOutputEvent",
+          "type": "object"
+        },
+        "ReplayErrorEvent": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "minLength": 1,
+              "title": "Code",
+              "type": "string"
+            },
+            "emitted_at": {
+              "format": "date-time",
+              "title": "Emitted At",
+              "type": "string"
+            },
+            "event": {
+              "const": "replay.error",
+              "default": "replay.error",
+              "title": "Event",
+              "type": "string"
+            },
+            "event_id": {
+              "minLength": 1,
+              "title": "Event Id",
+              "type": "string"
+            },
+            "message": {
+              "minLength": 1,
+              "title": "Message",
+              "type": "string"
+            },
+            "offset_ms": {
+              "minimum": 0,
+              "title": "Offset Ms",
+              "type": "integer"
+            },
+            "retryable": {
+              "title": "Retryable",
+              "type": "boolean"
+            },
+            "sequence": {
+              "minimum": 0,
+              "title": "Sequence",
+              "type": "integer"
+            },
+            "session_id": {
+              "minLength": 1,
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "event_id",
+            "session_id",
+            "sequence",
+            "offset_ms",
+            "emitted_at",
+            "code",
+            "message",
+            "retryable"
+          ],
+          "title": "ReplayErrorEvent",
+          "type": "object"
+        },
+        "ReplayState": {
+          "enum": [
+            "CREATED",
+            "RUNNING",
+            "PAUSED",
+            "COMPLETED",
+            "FAILED",
+            "RESET"
+          ],
+          "title": "ReplayState",
+          "type": "string"
+        },
+        "ReplayStateChangedEvent": {
+          "additionalProperties": false,
+          "properties": {
+            "emitted_at": {
+              "format": "date-time",
+              "title": "Emitted At",
+              "type": "string"
+            },
+            "event": {
+              "const": "replay.state_changed",
+              "default": "replay.state_changed",
+              "title": "Event",
+              "type": "string"
+            },
+            "event_id": {
+              "minLength": 1,
+              "title": "Event Id",
+              "type": "string"
+            },
+            "message": {
+              "minLength": 1,
+              "title": "Message",
+              "type": "string"
+            },
+            "offset_ms": {
+              "minimum": 0,
+              "title": "Offset Ms",
+              "type": "integer"
+            },
+            "sequence": {
+              "minimum": 0,
+              "title": "Sequence",
+              "type": "integer"
+            },
+            "session_id": {
+              "minLength": 1,
+              "title": "Session Id",
+              "type": "string"
+            },
+            "state": {
+              "$ref": "#/$defs/ReplayState"
+            }
+          },
+          "required": [
+            "event_id",
+            "session_id",
+            "sequence",
+            "offset_ms",
+            "emitted_at",
+            "state",
+            "message"
+          ],
+          "title": "ReplayStateChangedEvent",
+          "type": "object"
+        },
+        "RoutineAssessment": {
+          "additionalProperties": false,
+          "properties": {
+            "anomaly_score": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Anomaly Score"
+            },
+            "event_type": {
+              "enum": [
+                "meal",
+                "nap",
+                "walk"
+              ],
+              "title": "Event Type",
+              "type": "string"
+            },
+            "evidence": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minItems": 1,
+              "title": "Evidence",
+              "type": "array"
+            },
+            "status": {
+              "enum": [
+                "WITHIN_ROUTINE",
+                "EARLY",
+                "LATE",
+                "MISSING",
+                "COUNT_DEVIATION",
+                "DURATION_DEVIATION"
+              ],
+              "title": "Status",
+              "type": "string"
+            }
+          },
+          "required": [
+            "event_type",
+            "status",
+            "evidence"
+          ],
+          "title": "RoutineAssessment",
+          "type": "object"
+        },
+        "RoutineModelOutput": {
+          "additionalProperties": false,
+          "properties": {
+            "assessments": {
+              "items": {
+                "$ref": "#/$defs/RoutineAssessment"
+              },
+              "minItems": 1,
+              "title": "Assessments",
+              "type": "array"
+            },
+            "context": {
+              "$ref": "#/$defs/InferenceContext"
+            },
+            "explanation": {
+              "minLength": 1,
+              "title": "Explanation",
+              "type": "string"
+            },
+            "model_kind": {
+              "const": "ROUTINE_ANOMALY",
+              "default": "ROUTINE_ANOMALY",
+              "title": "Model Kind",
+              "type": "string"
+            },
+            "truth_category": {
+              "const": "SYNTHETIC_ROUTINE",
+              "title": "Truth Category",
+              "type": "string"
+            }
+          },
+          "required": [
+            "context",
+            "assessments",
+            "truth_category",
+            "explanation"
+          ],
+          "title": "RoutineModelOutput",
+          "type": "object"
+        },
+        "SensorKind": {
+          "enum": [
+            "ACCELEROMETER",
+            "GYROSCOPE",
+            "IMU_6AXIS"
+          ],
+          "title": "SensorKind",
+          "type": "string"
+        },
+        "SensorWindow": {
+          "additionalProperties": false,
+          "properties": {
+            "case_id": {
+              "minLength": 1,
+              "title": "Case Id",
+              "type": "string"
+            },
+            "channels": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minItems": 1,
+              "title": "Channels",
+              "type": "array"
+            },
+            "sample_rate_hz": {
+              "exclusiveMinimum": 0,
+              "title": "Sample Rate Hz",
+              "type": "number"
+            },
+            "samples": {
+              "items": {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              "minItems": 1,
+              "title": "Samples",
+              "type": "array"
+            },
+            "sensor_kind": {
+              "$ref": "#/$defs/SensorKind"
+            },
+            "sequence": {
+              "minimum": 0,
+              "title": "Sequence",
+              "type": "integer"
+            },
+            "source_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Source Sha256",
+              "type": "string"
+            },
+            "start_offset_ms": {
+              "minimum": 0,
+              "title": "Start Offset Ms",
+              "type": "integer"
+            },
+            "stream_id": {
+              "minLength": 1,
+              "title": "Stream Id",
+              "type": "string"
+            },
+            "units": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "minItems": 1,
+              "title": "Units",
+              "type": "array"
+            },
+            "window_id": {
+              "minLength": 1,
+              "title": "Window Id",
+              "type": "string"
+            }
+          },
+          "required": [
+            "window_id",
+            "case_id",
+            "stream_id",
+            "sensor_kind",
+            "sequence",
+            "start_offset_ms",
+            "sample_rate_hz",
+            "channels",
+            "units",
+            "samples",
+            "source_sha256"
+          ],
+          "title": "SensorWindow",
+          "type": "object"
+        },
+        "SensorWindowEvent": {
+          "additionalProperties": false,
+          "properties": {
+            "emitted_at": {
+              "format": "date-time",
+              "title": "Emitted At",
+              "type": "string"
+            },
+            "event": {
+              "const": "sensor.window",
+              "default": "sensor.window",
+              "title": "Event",
+              "type": "string"
+            },
+            "event_id": {
+              "minLength": 1,
+              "title": "Event Id",
+              "type": "string"
+            },
+            "offset_ms": {
+              "minimum": 0,
+              "title": "Offset Ms",
+              "type": "integer"
+            },
+            "sequence": {
+              "minimum": 0,
+              "title": "Sequence",
+              "type": "integer"
+            },
+            "session_id": {
+              "minLength": 1,
+              "title": "Session Id",
+              "type": "string"
+            },
+            "window": {
+              "$ref": "#/$defs/SensorWindow"
+            }
+          },
+          "required": [
+            "event_id",
+            "session_id",
+            "sequence",
+            "offset_ms",
+            "emitted_at",
+            "window"
+          ],
+          "title": "SensorWindowEvent",
+          "type": "object"
+        }
+      },
+      "discriminator": {
+        "mapping": {
+          "alert.candidate": "#/$defs/AlertCandidateEvent",
+          "model.output": "#/$defs/ModelOutputEvent",
+          "replay.error": "#/$defs/ReplayErrorEvent",
+          "replay.state_changed": "#/$defs/ReplayStateChangedEvent",
+          "sensor.window": "#/$defs/SensorWindowEvent"
+        },
+        "propertyName": "event"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ReplayStateChangedEvent"
+        },
+        {
+          "$ref": "#/$defs/SensorWindowEvent"
+        },
+        {
+          "$ref": "#/$defs/ModelOutputEvent"
+        },
+        {
+          "$ref": "#/$defs/AlertCandidateEvent"
+        },
+        {
+          "$ref": "#/$defs/ReplayErrorEvent"
+        }
+      ]
+    },
+    "SensorWindow": {
+      "$defs": {
+        "SensorKind": {
+          "enum": [
+            "ACCELEROMETER",
+            "GYROSCOPE",
+            "IMU_6AXIS"
+          ],
+          "title": "SensorKind",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "minLength": 1,
+          "title": "Case Id",
+          "type": "string"
+        },
+        "channels": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Channels",
+          "type": "array"
+        },
+        "sample_rate_hz": {
+          "exclusiveMinimum": 0,
+          "title": "Sample Rate Hz",
+          "type": "number"
+        },
+        "samples": {
+          "items": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "minItems": 1,
+          "title": "Samples",
+          "type": "array"
+        },
+        "sensor_kind": {
+          "$ref": "#/$defs/SensorKind"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "start_offset_ms": {
+          "minimum": 0,
+          "title": "Start Offset Ms",
+          "type": "integer"
+        },
+        "stream_id": {
+          "minLength": 1,
+          "title": "Stream Id",
+          "type": "string"
+        },
+        "units": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Units",
+          "type": "array"
+        },
+        "window_id": {
+          "minLength": 1,
+          "title": "Window Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "window_id",
+        "case_id",
+        "stream_id",
+        "sensor_kind",
+        "sequence",
+        "start_offset_ms",
+        "sample_rate_hz",
+        "channels",
+        "units",
+        "samples",
+        "source_sha256"
+      ],
+      "title": "SensorWindow",
+      "type": "object"
+    }
+  },
+  "title": "模拟智能手表统一领域合同"
+}

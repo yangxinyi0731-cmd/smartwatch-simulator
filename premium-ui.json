@@ -7,8 +7,10 @@
   "ownership": {
     "Scrollbar": "global-application-stylesheet"
   },
-  "requiredCommands": ["backend-tests", "build"],
+  "requiredCommands": ["contract-export", "generate-api", "backend-tests", "build"],
   "commands": {
+    "contract-export": ".\\.venv\\Scripts\\python.exe -m backend.scripts.export_contracts",
+    "generate-api": "npm --prefix frontend run generate:api",
     "backend-tests": ".\\.venv\\Scripts\\python.exe -m pytest .\\backend\\tests -q",
     "build": "npm --prefix frontend run build"
   },

@@ -45,4 +45,7 @@
 - 有 `DESIGN.md`、`UX-CONTRACT.md`、`TASK_STATE.md` 和真实性声明；
 - Tabler 前端工作台已完成；
 - FastAPI、SQLite 和 WebSocket 已形成最小本地状态闭环；
+- 统一来源、案例、传感器窗口、三模型输出、回放事件和模型 manifest 合同已建立；
+- SQLite 已迁移到结构版本 2，并提供空案例目录的服务端分页接口；
+- OpenAPI、领域 JSON Schema 和前端 TypeScript 类型可以重复生成并检查漂移；
 - SQLite 案例实数当前为 0，三个模型仍未接入。

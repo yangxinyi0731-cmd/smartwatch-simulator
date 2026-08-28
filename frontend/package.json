@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
+    "generate:api": "openapi-ts",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -14,11 +15,15 @@
     "vue": "^3.5.41"
   },
   "devDependencies": {
+    "@hey-api/openapi-ts": "0.99.0",
     "@types/node": "^24.13.3",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vue/tsconfig": "^0.9.1",
     "typescript": "~6.0.2",
     "vite": "^8.2.2",
     "vue-tsc": "^3.3.11"
+  },
+  "overrides": {
+    "js-yaml": "4.3.1"
   }
 }

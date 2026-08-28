@@ -4,18 +4,28 @@ import asyncio
 import sqlite3
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
+from math import ceil
 from pathlib import Path
-from typing import AsyncIterator
+from typing import Annotated, AsyncIterator, Literal
 
-from fastapi import FastAPI, Response, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Query, Response, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 
 from .config import Settings
+from .contracts import ContractCatalog, ModelKind, TruthCategory, contract_catalog
 from .database import Database
-from .schemas import CaseSummary, DatabaseHealth, ServiceHealth, SystemStatus
+from .schemas import (
+    ApiError,
+    CaseListItem,
+    CaseListResponse,
+    CaseSummary,
+    DatabaseHealth,
+    ServiceHealth,
+    SystemStatus,
+)
 
 
-SERVICE_VERSION = "0.2.0"
+SERVICE_VERSION = "0.3.0"
 STATUS_INTERVAL_SECONDS = 15
 
 
@@ -77,7 +87,9 @@ def create_app(
     application = FastAPI(
         title="模拟智能手表本地服务",
         version=SERVICE_VERSION,
-        description="为本地研究演示提供健康检查、SQLite 状态和实时连接。",
+        description=(
+            "为本地研究演示提供健康检查、可追溯案例合同、SQLite 状态和实时连接。"
+        ),
         lifespan=lifespan,
     )
 
@@ -91,6 +103,88 @@ def create_app(
             status_code=status_code,
             content=status.model_dump(mode="json"),
             headers={"Cache-Control": "no-store"},
+        )
+
+    @application.get("/api/contracts", response_model=ContractCatalog)
+    def contracts(response: Response) -> ContractCatalog:
+        response.headers["Cache-Control"] = "no-store"
+        return contract_catalog()
+
+    @application.get(
+        "/api/cases",
+        response_model=CaseListResponse,
+        responses={
+            503: {
+                "model": ApiError,
+                "description": "案例目录暂不可读，响应不包含内部异常。",
+            }
+        },
+    )
+    def cases(
+        response: Response,
+        page: Annotated[int, Query(ge=1)] = 1,
+        page_size: Annotated[int, Query(ge=1, le=50)] = 20,
+        query: Annotated[str | None, Query(max_length=100)] = None,
+        truth_category: TruthCategory | None = None,
+        model_kind: ModelKind | None = None,
+        sort_by: Literal["case_id", "title", "created_at"] = "created_at",
+        sort_order: Literal["asc", "desc"] = "desc",
+    ) -> CaseListResponse | JSONResponse:
+        try:
+            records, total = database.list_cases(
+                page=page,
+                page_size=page_size,
+                query=query,
+                truth_category=truth_category,
+                model_kind=model_kind,
+                sort_by=sort_by,
+                sort_order=sort_order,
+            )
+            total_pages = ceil(total / page_size) if total else 0
+            resolved_page = min(page, total_pages) if total_pages else 1
+            if resolved_page != page:
+                records, total = database.list_cases(
+                    page=resolved_page,
+                    page_size=page_size,
+                    query=query,
+                    truth_category=truth_category,
+                    model_kind=model_kind,
+                    sort_by=sort_by,
+                    sort_order=sort_order,
+                )
+        except (OSError, RuntimeError, sqlite3.Error):
+            error = ApiError(
+                code="CASE_CATALOG_UNAVAILABLE",
+                message="案例库暂不可用，请稍后重试。",
+                retryable=True,
+            )
+            return JSONResponse(
+                status_code=503,
+                content=error.model_dump(mode="json"),
+                headers={"Cache-Control": "no-store"},
+            )
+
+        response.headers["Cache-Control"] = "no-store"
+        items = tuple(
+            CaseListItem(
+                case_id=record.case_id,
+                title=record.title,
+                truth_category=record.truth_category,
+                source_name=record.source_name,
+                fixed_version=record.fixed_version,
+                age_group=record.age_group,
+                activity_label=record.activity_label,
+                allowed_models=record.allowed_models,
+                sensor_stream_count=record.sensor_stream_count,
+                created_at=record.created_at,
+            )
+            for record in records
+        )
+        return CaseListResponse.from_page(
+            items=items,
+            page=resolved_page,
+            page_size=page_size,
+            total=total,
         )
 
     @application.websocket("/ws/system")

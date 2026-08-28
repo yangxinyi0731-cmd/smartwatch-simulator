@@ -2,7 +2,7 @@
 
 英文仓库名：`smartwatch-health-simulator`
 
-这是一个只在 Windows 电脑上运行的三模型模拟智能手表研究平台。当前已经具备 Tabler 风格 Vue 前端、FastAPI 本地后端、SQLite 空案例库和 WebSocket 实时状态通道；尚未导入案例或接入任何模型。
+这是一个只在 Windows 电脑上运行的三模型模拟智能手表研究平台。当前已经具备 Tabler 风格 Vue 前端、FastAPI 本地后端、SQLite 空案例库、WebSocket 实时状态通道，以及统一案例/来源/回放/三模型合同；尚未导入案例或接入任何模型。
 
 ## 当前真实状态
 
@@ -11,8 +11,11 @@
 - Vue 3 + TypeScript + Vite 前端；
 - Tabler 工作台布局、共享状态和空状态组件；
 - `GET /api/health` 真实健康检查；
-- SQLite 结构版本 1 和空案例表；
+- SQLite 结构版本 2：来源、案例、传感器流、模型 manifest、回放和三模型独立输出表；
 - `WS /ws/system` 实时系统状态；
+- `GET /api/contracts`：真实性类别、三模型固定输入输出和回放事件合同；
+- `GET /api/cases`：真实服务端分页、筛选和白名单排序；
+- Pydantic → OpenAPI/JSON Schema → TypeScript 的可重复生成链；
 - 前端自动检查、断线重试和手动刷新；
 - 后端接口与数据库自动测试。
 
@@ -60,6 +63,10 @@ npm --prefix frontend run dev
 
 FastAPI 接口文档：`http://127.0.0.1:8000/docs`
 
+统一合同：`http://127.0.0.1:8000/api/contracts`
+
+案例目录：`http://127.0.0.1:8000/api/cases`
+
 默认数据库位于 `backend/runtime/smartwatch.sqlite3`，数据库文件已被 Git 忽略。需要改到其他位置时，只接受绝对路径：
 
 ```powershell
@@ -70,7 +77,10 @@ $env:SMARTWATCH_DATABASE_PATH = 'D:\smartwatch-data\smartwatch.sqlite3'
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest .\backend\tests -q
+.\.venv\Scripts\python.exe -m backend.scripts.export_contracts
+npm --prefix frontend run generate:api
 npm --prefix frontend run build
+npm --prefix frontend audit
 ```
 
 完整设计审计、浏览器验证和阶段证据记录在 `TASK_STATE.md`。
@@ -85,4 +95,4 @@ npm --prefix frontend run build
 - 没有实际输入时不显示随机波形或模型分数；
 - 任何指标都必须来自保存了配置、分组和命令的实际运行。
 
-跨对话继续开发前，请先阅读 `CONTEXT_HANDOFF.md` 和 `TASK_STATE.md`，并等待用户确认下一大关。
+跨对话继续开发前，请先阅读 `CONTEXT_HANDOFF.md` 和 `TASK_STATE.md`。当前用户已授权按完整大关连续推进；只有登录、许可申请、隐私/法律选择或外部账号操作需要用户本人处理时才暂停。

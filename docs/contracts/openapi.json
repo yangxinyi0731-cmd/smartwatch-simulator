@@ -1,0 +1,836 @@
+{
+  "components": {
+    "schemas": {
+      "AgeGroup": {
+        "enum": [
+          "YOUNG_ADULT",
+          "OLDER_ADULT",
+          "MIXED",
+          "UNKNOWN",
+          "NOT_APPLICABLE"
+        ],
+        "title": "AgeGroup",
+        "type": "string"
+      },
+      "ApiError": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable"
+        ],
+        "title": "ApiError",
+        "type": "object"
+      },
+      "CaseListItem": {
+        "additionalProperties": false,
+        "properties": {
+          "activity_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Label"
+          },
+          "age_group": {
+            "$ref": "#/components/schemas/AgeGroup"
+          },
+          "allowed_models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelKind"
+            },
+            "title": "Allowed Models",
+            "type": "array"
+          },
+          "case_id": {
+            "title": "Case Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "fixed_version": {
+            "title": "Fixed Version",
+            "type": "string"
+          },
+          "sensor_stream_count": {
+            "minimum": 0.0,
+            "title": "Sensor Stream Count",
+            "type": "integer"
+          },
+          "source_name": {
+            "title": "Source Name",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "truth_category": {
+            "$ref": "#/components/schemas/TruthCategory"
+          }
+        },
+        "required": [
+          "case_id",
+          "title",
+          "truth_category",
+          "source_name",
+          "fixed_version",
+          "age_group",
+          "activity_label",
+          "allowed_models",
+          "sensor_stream_count",
+          "created_at"
+        ],
+        "title": "CaseListItem",
+        "type": "object"
+      },
+      "CaseListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CaseListItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "page": {
+            "minimum": 1.0,
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          },
+          "total_pages": {
+            "minimum": 0.0,
+            "title": "Total Pages",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "page",
+          "page_size",
+          "total",
+          "total_pages"
+        ],
+        "title": "CaseListResponse",
+        "type": "object"
+      },
+      "CaseSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "count": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Count"
+          },
+          "state": {
+            "enum": [
+              "empty",
+              "available",
+              "unavailable"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "title": "CaseSummary",
+        "type": "object"
+      },
+      "ChannelDefinition": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "quantity": {
+            "enum": [
+              "acceleration",
+              "angular_velocity"
+            ],
+            "title": "Quantity",
+            "type": "string"
+          },
+          "unit": {
+            "enum": [
+              "m/s^2",
+              "rad/s"
+            ],
+            "title": "Unit",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "quantity",
+          "unit"
+        ],
+        "title": "ChannelDefinition",
+        "type": "object"
+      },
+      "ContractCatalog": {
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "1.0.0",
+            "default": "1.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "database_schema_version": {
+            "default": 2,
+            "title": "Database Schema Version",
+            "type": "integer"
+          },
+          "invariants": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Invariants",
+            "type": "array"
+          },
+          "model_contracts": {
+            "items": {
+              "$ref": "#/components/schemas/ModelContract"
+            },
+            "title": "Model Contracts",
+            "type": "array"
+          },
+          "replay_event_types": {
+            "items": {
+              "$ref": "#/components/schemas/ReplayEventType"
+            },
+            "title": "Replay Event Types",
+            "type": "array"
+          },
+          "truth_categories": {
+            "items": {
+              "$ref": "#/components/schemas/TruthCategory"
+            },
+            "title": "Truth Categories",
+            "type": "array"
+          }
+        },
+        "required": [
+          "truth_categories",
+          "model_contracts",
+          "replay_event_types",
+          "invariants"
+        ],
+        "title": "ContractCatalog",
+        "type": "object"
+      },
+      "DatabaseHealth": {
+        "additionalProperties": false,
+        "properties": {
+          "engine": {
+            "const": "sqlite",
+            "default": "sqlite",
+            "title": "Engine",
+            "type": "string"
+          },
+          "schema_version": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Version"
+          },
+          "state": {
+            "enum": [
+              "ready",
+              "unavailable"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "title": "DatabaseHealth",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "LabelDefinition": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "minLength": 1,
+            "title": "Code",
+            "type": "string"
+          },
+          "label_zh_cn": {
+            "minLength": 1,
+            "title": "Label Zh Cn",
+            "type": "string"
+          },
+          "meaning": {
+            "minLength": 1,
+            "title": "Meaning",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "label_zh_cn",
+          "meaning"
+        ],
+        "title": "LabelDefinition",
+        "type": "object"
+      },
+      "ModelContract": {
+        "additionalProperties": false,
+        "properties": {
+          "model_kind": {
+            "$ref": "#/components/schemas/ModelKind"
+          },
+          "name_zh_cn": {
+            "minLength": 1,
+            "title": "Name Zh Cn",
+            "type": "string"
+          },
+          "output_labels": {
+            "items": {
+              "$ref": "#/components/schemas/LabelDefinition"
+            },
+            "minItems": 1,
+            "title": "Output Labels",
+            "type": "array"
+          },
+          "routine_event_input": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RoutineEventInputContract"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "safety_boundary": {
+            "minLength": 1,
+            "title": "Safety Boundary",
+            "type": "string"
+          },
+          "task": {
+            "minLength": 1,
+            "title": "Task",
+            "type": "string"
+          },
+          "tensor_input": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TensorInputContract"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "model_kind",
+          "name_zh_cn",
+          "task",
+          "output_labels",
+          "safety_boundary"
+        ],
+        "title": "ModelContract",
+        "type": "object"
+      },
+      "ModelKind": {
+        "enum": [
+          "FALL_DETECTION",
+          "ROUTINE_ANOMALY",
+          "ACTIVITY_RECOGNITION"
+        ],
+        "title": "ModelKind",
+        "type": "string"
+      },
+      "RealtimeHealth": {
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "default": "/ws/system",
+            "title": "Path",
+            "type": "string"
+          },
+          "transport": {
+            "const": "websocket",
+            "default": "websocket",
+            "title": "Transport",
+            "type": "string"
+          }
+        },
+        "title": "RealtimeHealth",
+        "type": "object"
+      },
+      "ReplayEventType": {
+        "enum": [
+          "replay.state_changed",
+          "sensor.window",
+          "model.output",
+          "alert.candidate",
+          "replay.error"
+        ],
+        "title": "ReplayEventType",
+        "type": "string"
+      },
+      "RoutineEventInputContract": {
+        "additionalProperties": false,
+        "properties": {
+          "event_types": {
+            "items": {
+              "enum": [
+                "meal",
+                "nap",
+                "walk"
+              ],
+              "type": "string"
+            },
+            "title": "Event Types",
+            "type": "array"
+          },
+          "history_days": {
+            "exclusiveMinimum": 0.0,
+            "title": "History Days",
+            "type": "integer"
+          },
+          "required_fields": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Required Fields",
+            "type": "array"
+          }
+        },
+        "required": [
+          "history_days",
+          "event_types",
+          "required_fields"
+        ],
+        "title": "RoutineEventInputContract",
+        "type": "object"
+      },
+      "ServiceHealth": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "default": "smartwatch-health-simulator",
+            "title": "Name",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "ready",
+              "degraded"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "state"
+        ],
+        "title": "ServiceHealth",
+        "type": "object"
+      },
+      "SystemStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "cases": {
+            "$ref": "#/components/schemas/CaseSummary"
+          },
+          "checked_at": {
+            "format": "date-time",
+            "title": "Checked At",
+            "type": "string"
+          },
+          "database": {
+            "$ref": "#/components/schemas/DatabaseHealth"
+          },
+          "event": {
+            "const": "system.status",
+            "default": "system.status",
+            "title": "Event",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "realtime": {
+            "$ref": "#/components/schemas/RealtimeHealth"
+          },
+          "service": {
+            "$ref": "#/components/schemas/ServiceHealth"
+          }
+        },
+        "required": [
+          "service",
+          "database",
+          "cases",
+          "checked_at",
+          "message"
+        ],
+        "title": "SystemStatus",
+        "type": "object"
+      },
+      "TensorInputContract": {
+        "additionalProperties": false,
+        "properties": {
+          "channels": {
+            "items": {
+              "$ref": "#/components/schemas/ChannelDefinition"
+            },
+            "minItems": 1,
+            "title": "Channels",
+            "type": "array"
+          },
+          "input_shape": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Input Shape",
+            "type": "array"
+          },
+          "sample_count": {
+            "exclusiveMinimum": 0.0,
+            "title": "Sample Count",
+            "type": "integer"
+          },
+          "sample_rate_hz": {
+            "exclusiveMinimum": 0.0,
+            "title": "Sample Rate Hz",
+            "type": "number"
+          },
+          "window_seconds": {
+            "exclusiveMinimum": 0.0,
+            "title": "Window Seconds",
+            "type": "number"
+          }
+        },
+        "required": [
+          "sample_rate_hz",
+          "window_seconds",
+          "sample_count",
+          "channels",
+          "input_shape"
+        ],
+        "title": "TensorInputContract",
+        "type": "object"
+      },
+      "TruthCategory": {
+        "enum": [
+          "REAL_FREE_LIVING",
+          "REAL_LAB_ACTIVITY",
+          "SIMULATED_FALL",
+          "SYNTHETIC_ROUTINE",
+          "DERIVED_PERTURBATION"
+        ],
+        "title": "TruthCategory",
+        "type": "string"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "为本地研究演示提供健康检查、可追溯案例合同、SQLite 状态和实时连接。",
+    "title": "模拟智能手表本地服务",
+    "version": "0.3.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/cases": {
+      "get": {
+        "operationId": "cases_api_cases_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Query"
+            }
+          },
+          {
+            "in": "query",
+            "name": "truth_category",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/TruthCategory"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Truth Category"
+            }
+          },
+          {
+            "in": "query",
+            "name": "model_kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ModelKind"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Model Kind"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "required": false,
+            "schema": {
+              "default": "created_at",
+              "enum": [
+                "case_id",
+                "title",
+                "created_at"
+              ],
+              "title": "Sort By",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort_order",
+            "required": false,
+            "schema": {
+              "default": "desc",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "title": "Sort Order",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "案例目录暂不可读，响应不包含内部异常。"
+          }
+        },
+        "summary": "Cases"
+      }
+    },
+    "/api/contracts": {
+      "get": {
+        "operationId": "contracts_api_contracts_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractCatalog"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Contracts"
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health"
+      }
+    }
+  }
+}
