@@ -512,6 +512,25 @@ class CaseListRecord:
 
 
 @dataclass(frozen=True, slots=True)
+class ModelListRecord:
+    manifest_id: str
+    model_id: str
+    model_kind: str
+    version: str
+    format: str
+    source_commit: str
+    artifact_relative_path: str | None
+    artifact_sha256: str | None
+    training_truth_categories: tuple[str, ...]
+    evaluation_reference: str
+    limitations: tuple[str, ...]
+    deployment_approved: bool
+    approval_status: str
+    external_validation_completed: bool
+    created_at: str
+
+
+@dataclass(frozen=True, slots=True)
 class ImportCaseBundle:
     case: CaseContract
     stream: SensorStreamContract
@@ -531,6 +550,16 @@ class ImportCaseBundle:
             raise ValueError("原始来源文件必须属于同一个案例。")
         if any(item.case_id != case_id for item in self.ground_truth_events):
             raise ValueError("真实标签事件必须属于同一个案例。")
+
+
+@dataclass(frozen=True, slots=True)
+class CaseRuntimeBundle:
+    case: CaseContract
+    streams: tuple[SensorStreamContract, ...]
+    qualities: tuple[SensorQualityContract, ...]
+    ground_truth_events: tuple[GroundTruthEvent, ...]
+    routine_profile: RoutineProfileContract | None
+    routine_events: tuple[RoutineEventContract, ...]
 
 
 class Database:
@@ -700,6 +729,201 @@ COMMIT;
             for row in rows
         )
         return records, total
+
+    def list_model_manifests(self) -> tuple[ModelListRecord, ...]:
+        with self.connect() as connection:
+            rows = connection.execute(
+                "SELECT manifest_id, model_id, model_kind, version, format, "
+                "source_commit, artifact_relative_path, artifact_sha256, "
+                "training_provenance_json, evaluation_json, limitations_json, "
+                "deployment_approved, approval_status, "
+                "external_validation_completed, created_at "
+                "FROM model_manifests ORDER BY model_kind ASC, created_at DESC, "
+                "manifest_id ASC"
+            ).fetchall()
+
+        records = []
+        for row in rows:
+            training = json.loads(row["training_provenance_json"])
+            evaluation = json.loads(row["evaluation_json"])
+            records.append(
+                ModelListRecord(
+                    manifest_id=row["manifest_id"],
+                    model_id=row["model_id"],
+                    model_kind=row["model_kind"],
+                    version=row["version"],
+                    format=row["format"],
+                    source_commit=row["source_commit"],
+                    artifact_relative_path=row["artifact_relative_path"],
+                    artifact_sha256=row["artifact_sha256"],
+                    training_truth_categories=tuple(training["truth_categories"]),
+                    evaluation_reference=evaluation["reference"],
+                    limitations=tuple(json.loads(row["limitations_json"])),
+                    deployment_approved=bool(row["deployment_approved"]),
+                    approval_status=row["approval_status"],
+                    external_validation_completed=bool(
+                        row["external_validation_completed"]
+                    ),
+                    created_at=row["created_at"],
+                )
+            )
+        return tuple(records)
+
+    def get_case_runtime_bundle(self, case_id: str) -> CaseRuntimeBundle | None:
+        with self.connect() as connection:
+            row = connection.execute(
+                "SELECT c.*, ds.name AS source_name, ds.source_url, "
+                "ds.fixed_version, ds.license_status, ds.license_reference, "
+                "ds.redistribution_allowed, ds.verified_at, ds.notes AS source_notes "
+                "FROM cases c JOIN data_sources ds ON ds.source_id = c.source_id "
+                "WHERE c.case_id = ?",
+                (case_id,),
+            ).fetchone()
+            if row is None:
+                return None
+
+            source = SourceReference.model_validate(
+                {
+                    "source_id": row["source_id"],
+                    "dataset_name": row["source_name"],
+                    "source_url": row["source_url"],
+                    "fixed_version": row["fixed_version"],
+                    "license_status": row["license_status"],
+                    "license_reference": row["license_reference"],
+                    "redistribution_allowed": (
+                        None
+                        if row["redistribution_allowed"] is None
+                        else bool(row["redistribution_allowed"])
+                    ),
+                    "verified_at": row["verified_at"],
+                    "notes": row["source_notes"],
+                }
+            )
+            case = CaseContract.model_validate(
+                {
+                    "case_id": row["case_id"],
+                    "title": row["title"],
+                    "description": row["description"],
+                    "truth_category": row["truth_category"],
+                    "source": source,
+                    "source_record_path": row["source_record_path"],
+                    "source_sha256": row["source_sha256"],
+                    "participant_id": row["participant_id"],
+                    "age_group": row["age_group"],
+                    "device_name": row["device_name"],
+                    "wear_position": row["wear_position"],
+                    "original_sample_rate_hz": row["original_sample_rate_hz"],
+                    "activity_label": row["activity_label"],
+                    "has_accelerometer": bool(row["has_accelerometer"]),
+                    "has_gyroscope": bool(row["has_gyroscope"]),
+                    "allowed_models": json.loads(row["allowed_models_json"]),
+                    "derivation_parent_case_id": row["derivation_parent_case_id"],
+                    "processing_command": row["processing_command"],
+                    "created_at": row["created_at"],
+                    "updated_at": row["updated_at"],
+                }
+            )
+
+            stream_rows = connection.execute(
+                "SELECT * FROM sensor_streams WHERE case_id = ? "
+                "ORDER BY stream_id ASC",
+                (case_id,),
+            ).fetchall()
+            streams = tuple(
+                SensorStreamContract.model_validate(
+                    {
+                        "stream_id": stream["stream_id"],
+                        "case_id": stream["case_id"],
+                        "sensor_kind": stream["sensor_kind"],
+                        "sample_rate_hz": stream["sample_rate_hz"],
+                        "channels": json.loads(stream["channels_json"]),
+                        "units": json.loads(stream["units_json"]),
+                        "sample_count": stream["sample_count"],
+                        "duration_ms": stream["duration_ms"],
+                        "storage_format": stream["storage_format"],
+                        "relative_path": stream["relative_path"],
+                        "content_sha256": stream["content_sha256"],
+                        "created_at": stream["created_at"],
+                    }
+                )
+                for stream in stream_rows
+            )
+
+            quality_rows = connection.execute(
+                "SELECT sq.* FROM sensor_quality sq "
+                "JOIN sensor_streams ss ON ss.stream_id = sq.stream_id "
+                "WHERE ss.case_id = ? ORDER BY sq.stream_id ASC",
+                (case_id,),
+            ).fetchall()
+            qualities = tuple(
+                SensorQualityContract.model_validate(
+                    {
+                        "stream_id": quality["stream_id"],
+                        "accel_rows": quality["accel_rows"],
+                        "accel_unique_timestamps": quality[
+                            "accel_unique_timestamps"
+                        ],
+                        "gyro_rows": quality["gyro_rows"],
+                        "gyro_unique_timestamps": quality[
+                            "gyro_unique_timestamps"
+                        ],
+                        "accel_effective_rate_hz": quality[
+                            "accel_effective_rate_hz"
+                        ],
+                        "gyro_effective_rate_hz": quality[
+                            "gyro_effective_rate_hz"
+                        ],
+                        "accel_median_dt_ms": quality["accel_median_dt_ms"],
+                        "gyro_median_dt_ms": quality["gyro_median_dt_ms"],
+                        "accel_max_gap_ms": quality["accel_max_gap_ms"],
+                        "gyro_max_gap_ms": quality["gyro_max_gap_ms"],
+                        "flags": json.loads(quality["flags_json"]),
+                    }
+                )
+                for quality in quality_rows
+            )
+
+            truth_rows = connection.execute(
+                "SELECT * FROM ground_truth_events WHERE case_id = ? "
+                "ORDER BY start_offset_ms ASC, event_id ASC",
+                (case_id,),
+            ).fetchall()
+            ground_truth_events = tuple(
+                GroundTruthEvent.model_validate(dict(event)) for event in truth_rows
+            )
+
+            profile_row = connection.execute(
+                "SELECT * FROM routine_profiles WHERE profile_id = ?",
+                (case_id,),
+            ).fetchone()
+            routine_profile = (
+                RoutineProfileContract.model_validate(
+                    {
+                        **dict(profile_row),
+                        "case": case,
+                    }
+                )
+                if profile_row is not None
+                else None
+            )
+            routine_rows = connection.execute(
+                "SELECT * FROM routine_events WHERE profile_id = ? "
+                "ORDER BY started_at ASC, event_id ASC",
+                (case_id,),
+            ).fetchall()
+            routine_events = tuple(
+                RoutineEventContract.model_validate(dict(event))
+                for event in routine_rows
+            )
+
+        return CaseRuntimeBundle(
+            case=case,
+            streams=streams,
+            qualities=qualities,
+            ground_truth_events=ground_truth_events,
+            routine_profile=routine_profile,
+            routine_events=routine_events,
+        )
 
     @staticmethod
     def _json(value: object) -> str:

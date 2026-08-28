@@ -14,12 +14,16 @@ from fastapi.responses import JSONResponse
 from .config import Settings
 from .contracts import ContractCatalog, ModelKind, TruthCategory, contract_catalog
 from .database import Database
+from .replay import build_replay_preview
 from .schemas import (
     ApiError,
     CaseListItem,
     CaseListResponse,
     CaseSummary,
     DatabaseHealth,
+    ModelListItem,
+    ModelListResponse,
+    ReplayPreviewResponse,
     ServiceHealth,
     SystemStatus,
 )
@@ -186,6 +190,97 @@ def create_app(
             page_size=page_size,
             total=total,
         )
+
+    @application.get(
+        "/api/models",
+        response_model=ModelListResponse,
+        responses={
+            503: {
+                "model": ApiError,
+                "description": "模型清单暂不可读，响应不包含内部异常。",
+            }
+        },
+    )
+    def models(response: Response) -> ModelListResponse | JSONResponse:
+        try:
+            records = database.list_model_manifests()
+        except (OSError, RuntimeError, sqlite3.Error, ValueError, KeyError):
+            error = ApiError(
+                code="MODEL_CATALOG_UNAVAILABLE",
+                message="模型清单暂不可用，请稍后重试。",
+                retryable=True,
+            )
+            return JSONResponse(
+                status_code=503,
+                content=error.model_dump(mode="json"),
+                headers={"Cache-Control": "no-store"},
+            )
+
+        response.headers["Cache-Control"] = "no-store"
+        items = tuple(
+            ModelListItem(
+                manifest_id=record.manifest_id,
+                model_id=record.model_id,
+                model_kind=record.model_kind,
+                version=record.version,
+                format=record.format,
+                source_commit=record.source_commit,
+                artifact_relative_path=record.artifact_relative_path,
+                artifact_sha256=record.artifact_sha256,
+                training_truth_categories=record.training_truth_categories,
+                evaluation_reference=record.evaluation_reference,
+                limitations=record.limitations,
+                deployment_approved=record.deployment_approved,
+                approval_status=record.approval_status,
+                external_validation_completed=record.external_validation_completed,
+                created_at=record.created_at,
+            )
+            for record in records
+        )
+        return ModelListResponse(items=items, total=len(items))
+
+    @application.get(
+        "/api/cases/{case_id}/replay-preview",
+        response_model=ReplayPreviewResponse,
+        responses={
+            404: {"model": ApiError, "description": "案例不存在。"},
+            503: {
+                "model": ApiError,
+                "description": "案例回放数据暂不可读，响应不包含内部异常。",
+            },
+        },
+    )
+    def replay_preview(
+        case_id: str,
+        response: Response,
+    ) -> ReplayPreviewResponse | JSONResponse:
+        try:
+            bundle = database.get_case_runtime_bundle(case_id)
+            if bundle is None:
+                error = ApiError(
+                    code="CASE_NOT_FOUND",
+                    message="没有找到这个测试案例。",
+                    retryable=False,
+                )
+                return JSONResponse(
+                    status_code=404,
+                    content=error.model_dump(mode="json"),
+                    headers={"Cache-Control": "no-store"},
+                )
+            preview = build_replay_preview(bundle)
+        except (OSError, RuntimeError, sqlite3.Error, ValueError, KeyError):
+            error = ApiError(
+                code="REPLAY_PREVIEW_UNAVAILABLE",
+                message="案例回放数据暂不可用，请核对本地文件后重试。",
+                retryable=True,
+            )
+            return JSONResponse(
+                status_code=503,
+                content=error.model_dump(mode="json"),
+                headers={"Cache-Control": "no-store"},
+            )
+        response.headers["Cache-Control"] = "no-store"
+        return preview
 
     @application.websocket("/ws/system")
     async def system_status_socket(websocket: WebSocket) -> None:

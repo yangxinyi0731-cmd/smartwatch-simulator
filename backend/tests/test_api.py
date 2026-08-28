@@ -6,7 +6,10 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from backend.app.database import SCHEMA_VERSION
+from backend.app.database import Database
 from backend.app.main import create_app
+from backend.app.contracts import ModelManifest
+from backend.scripts.sync_runtime_assets import sync
 
 
 def test_health_initializes_empty_database(tmp_path: Path) -> None:
@@ -103,6 +106,68 @@ def test_case_catalog_validates_filter_values(tmp_path: Path) -> None:
 
     assert response.status_code == 422
     assert "REAL_ELDERLY_FALL" in response.text
+
+
+def test_model_catalog_returns_registered_research_manifest(tmp_path: Path) -> None:
+    database_path = tmp_path / "models-test.sqlite3"
+    project_root = Path(__file__).resolve().parents[2]
+    manifest = ModelManifest.model_validate_json(
+        (project_root / "models/fall_detector/tcn_final_candidate/manifest.json")
+        .read_text(encoding="utf-8")
+    )
+
+    with TestClient(create_app(database_path=database_path)) as client:
+        Database(database_path).register_model_manifest(manifest)
+        response = client.get("/api/models")
+
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-store"
+    payload = response.json()
+    assert payload["total"] == 1
+    item = payload["items"][0]
+    assert item["manifest_id"] == manifest.manifest_id
+    assert item["model_kind"] == "FALL_DETECTION"
+    assert item["artifact_sha256"] == manifest.artifact_sha256
+    assert item["deployment_approved"] is False
+    assert item["approval_status"] == "EXTERNAL_VALIDATION_REQUIRED"
+    assert item["external_validation_completed"] is False
+
+
+def test_routine_replay_preview_uses_registered_synthetic_events(tmp_path: Path) -> None:
+    database_path = tmp_path / "routine-preview.sqlite3"
+    sync(database_path)
+
+    with TestClient(create_app(database_path=database_path)) as client:
+        response = client.get(
+            "/api/cases/synthetic-routine-100-v1/replay-preview"
+        )
+
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-store"
+    payload = response.json()
+    assert payload["case"]["truth_category"] == "SYNTHETIC_ROUTINE"
+    assert payload["sensor_stream"] is None
+    assert payload["sensor_samples"] == []
+    assert payload["fall_windows"] == []
+    assert payload["routine_profile"]["history_days"] == 100
+    assert payload["routine_profile"]["event_count"] == 551
+    assert len(payload["routine_days"]) == 100
+    assert all(len(day["assessments"]) == 3 for day in payload["routine_days"])
+    assert any("固定种子合成" in message for message in payload["messages"])
+
+
+def test_replay_preview_returns_sanitized_not_found(tmp_path: Path) -> None:
+    database_path = tmp_path / "missing-preview.sqlite3"
+
+    with TestClient(create_app(database_path=database_path)) as client:
+        response = client.get("/api/cases/missing/replay-preview")
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "code": "CASE_NOT_FOUND",
+        "message": "没有找到这个测试案例。",
+        "retryable": False,
+    }
 
 
 def test_health_reports_sanitized_degraded_state(tmp_path: Path) -> None:

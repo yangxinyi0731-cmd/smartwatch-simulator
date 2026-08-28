@@ -36,6 +36,161 @@
         "title": "ApiError",
         "type": "object"
       },
+      "ApprovalStatus": {
+        "enum": [
+          "RESEARCH_ONLY",
+          "EXTERNAL_VALIDATION_REQUIRED",
+          "APPROVED"
+        ],
+        "title": "ApprovalStatus",
+        "type": "string"
+      },
+      "CaseContract": {
+        "additionalProperties": false,
+        "properties": {
+          "activity_label": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Label"
+          },
+          "age_group": {
+            "$ref": "#/components/schemas/AgeGroup"
+          },
+          "allowed_models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelKind"
+            },
+            "title": "Allowed Models",
+            "type": "array"
+          },
+          "case_id": {
+            "minLength": 1,
+            "title": "Case Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "derivation_parent_case_id": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Derivation Parent Case Id"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "device_name": {
+            "minLength": 1,
+            "title": "Device Name",
+            "type": "string"
+          },
+          "has_accelerometer": {
+            "title": "Has Accelerometer",
+            "type": "boolean"
+          },
+          "has_gyroscope": {
+            "title": "Has Gyroscope",
+            "type": "boolean"
+          },
+          "original_sample_rate_hz": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original Sample Rate Hz"
+          },
+          "participant_id": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participant Id"
+          },
+          "processing_command": {
+            "minLength": 1,
+            "title": "Processing Command",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceReference"
+          },
+          "source_record_path": {
+            "minLength": 1,
+            "title": "Source Record Path",
+            "type": "string"
+          },
+          "source_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "title": {
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "truth_category": {
+            "$ref": "#/components/schemas/TruthCategory"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "wear_position": {
+            "minLength": 1,
+            "title": "Wear Position",
+            "type": "string"
+          }
+        },
+        "required": [
+          "case_id",
+          "title",
+          "truth_category",
+          "source",
+          "source_record_path",
+          "source_sha256",
+          "age_group",
+          "device_name",
+          "wear_position",
+          "has_accelerometer",
+          "has_gyroscope",
+          "allowed_models",
+          "processing_command",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "CaseContract",
+        "type": "object"
+      },
       "CaseListItem": {
         "additionalProperties": false,
         "properties": {
@@ -300,6 +455,140 @@
         "title": "DatabaseHealth",
         "type": "object"
       },
+      "FallAlarmEpisodeItem": {
+        "additionalProperties": false,
+        "properties": {
+          "end_offset_ms": {
+            "exclusiveMinimum": 0.0,
+            "title": "End Offset Ms",
+            "type": "integer"
+          },
+          "peak_probability": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Peak Probability",
+            "type": "number"
+          },
+          "start_offset_ms": {
+            "minimum": 0.0,
+            "title": "Start Offset Ms",
+            "type": "integer"
+          },
+          "window_count": {
+            "exclusiveMinimum": 0.0,
+            "title": "Window Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "start_offset_ms",
+          "end_offset_ms",
+          "peak_probability",
+          "window_count"
+        ],
+        "title": "FallAlarmEpisodeItem",
+        "type": "object"
+      },
+      "FallWindowResult": {
+        "additionalProperties": false,
+        "properties": {
+          "end_offset_ms": {
+            "exclusiveMinimum": 0.0,
+            "title": "End Offset Ms",
+            "type": "integer"
+          },
+          "fall_probability": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Fall Probability",
+            "type": "number"
+          },
+          "is_candidate": {
+            "title": "Is Candidate",
+            "type": "boolean"
+          },
+          "start_offset_ms": {
+            "minimum": 0.0,
+            "title": "Start Offset Ms",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "start_offset_ms",
+          "end_offset_ms",
+          "fall_probability",
+          "is_candidate"
+        ],
+        "title": "FallWindowResult",
+        "type": "object"
+      },
+      "GroundTruthEvent": {
+        "additionalProperties": false,
+        "properties": {
+          "annotation_source_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Annotation Source Sha256",
+            "type": "string"
+          },
+          "case_id": {
+            "minLength": 1,
+            "title": "Case Id",
+            "type": "string"
+          },
+          "end_offset_ms": {
+            "minimum": 0.0,
+            "title": "End Offset Ms",
+            "type": "integer"
+          },
+          "event_id": {
+            "minLength": 1,
+            "title": "Event Id",
+            "type": "string"
+          },
+          "event_type": {
+            "$ref": "#/components/schemas/GroundTruthEventType"
+          },
+          "label": {
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "notes": {
+            "minLength": 1,
+            "title": "Notes",
+            "type": "string"
+          },
+          "start_offset_ms": {
+            "minimum": 0.0,
+            "title": "Start Offset Ms",
+            "type": "integer"
+          },
+          "truth_category": {
+            "$ref": "#/components/schemas/TruthCategory"
+          }
+        },
+        "required": [
+          "event_id",
+          "case_id",
+          "event_type",
+          "label",
+          "start_offset_ms",
+          "end_offset_ms",
+          "truth_category",
+          "annotation_source_sha256",
+          "notes"
+        ],
+        "title": "GroundTruthEvent",
+        "type": "object"
+      },
+      "GroundTruthEventType": {
+        "enum": [
+          "ACTIVITY_INTERVAL",
+          "FALL_INTERVAL"
+        ],
+        "title": "GroundTruthEventType",
+        "type": "string"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -339,6 +628,14 @@
         ],
         "title": "LabelDefinition",
         "type": "object"
+      },
+      "ManifestFormat": {
+        "enum": [
+          "ONNX",
+          "STATISTICAL_RULES"
+        ],
+        "title": "ManifestFormat",
+        "type": "string"
       },
       "ModelContract": {
         "additionalProperties": false,
@@ -409,6 +706,131 @@
         "title": "ModelKind",
         "type": "string"
       },
+      "ModelListItem": {
+        "additionalProperties": false,
+        "properties": {
+          "approval_status": {
+            "$ref": "#/components/schemas/ApprovalStatus"
+          },
+          "artifact_relative_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artifact Relative Path"
+          },
+          "artifact_sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artifact Sha256"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "deployment_approved": {
+            "title": "Deployment Approved",
+            "type": "boolean"
+          },
+          "evaluation_reference": {
+            "title": "Evaluation Reference",
+            "type": "string"
+          },
+          "external_validation_completed": {
+            "title": "External Validation Completed",
+            "type": "boolean"
+          },
+          "format": {
+            "$ref": "#/components/schemas/ManifestFormat"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "manifest_id": {
+            "title": "Manifest Id",
+            "type": "string"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "model_kind": {
+            "$ref": "#/components/schemas/ModelKind"
+          },
+          "source_commit": {
+            "title": "Source Commit",
+            "type": "string"
+          },
+          "training_truth_categories": {
+            "items": {
+              "$ref": "#/components/schemas/TruthCategory"
+            },
+            "title": "Training Truth Categories",
+            "type": "array"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "manifest_id",
+          "model_id",
+          "model_kind",
+          "version",
+          "format",
+          "source_commit",
+          "artifact_relative_path",
+          "artifact_sha256",
+          "training_truth_categories",
+          "evaluation_reference",
+          "limitations",
+          "deployment_approved",
+          "approval_status",
+          "external_validation_completed",
+          "created_at"
+        ],
+        "title": "ModelListItem",
+        "type": "object"
+      },
+      "ModelListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ModelListItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "ModelListResponse",
+        "type": "object"
+      },
       "RealtimeHealth": {
         "additionalProperties": false,
         "properties": {
@@ -437,6 +859,278 @@
         ],
         "title": "ReplayEventType",
         "type": "string"
+      },
+      "ReplayPreviewResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "case": {
+            "$ref": "#/components/schemas/CaseContract"
+          },
+          "duration_ms": {
+            "minimum": 0.0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "fall_alarm_episodes": {
+            "items": {
+              "$ref": "#/components/schemas/FallAlarmEpisodeItem"
+            },
+            "title": "Fall Alarm Episodes",
+            "type": "array"
+          },
+          "fall_manifest_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fall Manifest Id"
+          },
+          "fall_threshold": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fall Threshold"
+          },
+          "fall_windows": {
+            "items": {
+              "$ref": "#/components/schemas/FallWindowResult"
+            },
+            "title": "Fall Windows",
+            "type": "array"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "ground_truth_events": {
+            "items": {
+              "$ref": "#/components/schemas/GroundTruthEvent"
+            },
+            "title": "Ground Truth Events",
+            "type": "array"
+          },
+          "messages": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Messages",
+            "type": "array"
+          },
+          "routine_days": {
+            "items": {
+              "$ref": "#/components/schemas/RoutineDayResult"
+            },
+            "title": "Routine Days",
+            "type": "array"
+          },
+          "routine_profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RoutineProfileSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sensor_quality": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SensorQualityContract"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sensor_samples": {
+            "items": {
+              "$ref": "#/components/schemas/SensorSamplePoint"
+            },
+            "title": "Sensor Samples",
+            "type": "array"
+          },
+          "sensor_stream": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SensorStreamContract"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "case",
+          "duration_ms",
+          "sensor_stream",
+          "sensor_quality",
+          "ground_truth_events",
+          "sensor_samples",
+          "fall_manifest_id",
+          "fall_windows",
+          "fall_alarm_episodes",
+          "routine_profile",
+          "routine_days",
+          "messages",
+          "generated_at"
+        ],
+        "title": "ReplayPreviewResponse",
+        "type": "object"
+      },
+      "RoutineAssessment": {
+        "additionalProperties": false,
+        "properties": {
+          "anomaly_score": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anomaly Score"
+          },
+          "event_type": {
+            "enum": [
+              "meal",
+              "nap",
+              "walk"
+            ],
+            "title": "Event Type",
+            "type": "string"
+          },
+          "evidence": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Evidence",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "WITHIN_ROUTINE",
+              "EARLY",
+              "LATE",
+              "MISSING",
+              "COUNT_DEVIATION",
+              "DURATION_DEVIATION"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_type",
+          "status",
+          "evidence"
+        ],
+        "title": "RoutineAssessment",
+        "type": "object"
+      },
+      "RoutineDayResult": {
+        "additionalProperties": false,
+        "properties": {
+          "assessments": {
+            "items": {
+              "$ref": "#/components/schemas/RoutineAssessment"
+            },
+            "title": "Assessments",
+            "type": "array"
+          },
+          "day": {
+            "format": "date",
+            "title": "Day",
+            "type": "string"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/RoutineEventContract"
+            },
+            "title": "Events",
+            "type": "array"
+          }
+        },
+        "required": [
+          "day",
+          "events",
+          "assessments"
+        ],
+        "title": "RoutineDayResult",
+        "type": "object"
+      },
+      "RoutineEventContract": {
+        "additionalProperties": false,
+        "properties": {
+          "duration_minutes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Duration Minutes",
+            "type": "number"
+          },
+          "event_id": {
+            "minLength": 1,
+            "title": "Event Id",
+            "type": "string"
+          },
+          "event_type": {
+            "enum": [
+              "meal",
+              "nap",
+              "walk"
+            ],
+            "title": "Event Type",
+            "type": "string"
+          },
+          "profile_id": {
+            "minLength": 1,
+            "title": "Profile Id",
+            "type": "string"
+          },
+          "slot_key": {
+            "minLength": 1,
+            "title": "Slot Key",
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "truth_category": {
+            "const": "SYNTHETIC_ROUTINE",
+            "default": "SYNTHETIC_ROUTINE",
+            "title": "Truth Category",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "profile_id",
+          "event_type",
+          "slot_key",
+          "started_at",
+          "duration_minutes"
+        ],
+        "title": "RoutineEventContract",
+        "type": "object"
       },
       "RoutineEventInputContract": {
         "additionalProperties": false,
@@ -475,6 +1169,256 @@
         "title": "RoutineEventInputContract",
         "type": "object"
       },
+      "RoutineProfileSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "event_count": {
+            "exclusiveMinimum": 0.0,
+            "title": "Event Count",
+            "type": "integer"
+          },
+          "events_sha256": {
+            "title": "Events Sha256",
+            "type": "string"
+          },
+          "history_days": {
+            "exclusiveMinimum": 0.0,
+            "title": "History Days",
+            "type": "integer"
+          },
+          "history_end": {
+            "format": "date",
+            "title": "History End",
+            "type": "string"
+          },
+          "history_start": {
+            "format": "date",
+            "title": "History Start",
+            "type": "string"
+          },
+          "profile_id": {
+            "title": "Profile Id",
+            "type": "string"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "profile_id",
+          "history_days",
+          "history_start",
+          "history_end",
+          "seed",
+          "event_count",
+          "events_sha256"
+        ],
+        "title": "RoutineProfileSummary",
+        "type": "object"
+      },
+      "SensorKind": {
+        "enum": [
+          "ACCELEROMETER",
+          "GYROSCOPE",
+          "IMU_6AXIS"
+        ],
+        "title": "SensorKind",
+        "type": "string"
+      },
+      "SensorQualityContract": {
+        "additionalProperties": false,
+        "properties": {
+          "accel_effective_rate_hz": {
+            "exclusiveMinimum": 0.0,
+            "title": "Accel Effective Rate Hz",
+            "type": "number"
+          },
+          "accel_max_gap_ms": {
+            "exclusiveMinimum": 0.0,
+            "title": "Accel Max Gap Ms",
+            "type": "number"
+          },
+          "accel_median_dt_ms": {
+            "exclusiveMinimum": 0.0,
+            "title": "Accel Median Dt Ms",
+            "type": "number"
+          },
+          "accel_rows": {
+            "exclusiveMinimum": 1.0,
+            "title": "Accel Rows",
+            "type": "integer"
+          },
+          "accel_unique_timestamps": {
+            "exclusiveMinimum": 1.0,
+            "title": "Accel Unique Timestamps",
+            "type": "integer"
+          },
+          "flags": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "title": "Flags",
+            "type": "array"
+          },
+          "gyro_effective_rate_hz": {
+            "exclusiveMinimum": 0.0,
+            "title": "Gyro Effective Rate Hz",
+            "type": "number"
+          },
+          "gyro_max_gap_ms": {
+            "exclusiveMinimum": 0.0,
+            "title": "Gyro Max Gap Ms",
+            "type": "number"
+          },
+          "gyro_median_dt_ms": {
+            "exclusiveMinimum": 0.0,
+            "title": "Gyro Median Dt Ms",
+            "type": "number"
+          },
+          "gyro_rows": {
+            "exclusiveMinimum": 1.0,
+            "title": "Gyro Rows",
+            "type": "integer"
+          },
+          "gyro_unique_timestamps": {
+            "exclusiveMinimum": 1.0,
+            "title": "Gyro Unique Timestamps",
+            "type": "integer"
+          },
+          "stream_id": {
+            "minLength": 1,
+            "title": "Stream Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id",
+          "accel_rows",
+          "accel_unique_timestamps",
+          "gyro_rows",
+          "gyro_unique_timestamps",
+          "accel_effective_rate_hz",
+          "gyro_effective_rate_hz",
+          "accel_median_dt_ms",
+          "gyro_median_dt_ms",
+          "accel_max_gap_ms",
+          "gyro_max_gap_ms",
+          "flags"
+        ],
+        "title": "SensorQualityContract",
+        "type": "object"
+      },
+      "SensorSamplePoint": {
+        "additionalProperties": false,
+        "properties": {
+          "offset_ms": {
+            "minimum": 0.0,
+            "title": "Offset Ms",
+            "type": "integer"
+          },
+          "values": {
+            "items": {
+              "type": "number"
+            },
+            "minItems": 1,
+            "title": "Values",
+            "type": "array"
+          }
+        },
+        "required": [
+          "offset_ms",
+          "values"
+        ],
+        "title": "SensorSamplePoint",
+        "type": "object"
+      },
+      "SensorStreamContract": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "minLength": 1,
+            "title": "Case Id",
+            "type": "string"
+          },
+          "channels": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Channels",
+            "type": "array"
+          },
+          "content_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Sha256",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "duration_ms": {
+            "exclusiveMinimum": 0.0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "relative_path": {
+            "minLength": 1,
+            "title": "Relative Path",
+            "type": "string"
+          },
+          "sample_count": {
+            "exclusiveMinimum": 0.0,
+            "title": "Sample Count",
+            "type": "integer"
+          },
+          "sample_rate_hz": {
+            "exclusiveMinimum": 0.0,
+            "title": "Sample Rate Hz",
+            "type": "number"
+          },
+          "sensor_kind": {
+            "$ref": "#/components/schemas/SensorKind"
+          },
+          "storage_format": {
+            "$ref": "#/components/schemas/StorageFormat"
+          },
+          "stream_id": {
+            "minLength": 1,
+            "title": "Stream Id",
+            "type": "string"
+          },
+          "units": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Units",
+            "type": "array"
+          }
+        },
+        "required": [
+          "stream_id",
+          "case_id",
+          "sensor_kind",
+          "sample_rate_hz",
+          "channels",
+          "units",
+          "sample_count",
+          "duration_ms",
+          "storage_format",
+          "relative_path",
+          "content_sha256",
+          "created_at"
+        ],
+        "title": "SensorStreamContract",
+        "type": "object"
+      },
       "ServiceHealth": {
         "additionalProperties": false,
         "properties": {
@@ -502,6 +1446,93 @@
         ],
         "title": "ServiceHealth",
         "type": "object"
+      },
+      "SourceLicenseStatus": {
+        "enum": [
+          "VERIFIED_OPEN",
+          "LOCAL_RESEARCH_ONLY",
+          "APPLICATION_REQUIRED",
+          "UNVERIFIED"
+        ],
+        "title": "SourceLicenseStatus",
+        "type": "string"
+      },
+      "SourceReference": {
+        "additionalProperties": false,
+        "properties": {
+          "dataset_name": {
+            "minLength": 1,
+            "title": "Dataset Name",
+            "type": "string"
+          },
+          "fixed_version": {
+            "minLength": 1,
+            "title": "Fixed Version",
+            "type": "string"
+          },
+          "license_reference": {
+            "minLength": 1,
+            "title": "License Reference",
+            "type": "string"
+          },
+          "license_status": {
+            "$ref": "#/components/schemas/SourceLicenseStatus"
+          },
+          "notes": {
+            "minLength": 1,
+            "title": "Notes",
+            "type": "string"
+          },
+          "redistribution_allowed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Redistribution Allowed"
+          },
+          "source_id": {
+            "minLength": 1,
+            "title": "Source Id",
+            "type": "string"
+          },
+          "source_url": {
+            "format": "uri",
+            "minLength": 1,
+            "title": "Source Url",
+            "type": "string"
+          },
+          "verified_at": {
+            "format": "date-time",
+            "title": "Verified At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "dataset_name",
+          "source_url",
+          "fixed_version",
+          "license_status",
+          "license_reference",
+          "redistribution_allowed",
+          "verified_at",
+          "notes"
+        ],
+        "title": "SourceReference",
+        "type": "object"
+      },
+      "StorageFormat": {
+        "enum": [
+          "CSV",
+          "NPY",
+          "NPZ"
+        ],
+        "title": "StorageFormat",
+        "type": "string"
       },
       "SystemStatus": {
         "additionalProperties": false,
@@ -796,6 +1827,65 @@
         "summary": "Cases"
       }
     },
+    "/api/cases/{case_id}/replay-preview": {
+      "get": {
+        "operationId": "replay_preview_api_cases__case_id__replay_preview_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "title": "Case Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayPreviewResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "案例不存在。"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "案例回放数据暂不可读，响应不包含内部异常。"
+          }
+        },
+        "summary": "Replay Preview"
+      }
+    },
     "/api/contracts": {
       "get": {
         "operationId": "contracts_api_contracts_get",
@@ -830,6 +1920,34 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/models": {
+      "get": {
+        "operationId": "models_api_models_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "模型清单暂不可读，响应不包含内部异常。"
+          }
+        },
+        "summary": "Models"
       }
     }
   }

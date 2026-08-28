@@ -28,6 +28,88 @@ export type ApiError = {
 };
 
 /**
+ * ApprovalStatus
+ */
+export type ApprovalStatus = 'RESEARCH_ONLY' | 'EXTERNAL_VALIDATION_REQUIRED' | 'APPROVED';
+
+/**
+ * CaseContract
+ */
+export type CaseContract = {
+    /**
+     * Activity Label
+     */
+    activity_label?: string | null;
+    age_group: AgeGroup;
+    /**
+     * Allowed Models
+     */
+    allowed_models: Array<ModelKind>;
+    /**
+     * Case Id
+     */
+    case_id: string;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Derivation Parent Case Id
+     */
+    derivation_parent_case_id?: string | null;
+    /**
+     * Description
+     */
+    description?: string;
+    /**
+     * Device Name
+     */
+    device_name: string;
+    /**
+     * Has Accelerometer
+     */
+    has_accelerometer: boolean;
+    /**
+     * Has Gyroscope
+     */
+    has_gyroscope: boolean;
+    /**
+     * Original Sample Rate Hz
+     */
+    original_sample_rate_hz?: number | null;
+    /**
+     * Participant Id
+     */
+    participant_id?: string | null;
+    /**
+     * Processing Command
+     */
+    processing_command: string;
+    source: SourceReference;
+    /**
+     * Source Record Path
+     */
+    source_record_path: string;
+    /**
+     * Source Sha256
+     */
+    source_sha256: string;
+    /**
+     * Title
+     */
+    title: string;
+    truth_category: TruthCategory;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+    /**
+     * Wear Position
+     */
+    wear_position: string;
+};
+
+/**
  * CaseListItem
  */
 export type CaseListItem = {
@@ -174,6 +256,91 @@ export type DatabaseHealth = {
 };
 
 /**
+ * FallAlarmEpisodeItem
+ */
+export type FallAlarmEpisodeItem = {
+    /**
+     * End Offset Ms
+     */
+    end_offset_ms: number;
+    /**
+     * Peak Probability
+     */
+    peak_probability: number;
+    /**
+     * Start Offset Ms
+     */
+    start_offset_ms: number;
+    /**
+     * Window Count
+     */
+    window_count: number;
+};
+
+/**
+ * FallWindowResult
+ */
+export type FallWindowResult = {
+    /**
+     * End Offset Ms
+     */
+    end_offset_ms: number;
+    /**
+     * Fall Probability
+     */
+    fall_probability: number;
+    /**
+     * Is Candidate
+     */
+    is_candidate: boolean;
+    /**
+     * Start Offset Ms
+     */
+    start_offset_ms: number;
+};
+
+/**
+ * GroundTruthEvent
+ */
+export type GroundTruthEvent = {
+    /**
+     * Annotation Source Sha256
+     */
+    annotation_source_sha256: string;
+    /**
+     * Case Id
+     */
+    case_id: string;
+    /**
+     * End Offset Ms
+     */
+    end_offset_ms: number;
+    /**
+     * Event Id
+     */
+    event_id: string;
+    event_type: GroundTruthEventType;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Notes
+     */
+    notes: string;
+    /**
+     * Start Offset Ms
+     */
+    start_offset_ms: number;
+    truth_category: TruthCategory;
+};
+
+/**
+ * GroundTruthEventType
+ */
+export type GroundTruthEventType = 'ACTIVITY_INTERVAL' | 'FALL_INTERVAL';
+
+/**
  * HTTPValidationError
  */
 export type HttpValidationError = {
@@ -200,6 +367,11 @@ export type LabelDefinition = {
      */
     meaning: string;
 };
+
+/**
+ * ManifestFormat
+ */
+export type ManifestFormat = 'ONNX' | 'STATISTICAL_RULES';
 
 /**
  * ModelContract
@@ -232,6 +404,77 @@ export type ModelContract = {
 export type ModelKind = 'FALL_DETECTION' | 'ROUTINE_ANOMALY' | 'ACTIVITY_RECOGNITION';
 
 /**
+ * ModelListItem
+ */
+export type ModelListItem = {
+    approval_status: ApprovalStatus;
+    /**
+     * Artifact Relative Path
+     */
+    artifact_relative_path: string | null;
+    /**
+     * Artifact Sha256
+     */
+    artifact_sha256: string | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Deployment Approved
+     */
+    deployment_approved: boolean;
+    /**
+     * Evaluation Reference
+     */
+    evaluation_reference: string;
+    /**
+     * External Validation Completed
+     */
+    external_validation_completed: boolean;
+    format: ManifestFormat;
+    /**
+     * Limitations
+     */
+    limitations: Array<string>;
+    /**
+     * Manifest Id
+     */
+    manifest_id: string;
+    /**
+     * Model Id
+     */
+    model_id: string;
+    model_kind: ModelKind;
+    /**
+     * Source Commit
+     */
+    source_commit: string;
+    /**
+     * Training Truth Categories
+     */
+    training_truth_categories: Array<TruthCategory>;
+    /**
+     * Version
+     */
+    version: string;
+};
+
+/**
+ * ModelListResponse
+ */
+export type ModelListResponse = {
+    /**
+     * Items
+     */
+    items: Array<ModelListItem>;
+    /**
+     * Total
+     */
+    total: number;
+};
+
+/**
  * RealtimeHealth
  */
 export type RealtimeHealth = {
@@ -249,6 +492,130 @@ export type RealtimeHealth = {
  * ReplayEventType
  */
 export type ReplayEventType = 'replay.state_changed' | 'sensor.window' | 'model.output' | 'alert.candidate' | 'replay.error';
+
+/**
+ * ReplayPreviewResponse
+ */
+export type ReplayPreviewResponse = {
+    case: CaseContract;
+    /**
+     * Duration Ms
+     */
+    duration_ms: number;
+    /**
+     * Fall Alarm Episodes
+     */
+    fall_alarm_episodes: Array<FallAlarmEpisodeItem>;
+    /**
+     * Fall Manifest Id
+     */
+    fall_manifest_id: string | null;
+    /**
+     * Fall Threshold
+     */
+    fall_threshold?: number | null;
+    /**
+     * Fall Windows
+     */
+    fall_windows: Array<FallWindowResult>;
+    /**
+     * Generated At
+     */
+    generated_at: string;
+    /**
+     * Ground Truth Events
+     */
+    ground_truth_events: Array<GroundTruthEvent>;
+    /**
+     * Messages
+     */
+    messages: Array<string>;
+    /**
+     * Routine Days
+     */
+    routine_days: Array<RoutineDayResult>;
+    routine_profile: RoutineProfileSummary | null;
+    sensor_quality: SensorQualityContract | null;
+    /**
+     * Sensor Samples
+     */
+    sensor_samples: Array<SensorSamplePoint>;
+    sensor_stream: SensorStreamContract | null;
+};
+
+/**
+ * RoutineAssessment
+ */
+export type RoutineAssessment = {
+    /**
+     * Anomaly Score
+     */
+    anomaly_score?: number | null;
+    /**
+     * Event Type
+     */
+    event_type: 'meal' | 'nap' | 'walk';
+    /**
+     * Evidence
+     */
+    evidence: Array<string>;
+    /**
+     * Status
+     */
+    status: 'WITHIN_ROUTINE' | 'EARLY' | 'LATE' | 'MISSING' | 'COUNT_DEVIATION' | 'DURATION_DEVIATION';
+};
+
+/**
+ * RoutineDayResult
+ */
+export type RoutineDayResult = {
+    /**
+     * Assessments
+     */
+    assessments: Array<RoutineAssessment>;
+    /**
+     * Day
+     */
+    day: string;
+    /**
+     * Events
+     */
+    events: Array<RoutineEventContract>;
+};
+
+/**
+ * RoutineEventContract
+ */
+export type RoutineEventContract = {
+    /**
+     * Duration Minutes
+     */
+    duration_minutes: number;
+    /**
+     * Event Id
+     */
+    event_id: string;
+    /**
+     * Event Type
+     */
+    event_type: 'meal' | 'nap' | 'walk';
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Slot Key
+     */
+    slot_key: string;
+    /**
+     * Started At
+     */
+    started_at: string;
+    /**
+     * Truth Category
+     */
+    truth_category?: 'SYNTHETIC_ROUTINE';
+};
 
 /**
  * RoutineEventInputContract
@@ -269,6 +636,161 @@ export type RoutineEventInputContract = {
 };
 
 /**
+ * RoutineProfileSummary
+ */
+export type RoutineProfileSummary = {
+    /**
+     * Event Count
+     */
+    event_count: number;
+    /**
+     * Events Sha256
+     */
+    events_sha256: string;
+    /**
+     * History Days
+     */
+    history_days: number;
+    /**
+     * History End
+     */
+    history_end: string;
+    /**
+     * History Start
+     */
+    history_start: string;
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+    /**
+     * Seed
+     */
+    seed: number;
+};
+
+/**
+ * SensorKind
+ */
+export type SensorKind = 'ACCELEROMETER' | 'GYROSCOPE' | 'IMU_6AXIS';
+
+/**
+ * SensorQualityContract
+ */
+export type SensorQualityContract = {
+    /**
+     * Accel Effective Rate Hz
+     */
+    accel_effective_rate_hz: number;
+    /**
+     * Accel Max Gap Ms
+     */
+    accel_max_gap_ms: number;
+    /**
+     * Accel Median Dt Ms
+     */
+    accel_median_dt_ms: number;
+    /**
+     * Accel Rows
+     */
+    accel_rows: number;
+    /**
+     * Accel Unique Timestamps
+     */
+    accel_unique_timestamps: number;
+    /**
+     * Flags
+     */
+    flags: Array<string>;
+    /**
+     * Gyro Effective Rate Hz
+     */
+    gyro_effective_rate_hz: number;
+    /**
+     * Gyro Max Gap Ms
+     */
+    gyro_max_gap_ms: number;
+    /**
+     * Gyro Median Dt Ms
+     */
+    gyro_median_dt_ms: number;
+    /**
+     * Gyro Rows
+     */
+    gyro_rows: number;
+    /**
+     * Gyro Unique Timestamps
+     */
+    gyro_unique_timestamps: number;
+    /**
+     * Stream Id
+     */
+    stream_id: string;
+};
+
+/**
+ * SensorSamplePoint
+ */
+export type SensorSamplePoint = {
+    /**
+     * Offset Ms
+     */
+    offset_ms: number;
+    /**
+     * Values
+     */
+    values: Array<number>;
+};
+
+/**
+ * SensorStreamContract
+ */
+export type SensorStreamContract = {
+    /**
+     * Case Id
+     */
+    case_id: string;
+    /**
+     * Channels
+     */
+    channels: Array<string>;
+    /**
+     * Content Sha256
+     */
+    content_sha256: string;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Duration Ms
+     */
+    duration_ms: number;
+    /**
+     * Relative Path
+     */
+    relative_path: string;
+    /**
+     * Sample Count
+     */
+    sample_count: number;
+    /**
+     * Sample Rate Hz
+     */
+    sample_rate_hz: number;
+    sensor_kind: SensorKind;
+    storage_format: StorageFormat;
+    /**
+     * Stream Id
+     */
+    stream_id: string;
+    /**
+     * Units
+     */
+    units: Array<string>;
+};
+
+/**
  * ServiceHealth
  */
 export type ServiceHealth = {
@@ -285,6 +807,55 @@ export type ServiceHealth = {
      */
     version: string;
 };
+
+/**
+ * SourceLicenseStatus
+ */
+export type SourceLicenseStatus = 'VERIFIED_OPEN' | 'LOCAL_RESEARCH_ONLY' | 'APPLICATION_REQUIRED' | 'UNVERIFIED';
+
+/**
+ * SourceReference
+ */
+export type SourceReference = {
+    /**
+     * Dataset Name
+     */
+    dataset_name: string;
+    /**
+     * Fixed Version
+     */
+    fixed_version: string;
+    /**
+     * License Reference
+     */
+    license_reference: string;
+    license_status: SourceLicenseStatus;
+    /**
+     * Notes
+     */
+    notes: string;
+    /**
+     * Redistribution Allowed
+     */
+    redistribution_allowed: boolean | null;
+    /**
+     * Source Id
+     */
+    source_id: string;
+    /**
+     * Source Url
+     */
+    source_url: string;
+    /**
+     * Verified At
+     */
+    verified_at: string;
+};
+
+/**
+ * StorageFormat
+ */
+export type StorageFormat = 'CSV' | 'NPY' | 'NPZ';
 
 /**
  * SystemStatus
@@ -425,6 +996,44 @@ export type CasesApiCasesGetResponses = {
 
 export type CasesApiCasesGetResponse = CasesApiCasesGetResponses[keyof CasesApiCasesGetResponses];
 
+export type ReplayPreviewApiCasesCaseIdReplayPreviewGetData = {
+    body?: never;
+    path: {
+        /**
+         * Case Id
+         */
+        case_id: string;
+    };
+    query?: never;
+    url: '/api/cases/{case_id}/replay-preview';
+};
+
+export type ReplayPreviewApiCasesCaseIdReplayPreviewGetErrors = {
+    /**
+     * 案例不存在。
+     */
+    404: ApiError;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+    /**
+     * 案例回放数据暂不可读，响应不包含内部异常。
+     */
+    503: ApiError;
+};
+
+export type ReplayPreviewApiCasesCaseIdReplayPreviewGetError = ReplayPreviewApiCasesCaseIdReplayPreviewGetErrors[keyof ReplayPreviewApiCasesCaseIdReplayPreviewGetErrors];
+
+export type ReplayPreviewApiCasesCaseIdReplayPreviewGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ReplayPreviewResponse;
+};
+
+export type ReplayPreviewApiCasesCaseIdReplayPreviewGetResponse = ReplayPreviewApiCasesCaseIdReplayPreviewGetResponses[keyof ReplayPreviewApiCasesCaseIdReplayPreviewGetResponses];
+
 export type ContractsApiContractsGetData = {
     body?: never;
     path?: never;
@@ -456,3 +1065,28 @@ export type HealthApiHealthGetResponses = {
 };
 
 export type HealthApiHealthGetResponse = HealthApiHealthGetResponses[keyof HealthApiHealthGetResponses];
+
+export type ModelsApiModelsGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/models';
+};
+
+export type ModelsApiModelsGetErrors = {
+    /**
+     * 模型清单暂不可读，响应不包含内部异常。
+     */
+    503: ApiError;
+};
+
+export type ModelsApiModelsGetError = ModelsApiModelsGetErrors[keyof ModelsApiModelsGetErrors];
+
+export type ModelsApiModelsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ModelListResponse;
+};
+
+export type ModelsApiModelsGetResponse = ModelsApiModelsGetResponses[keyof ModelsApiModelsGetResponses];

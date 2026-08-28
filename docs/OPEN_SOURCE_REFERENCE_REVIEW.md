@@ -16,6 +16,7 @@
 | [openmhealth/schemas](https://github.com/openmhealth/schemas) | `df386000a93a35c1d7f33a023f759e41202a7d3d` | Apache-2.0；未归档；最近推送 2026-08-26 | 数据点头部的来源、时间、schema 版本与 acquisition provenance 思路 | 不声称本项目已符合完整 Open mHealth 或 FHIR；上游已注明部分睡眠/活动 schema 被 IEEE 1752.1 取代 |
 | [awareframework/aware-client](https://github.com/awareframework/aware-client) | `f77e873baaedfc649fd39ca8f3547f914c3e6b32` | Apache-2.0；未归档；最近推送 2026-08-07 | 传感器采集、本地保存、同步和研究配置分离 | 当前范围没有手机端与真实设备采集，不复制权限或后台常驻逻辑 |
 | [fastapi/full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template) | `2ccfa25845dec4c70b8a7b653ed347b2905240b6` | MIT；未归档；最近推送 2026-08-27 | OpenAPI 生成前端类型、Pytest 与端到端验证路线 | 该模板使用 React、PostgreSQL、认证和容器部署；本项目保留 Vue、SQLite、本地单用户 |
+| [the-momentum/open-wearables](https://github.com/the-momentum/open-wearables) | `f766b5a0a45b091828317d30c5e516574adfbe61` | MIT；未归档；最近推送 2026-08-28 | 自托管 FastAPI、统一可穿戴数据 API、来源适配器与人工反馈边界 | 当前项目是离线模拟研究平台，不引入厂商 OAuth、云同步或把样例数据冒充真实设备记录 |
 | [DevGurav/fall-detect-system](https://github.com/DevGurav/fall-detect-system) | `5879f92c5643f97a32302f4eb74b05a3fb07929a` | MIT；未归档；最近推送 2026-08-22 | 最相似的“腕部跌倒 + 虚拟设备回放 + 事件流”拆分，可作为回放边界检查清单 | 不复制其自报指标、目标阈值或数据许可结论；这些都不是本项目实测证据 |
 | [joaojtmarques/WEDA-FALL](https://github.com/joaojtmarques/WEDA-FALL) | `74e0b93cb061d4ecbca12628f2d47090e97fbeea` | GitHub API 未识别到许可证；最近推送 2026-08-24 | 腕部 50 Hz 六轴来源、年轻模拟跌倒与老人 ADL 误报分析 | 原始数据不进本仓库，不默认允许再分发或商用；老人没有执行跌倒 |
 | [CAPTURE-24 数据与工具](https://doi.org/10.1038/s41597-024-03960-3) | 工具参考仓库 `f861b44f5675cb3e8294cd3d560d7a71a749616f` | 论文明确数据为 CC BY 4.0；GitHub 工具代码为 Oxford Academic Use Licence，不是同一许可 | 参与者分组后切窗、100 Hz 腕部自由生活活动标签、活动识别基线 | 不复制工具代码；不把以年轻参与者为主的自由生活活动描述为老人数据；原始数据不进 Git |
@@ -30,6 +31,7 @@
 5. 固定 WEDA-FALL 来源在本机导入 100 个案例；原始与处理数组均留在 Git 忽略目录，只提交哈希与合同。
 6. 用户自有跌倒 ONNX 已按来源提交与 SHA-256 接入；100 案例重放结果只作为同源行为核验。
 7. CAPTURE-24 数据使用论文与 ORA DOI 作为 CC BY 4.0 许可依据；本项目独立实现读取、低通降采样、参与者分组与 NumPy/ONNX 训练，不复制学术许可工具代码。
+8. 对 Open Wearables 仅吸收“来源适配器与统一合同”思路；当前阶段保持完全本地、无需账号、无厂商云连接，避免把未来真实设备范围混进已完成演示。
 
 ## 当前许可结论
 

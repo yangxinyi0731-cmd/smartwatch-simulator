@@ -14,7 +14,7 @@
 
 - Windows 桌面程序；
 - Vue 3 + TypeScript 前端；
-- 已接入 FastAPI、SQLite 和 WebSocket；后续接入 ONNX Runtime；
+- 已接入 FastAPI、SQLite、WebSocket 和 ONNX Runtime；
 - 三个模型的独立结果和可追溯事件；
 - 100 天合成生活规律和 100 个公开来源测试案例；
 - 本地优先、离线演示。
@@ -49,3 +49,4 @@
 - SQLite 已迁移到结构版本 4，并提供 101 个案例的服务端分页接口；
 - OpenAPI、领域 JSON Schema 和前端 TypeScript 类型可以重复生成并检查漂移；
 - 已核验接入跌倒 ONNX 与 100 天合成规律统计规则；CAPTURE-24 活动识别训练管线已建立，模型尚在训练。
+- 总览页可从 SQLite 读取 101 个案例和模型清单，按真实性筛选，并对 WEDA 六轴记录或 100 天合成规律执行只读回放；波形、标签、候选告警、质量标记和模型依据均来自保存的数据。

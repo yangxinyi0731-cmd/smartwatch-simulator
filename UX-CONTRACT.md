@@ -86,7 +86,7 @@
 
 | Operation | Trigger | Pending | Success destination | Success feedback | Failure recovery | Focus outcome | Source ref |
 |---|---|---|---|---|---|---|---|
-| 开始回放 | “开始回放” | 按钮稳定忙碌 | 当前回放页 | 状态区显示运行中 | 保留案例并可重试 | 回放控制区 | PRODUCT.md |
+| 开始回放 | “开始回放” | 初次读取时按钮稳定忙碌 | 当前回放区 | 状态区、时钟和真实游标显示运行中 | 保留案例并可重新读取 | 回放控制区 | PRODUCT.md |
 | 暂停回放 | “暂停” | 同步按钮状态 | 当前回放页 | 时间轴停止 | 显示失败原因 | 原按钮 | PRODUCT.md |
 | 重置回放 | “重置回放” | 悲观等待 | 当前案例起点 | 状态区确认 | 保留当前状态并重试 | 开始回放 | PRODUCT.md |
 | Search | 案例搜索框 | 保留列表框架 | 当前路由查询 | 结果数状态 | 搜索区重试 | 搜索框 | 本合同 |
@@ -118,7 +118,7 @@
 ## Async and resilience
 
 - Mutation default：悲观确认。
-- Idempotency：回放会话、报告任务使用客户端请求 ID，按钮阻止重复提交。
+- Idempotency：当前只读预览在浏览器内播放，不创建后端写会话；未来回放持久会话和报告任务必须使用客户端请求 ID，按钮阻止重复提交。
 - Auto-save：首版不自动保存敏感设置；本地草稿必须明确标记。
 - Offline：保留已加载案例，显示持续连接状态；后端写操作不静默排队。
 - Retry：健康检查只重试安全 GET，使用 1/2/5/10 秒有上限退避；切换页面可见性或手动刷新时取消旧请求并重新核验。其他操作提供明确重试。
@@ -148,7 +148,7 @@
 - Required static commands：DESIGN lint、premium strict audit、anti-pattern rg、前端构建。
 - Browser matrix：Windows Chrome/Edge；1440×900、1024×768、窄窗口 390×844；200% zoom 为扩展检查。
 - Accessibility：键盘、可见焦点、语义、对比度、reduced motion、forced colors。
-- Current page states：总览必须验证检查中、后端未连接、HTTP 成功但实时通道断开、完整连接、SQLite 结构版本 4、101 案例、暂无交互回放数据、模型研究状态和来源未选择；案例搜索与回放界面将在下一界面关实现，当前不伪造这些交互。
+- Current page states：总览必须验证检查中、后端未连接、HTTP 成功但实时通道断开、完整连接、SQLite 结构版本 4、101 案例、两个已登记研究模型、活动模型待训练、案例读取失败、回放读取失败、WEDA 六轴回放和 100 天合成规律回放。波形只能来自已核验文件，规律时间线必须标记合成。
 - Component-state：后续组件建立 Vitest、Playwright 与视觉状态覆盖。
 - Canonical sibling：第 1 步为新项目无 sibling；以后以守望台总览为视觉基线。
 - CRUD/failure evidence：当前无 CRUD；第 2 步开始记录 API 失败路径。
