@@ -1931,7 +1931,7 @@
   "info": {
     "description": "为本地研究演示提供健康检查、可追溯案例合同、SQLite 状态和实时连接。",
     "title": "模拟智能手表本地服务",
-    "version": "0.5.0"
+    "version": "0.6.0"
   },
   "openapi": "3.1.0",
   "paths": {

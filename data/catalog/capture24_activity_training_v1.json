@@ -1,0 +1,1133 @@
+{
+  "attribution": "Chan S, Hang Y, Tong C, et al. CAPTURE-24: A large dataset of wrist-worn activity tracker data collected in the wild for human activity recognition. Scientific Data 11, 1135 (2024).",
+  "dataset": "CAPTURE-24",
+  "demo_cases": [
+    {
+      "case_id": "capture24-walking-p123",
+      "mapped_activity_label": "walking",
+      "model_output": {
+        "predicted_label": "eating_candidate",
+        "probabilities": {
+          "eating_candidate": 0.6021757125854492,
+          "other_unknown": 0.1273653358221054,
+          "sleep_or_lying_candidate": 0.013017927296459675,
+          "walking": 0.257440984249115
+        }
+      },
+      "participant_id": "P123",
+      "processed_rate_hz": 20,
+      "processed_relative_path": "data/processed/capture24_activity_demo/walking-P123.npy",
+      "processed_sha256": "481fb0d1ba615034bb1180c0bcda52ae3f228db240f537e4a42a770cf74a4344",
+      "processed_shape": [
+        400,
+        3
+      ],
+      "processed_units": [
+        "m/s^2",
+        "m/s^2",
+        "m/s^2"
+      ],
+      "selection_policy": "固定评估参与者顺序中该映射类别的第一个完整 20 秒窗口；不按预测正确与否或置信度挑选。",
+      "source_end_row": 874201,
+      "source_member": "capture24/P123.csv.gz",
+      "source_start_row": 872202,
+      "source_zip_sha256": "e1d44ba9bd6cb12f7d0e4dc2cbb0be56ce00182de7fbcb070907b8bf36fff4ba",
+      "truth_category": "REAL_FREE_LIVING"
+    },
+    {
+      "case_id": "capture24-eating-candidate-p123",
+      "mapped_activity_label": "eating_candidate",
+      "model_output": {
+        "predicted_label": "eating_candidate",
+        "probabilities": {
+          "eating_candidate": 0.4682731032371521,
+          "other_unknown": 0.32426559925079346,
+          "sleep_or_lying_candidate": 0.022181078791618347,
+          "walking": 0.1852801889181137
+        }
+      },
+      "participant_id": "P123",
+      "processed_rate_hz": 20,
+      "processed_relative_path": "data/processed/capture24_activity_demo/eating_candidate-P123.npy",
+      "processed_sha256": "2b09362b9db2ca398ee7a923721a5c2cbe657dfa82e0cffafe89bcc9f4830e7f",
+      "processed_shape": [
+        400,
+        3
+      ],
+      "processed_units": [
+        "m/s^2",
+        "m/s^2",
+        "m/s^2"
+      ],
+      "selection_policy": "固定评估参与者顺序中该映射类别的第一个完整 20 秒窗口；不按预测正确与否或置信度挑选。",
+      "source_end_row": 3592274,
+      "source_member": "capture24/P123.csv.gz",
+      "source_start_row": 3590275,
+      "source_zip_sha256": "e1d44ba9bd6cb12f7d0e4dc2cbb0be56ce00182de7fbcb070907b8bf36fff4ba",
+      "truth_category": "REAL_FREE_LIVING"
+    },
+    {
+      "case_id": "capture24-sleep-or-lying-candidate-p123",
+      "mapped_activity_label": "sleep_or_lying_candidate",
+      "model_output": {
+        "predicted_label": "sleep_or_lying_candidate",
+        "probabilities": {
+          "eating_candidate": 0.0601431280374527,
+          "other_unknown": 0.11103498935699463,
+          "sleep_or_lying_candidate": 0.8130166530609131,
+          "walking": 0.015805231407284737
+        }
+      },
+      "participant_id": "P123",
+      "processed_rate_hz": 20,
+      "processed_relative_path": "data/processed/capture24_activity_demo/sleep_or_lying_candidate-P123.npy",
+      "processed_sha256": "0a0c9c6a260c6b859c8d3ab975936a1b1a8e74fe9a02b09db42b88343bbfe6dd",
+      "processed_shape": [
+        400,
+        3
+      ],
+      "processed_units": [
+        "m/s^2",
+        "m/s^2",
+        "m/s^2"
+      ],
+      "selection_policy": "固定评估参与者顺序中该映射类别的第一个完整 20 秒窗口；不按预测正确与否或置信度挑选。",
+      "source_end_row": 2001,
+      "source_member": "capture24/P123.csv.gz",
+      "source_start_row": 2,
+      "source_zip_sha256": "e1d44ba9bd6cb12f7d0e4dc2cbb0be56ce00182de7fbcb070907b8bf36fff4ba",
+      "truth_category": "REAL_FREE_LIVING"
+    },
+    {
+      "case_id": "capture24-other-unknown-p123",
+      "mapped_activity_label": "other_unknown",
+      "model_output": {
+        "predicted_label": "eating_candidate",
+        "probabilities": {
+          "eating_candidate": 0.5815631151199341,
+          "other_unknown": 0.2009534388780594,
+          "sleep_or_lying_candidate": 0.06978238373994827,
+          "walking": 0.14770108461380005
+        }
+      },
+      "participant_id": "P123",
+      "processed_rate_hz": 20,
+      "processed_relative_path": "data/processed/capture24_activity_demo/other_unknown-P123.npy",
+      "processed_sha256": "f8b5829d46aa6796c5c8663dacd157c96dfc3f19d78459bf452ad1d667b2bb02",
+      "processed_shape": [
+        400,
+        3
+      ],
+      "processed_units": [
+        "m/s^2",
+        "m/s^2",
+        "m/s^2"
+      ],
+      "selection_policy": "固定评估参与者顺序中该映射类别的第一个完整 20 秒窗口；不按预测正确与否或置信度挑选。",
+      "source_end_row": 892102,
+      "source_member": "capture24/P123.csv.gz",
+      "source_start_row": 890103,
+      "source_zip_sha256": "e1d44ba9bd6cb12f7d0e4dc2cbb0be56ce00182de7fbcb070907b8bf36fff4ba",
+      "truth_category": "REAL_FREE_LIVING"
+    }
+  ],
+  "evaluation_group": {
+    "annotation_count_scope": "rows scanned until every mapped class reached its fixed cap, or end of member",
+    "participants": [
+      "P123",
+      "P078",
+      "P024",
+      "P129",
+      "P103",
+      "P079",
+      "P117",
+      "P019",
+      "P066",
+      "P046",
+      "P022",
+      "P016"
+    ],
+    "per_participant_window_counts": {
+      "P016": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P019": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P022": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P024": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P046": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P066": {
+        "eating_candidate": 63,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P078": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P079": {
+        "eating_candidate": 41,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P103": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P117": {
+        "eating_candidate": 47,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P123": {
+        "eating_candidate": 57,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P129": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      }
+    },
+    "scan": {
+      "P016": {
+        "source_rows_scanned": 5349840,
+        "stopped_after_selection_complete": true
+      },
+      "P019": {
+        "source_rows_scanned": 5898787,
+        "stopped_after_selection_complete": true
+      },
+      "P022": {
+        "source_rows_scanned": 4087900,
+        "stopped_after_selection_complete": true
+      },
+      "P024": {
+        "source_rows_scanned": 6255874,
+        "stopped_after_selection_complete": true
+      },
+      "P046": {
+        "source_rows_scanned": 5418625,
+        "stopped_after_selection_complete": true
+      },
+      "P066": {
+        "source_rows_scanned": 9900001,
+        "stopped_after_selection_complete": false
+      },
+      "P078": {
+        "source_rows_scanned": 4359900,
+        "stopped_after_selection_complete": true
+      },
+      "P079": {
+        "source_rows_scanned": 8820001,
+        "stopped_after_selection_complete": false
+      },
+      "P103": {
+        "source_rows_scanned": 5552200,
+        "stopped_after_selection_complete": true
+      },
+      "P117": {
+        "source_rows_scanned": 9090001,
+        "stopped_after_selection_complete": false
+      },
+      "P123": {
+        "source_rows_scanned": 7740001,
+        "stopped_after_selection_complete": false
+      },
+      "P129": {
+        "source_rows_scanned": 4632600,
+        "stopped_after_selection_complete": true
+      }
+    },
+    "top_raw_annotations_by_target": {
+      "eating_candidate": [
+        {
+          "raw_annotation": "home activity;eating;13030 eating sitting alone or with someone;MET 1.5",
+          "source_row_count": 650817
+        },
+        {
+          "raw_annotation": "occupation;interruption;13030 eating sitting;MET 1.5",
+          "source_row_count": 462708
+        },
+        {
+          "raw_annotation": "leisure;eating;social;13030 eating sitting indoor/outdoor;MET 1.5",
+          "source_row_count": 388611
+        },
+        {
+          "raw_annotation": "leisure;eating;13030 eating sitting indoor/outdoor;MET 1.5",
+          "source_row_count": 104000
+        },
+        {
+          "raw_annotation": "leisure;eating;social;5060 buying foods or drinks as a takeaway;MET 2.3",
+          "source_row_count": 50602
+        },
+        {
+          "raw_annotation": "occupation;interruption;sitting;13030 eating sitting;MET 1.5",
+          "source_row_count": 49402
+        },
+        {
+          "raw_annotation": "leisure;eating;not-social;13030 eating sitting indoor/outdoor;MET 1.5",
+          "source_row_count": 26801
+        },
+        {
+          "raw_annotation": "home activity;eating;13035 eating standing alone or with others;MET 2.0",
+          "source_row_count": 9301
+        }
+      ],
+      "other_unknown": [
+        {
+          "raw_annotation": "occupation;office and administrative support;11580 office wok/computer work general;MET 1.5",
+          "source_row_count": 3319824
+        },
+        {
+          "raw_annotation": "sitting;sitstand+activity;social;MET 1.8",
+          "source_row_count": 2292718
+        },
+        {
+          "raw_annotation": "transportation;private transportation;16010 driving automobile or light truck (not a semi);MET 2.5",
+          "source_row_count": 1577165
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;5080 sitting non-desk work (with or without eating at the same time);MET 1.3",
+          "source_row_count": 1435836
+        },
+        {
+          "raw_annotation": "home activity;household chores;preparing meals/cooking/washing dishes;5035 kitchen activity general cooking/washing/dishes/cleaning up;MET 3.3",
+          "source_row_count": 1395947
+        },
+        {
+          "raw_annotation": "occupation;miscellaneous;11475 (generic) manual labour;MET 2.8",
+          "source_row_count": 1155826
+        },
+        {
+          "raw_annotation": "occupation;interruption;standing;9050 standing talking in person/using a phone/smartphone/tablet;MET 1.8",
+          "source_row_count": 847719
+        },
+        {
+          "raw_annotation": "occupation;interruption;sitting;11585 sitting meeting/talking to colleagues with or without eating;MET 1.5",
+          "source_row_count": 708827
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;11580 office work such as writing and typing (with or without eating at the same time);MET 1.5",
+          "source_row_count": 677106
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;11580 office/computer work general;MET 1.5",
+          "source_row_count": 586729
+        },
+        {
+          "raw_annotation": "transportation;private transportation;1010 bicycling;MET 4.0",
+          "source_row_count": 551513
+        },
+        {
+          "raw_annotation": "leisure;miscellaneous;sitting;9055 sitting talking to person/using the phone;MET 1.5",
+          "source_row_count": 536116
+        },
+        {
+          "raw_annotation": "transportation;public transportation;16016 riding in a bus or train;MET 1.3",
+          "source_row_count": 495414
+        },
+        {
+          "raw_annotation": "occupation;office and administrative support;11580 office/computer work general;MET 1.5",
+          "source_row_count": 480915
+        },
+        {
+          "raw_annotation": "household-chores;walking+activity;MET 3.0",
+          "source_row_count": 389918
+        },
+        {
+          "raw_annotation": "occupation;office and administrative support;11600 (generic) standing tasks such as store clerk/libarian/packing boxes/repair heavy parts;MET 3.0",
+          "source_row_count": 330302
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;9030 sitting desk entertainment/hobby (with or without eating at the same time);MET 1.3",
+          "source_row_count": 246711
+        },
+        {
+          "raw_annotation": "household-chores;sitstand+activity;social;MET 4.5",
+          "source_row_count": 229533
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;standing;9050 standing talking in person/on the phone/computer (skype chatting) or using a mobile phone/smartphone/tablet;MET 1.8",
+          "source_row_count": 226611
+        },
+        {
+          "raw_annotation": "occupation;miscellaneous;11615 (generic) standing lifting items continuously with limited walking;MET 4.5",
+          "source_row_count": 223702
+        },
+        {
+          "raw_annotation": "sitting;sitstand+lowactivity;screen;MET 1.0",
+          "source_row_count": 206902
+        },
+        {
+          "raw_annotation": "occupation;interruption;11585 sitting meeting/talking to colleages with or without eating;MET 1.5",
+          "source_row_count": 198904
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;standing;9070 standing reading or without observable/identifiable activities;MET 1.8",
+          "source_row_count": 198512
+        },
+        {
+          "raw_annotation": "home activity;child/elderly/pet care;MET 2.3",
+          "source_row_count": 190307
+        },
+        {
+          "raw_annotation": "occupation;interruption;sitting;9060 sitting without observable/identifiable activities;MET 1.3",
+          "source_row_count": 177205
+        }
+      ],
+      "sleep_or_lying_candidate": [
+        {
+          "raw_annotation": "7030 sleeping;MET 0.95",
+          "source_row_count": 21318016
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;9060 sitting/lying reading or without observable/identifiable activities;MET 1.3",
+          "source_row_count": 1097041
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;9055 sitting/lying talking in person/using a mobile phone/smartphone/tablet or talking on the phone/computer (skype chatting);MET 1.5",
+          "source_row_count": 925036
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;7010 sitting/lying and watching television with TV on as the primary activity;MET 1.0",
+          "source_row_count": 465209
+        },
+        {
+          "raw_annotation": "leisure;miscellaneous;sitting;9060 (generic) sitting/lying reading or without observable/identifiable activities;MET 1.3",
+          "source_row_count": 77001
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;9060 sitting/lying reading or without observable activities;MET 1.3",
+          "source_row_count": 6701
+        }
+      ],
+      "walking": [
+        {
+          "raw_annotation": "occupation;interruption;11795 walking on job and carrying light objects such as boxes or pushing trolleys;MET 3.5",
+          "source_row_count": 1846845
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;walking;17150 walking household without observable loads;MET 2.0",
+          "source_row_count": 1782258
+        },
+        {
+          "raw_annotation": "leisure;miscellaneous;walking;5060 shopping miscellaneous;MET 2.3",
+          "source_row_count": 1279745
+        },
+        {
+          "raw_annotation": "transportation;walking;17250 walking as the single means to a destination not to work or class;MET 3.0",
+          "source_row_count": 882137
+        },
+        {
+          "raw_annotation": "occupation;interruption;11791 walking on job in office or lab area;MET 2.0",
+          "source_row_count": 667334
+        },
+        {
+          "raw_annotation": "transportation;walking;17270 walking as the single means to work or class (not from);MET 3.5",
+          "source_row_count": 555215
+        },
+        {
+          "raw_annotation": "transportation;walking;17161 walking not as the single means of transports e.g.from house to transports or vice versa/from car to places or vice versa/between transports;MET 2.5",
+          "source_row_count": 550894
+        },
+        {
+          "raw_annotation": "occupation;interruption;walking;11791 walking on job in office or lab area;MET 2.0",
+          "source_row_count": 437158
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;walking;5147 walking moving away light items (pens/papers/keys not included);MET 3.0",
+          "source_row_count": 189610
+        },
+        {
+          "raw_annotation": "transportation;walking;9050 standing miscellaneous (talking to others etc.);MET 1.8",
+          "source_row_count": 99667
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;walking;5165 (generic) walking non-cleaning task such as closing windows lock door putting away items;MET 3.5",
+          "source_row_count": 48501
+        },
+        {
+          "raw_annotation": "leisure;miscellaneous;walking;17031 loading /unloading a car implied walking;MET 3.5",
+          "source_row_count": 46903
+        },
+        {
+          "raw_annotation": "leisure;miscellaneous;walking;21070 (generic) walking and occasional standing (no more than two consecutive images);MET 2.5",
+          "source_row_count": 40903
+        },
+        {
+          "raw_annotation": "transportation;walking;9071 standing miscellaneous (talking to others etc.);MET 2.5",
+          "source_row_count": 9401
+        },
+        {
+          "raw_annotation": "home activity;household chores;preparing meals/cooking/washing dishes;5051 serving food/setting table implied walking and standing;MET 2.5",
+          "source_row_count": 9201
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;walking;5121 walking with moving and lifting loads such as bikes and furniture;MET 4.0",
+          "source_row_count": 7001
+        },
+        {
+          "raw_annotation": "home activity;child/elderly/pet care;child care;5181 walking and carrying child;MET 3.0",
+          "source_row_count": 2159
+        }
+      ]
+    },
+    "window_counts": {
+      "eating_candidate": 848,
+      "other_unknown": 960,
+      "sleep_or_lying_candidate": 960,
+      "walking": 960
+    }
+  },
+  "execution_command": "python -m backend.scripts.train_activity_model --source-zip data/raw/capture24/capture24_recovered_prefix.zip --source-recovery-catalog data/catalog/capture24_recovered_prefix_v1.json --source-selection-catalog data/catalog/capture24_activity_availability_v1.json --source-commit 9addc6b7f2f5e7fc198936c9fc0e114e08a5f1e6 --train-participants P023,P026,P070,P034,P031,P043,P011,P135,P028,P099,P053,P035,P029,P058,P089,P150,P097,P072,P116,P051,P127,P118,P113,P087 --evaluation-participants P123,P078,P024,P129,P103,P079,P117,P019,P066,P046,P022,P016 --per-class-limit 80",
+  "format_version": "1.0.0",
+  "license": "CC BY 4.0",
+  "paper": "https://doi.org/10.1038/s41597-024-03960-3",
+  "processing": {
+    "annotation_mapping": "case-insensitive conservative rules: sleep/asleep/lying/lie down/in bed; explicit semicolon eating/drinking category; walking category/description; all other annotated activities to other_unknown. Phrases such as with-or-without-eating are not treated as eating labels.",
+    "anti_alias": "non-overlapping five-sample boxcar mean before decimation",
+    "per_participant_per_class_limit": 80,
+    "target_rate_hz": 20,
+    "target_units": "m/s^2",
+    "window_seconds": 20
+  },
+  "raw_or_window_data_committed": false,
+  "source_archive_scope": "recovered_official_prefix_subset",
+  "source_device": "Axivity AX3 wrist-worn accelerometer",
+  "source_rate_hz": 100,
+  "source_recovery_catalog": {
+    "available_participants": [
+      "P023",
+      "P026",
+      "P070",
+      "P034",
+      "P031",
+      "P043",
+      "P011",
+      "P135",
+      "P028",
+      "P099",
+      "P053",
+      "P035",
+      "P030",
+      "P037",
+      "P029",
+      "P095",
+      "P058",
+      "P089",
+      "P150",
+      "P097",
+      "P072",
+      "P049",
+      "P102",
+      "P134",
+      "P116",
+      "P051",
+      "P127",
+      "P118",
+      "P113",
+      "P087",
+      "P123",
+      "P083",
+      "P078",
+      "P024",
+      "P129",
+      "P103",
+      "P079",
+      "P117",
+      "P019",
+      "P066",
+      "P046",
+      "P022",
+      "P016",
+      "P130",
+      "P006",
+      "P002",
+      "P093",
+      "P077"
+    ],
+    "official_declared_bytes": 6902652480,
+    "participant_count": 48,
+    "path": "data/catalog/capture24_recovered_prefix_v1.json",
+    "scope": "recovered_official_prefix_subset",
+    "sha256": "8eca64947ace5d654a87172203f79598aa3e9a8d98d6b3af157424e5b7d8d837",
+    "source_zip_bytes": 2348094346,
+    "source_zip_relative_path": "data/raw/capture24/capture24_recovered_prefix.zip",
+    "source_zip_sha256": "e1d44ba9bd6cb12f7d0e4dc2cbb0be56ce00182de7fbcb070907b8bf36fff4ba",
+    "truncated_member_excluded": {
+      "available_compressed_bytes": 16877134,
+      "expected_compressed_size": 37398434,
+      "header_offset": 2203868879,
+      "name": "capture24/P008.csv.gz"
+    }
+  },
+  "source_selection_catalog": {
+    "path": "data/catalog/capture24_activity_availability_v1.json",
+    "per_class_limit": 20,
+    "scan_source_commit": "0eacb10e778511895c3949b26a85951e7eac92d5",
+    "scanned_participant_count": 43,
+    "selection_policy": "按恢复目录原始顺序扫描；只依据四个映射类别是否各取得固定数量的最先完整窗口。前 train_count 名合格参与者进入训练，随后 evaluation_count 名进入评估；不读取或比较任何模型预测与指标。",
+    "sha256": "6981c12f927ae9dd1f04a871070e05c78f4adec1d91a352fab13b45a37fafa1e",
+    "unscanned_participants": [
+      "P130",
+      "P006",
+      "P002",
+      "P093",
+      "P077"
+    ]
+  },
+  "source_units": "g",
+  "source_url": "https://doi.org/10.5287/bodleian:NGx0JOMP5",
+  "source_zip_bytes": 2348094346,
+  "source_zip_sha256": "e1d44ba9bd6cb12f7d0e4dc2cbb0be56ce00182de7fbcb070907b8bf36fff4ba",
+  "training_group": {
+    "annotation_count_scope": "rows scanned until every mapped class reached its fixed cap, or end of member",
+    "participants": [
+      "P023",
+      "P026",
+      "P070",
+      "P034",
+      "P031",
+      "P043",
+      "P011",
+      "P135",
+      "P028",
+      "P099",
+      "P053",
+      "P035",
+      "P029",
+      "P058",
+      "P089",
+      "P150",
+      "P097",
+      "P072",
+      "P116",
+      "P051",
+      "P127",
+      "P118",
+      "P113",
+      "P087"
+    ],
+    "per_participant_window_counts": {
+      "P011": {
+        "eating_candidate": 30,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P023": {
+        "eating_candidate": 46,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P026": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P028": {
+        "eating_candidate": 27,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 69
+      },
+      "P029": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 61
+      },
+      "P031": {
+        "eating_candidate": 63,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P034": {
+        "eating_candidate": 43,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P035": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P043": {
+        "eating_candidate": 31,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P051": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 25
+      },
+      "P053": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P058": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P070": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P072": {
+        "eating_candidate": 53,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P087": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P089": {
+        "eating_candidate": 63,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P097": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P099": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P113": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P116": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P118": {
+        "eating_candidate": 69,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P127": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P135": {
+        "eating_candidate": 20,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      },
+      "P150": {
+        "eating_candidate": 80,
+        "other_unknown": 80,
+        "sleep_or_lying_candidate": 80,
+        "walking": 80
+      }
+    },
+    "scan": {
+      "P011": {
+        "source_rows_scanned": 9720001,
+        "stopped_after_selection_complete": false
+      },
+      "P023": {
+        "source_rows_scanned": 10080001,
+        "stopped_after_selection_complete": false
+      },
+      "P026": {
+        "source_rows_scanned": 4073700,
+        "stopped_after_selection_complete": true
+      },
+      "P028": {
+        "source_rows_scanned": 9720001,
+        "stopped_after_selection_complete": false
+      },
+      "P029": {
+        "source_rows_scanned": 10080001,
+        "stopped_after_selection_complete": false
+      },
+      "P031": {
+        "source_rows_scanned": 9720001,
+        "stopped_after_selection_complete": false
+      },
+      "P034": {
+        "source_rows_scanned": 9768001,
+        "stopped_after_selection_complete": false
+      },
+      "P035": {
+        "source_rows_scanned": 6266200,
+        "stopped_after_selection_complete": true
+      },
+      "P043": {
+        "source_rows_scanned": 9282001,
+        "stopped_after_selection_complete": false
+      },
+      "P051": {
+        "source_rows_scanned": 8940001,
+        "stopped_after_selection_complete": false
+      },
+      "P053": {
+        "source_rows_scanned": 6688834,
+        "stopped_after_selection_complete": true
+      },
+      "P058": {
+        "source_rows_scanned": 4932594,
+        "stopped_after_selection_complete": true
+      },
+      "P070": {
+        "source_rows_scanned": 5949600,
+        "stopped_after_selection_complete": true
+      },
+      "P072": {
+        "source_rows_scanned": 9630001,
+        "stopped_after_selection_complete": false
+      },
+      "P087": {
+        "source_rows_scanned": 6540362,
+        "stopped_after_selection_complete": true
+      },
+      "P089": {
+        "source_rows_scanned": 8640001,
+        "stopped_after_selection_complete": false
+      },
+      "P097": {
+        "source_rows_scanned": 4928145,
+        "stopped_after_selection_complete": true
+      },
+      "P099": {
+        "source_rows_scanned": 7263533,
+        "stopped_after_selection_complete": true
+      },
+      "P113": {
+        "source_rows_scanned": 5704722,
+        "stopped_after_selection_complete": true
+      },
+      "P116": {
+        "source_rows_scanned": 5879272,
+        "stopped_after_selection_complete": true
+      },
+      "P118": {
+        "source_rows_scanned": 9300001,
+        "stopped_after_selection_complete": false
+      },
+      "P127": {
+        "source_rows_scanned": 4743500,
+        "stopped_after_selection_complete": true
+      },
+      "P135": {
+        "source_rows_scanned": 9690001,
+        "stopped_after_selection_complete": false
+      },
+      "P150": {
+        "source_rows_scanned": 4570597,
+        "stopped_after_selection_complete": true
+      }
+    },
+    "top_raw_annotations_by_target": {
+      "eating_candidate": [
+        {
+          "raw_annotation": "home activity;eating;13030 eating sitting alone or with someone;MET 1.5",
+          "source_row_count": 1838654
+        },
+        {
+          "raw_annotation": "leisure;eating;13030 eating sitting indoor/outdoor;MET 1.5",
+          "source_row_count": 816508
+        },
+        {
+          "raw_annotation": "leisure;eating;social;13030 eating sitting indoor/outdoor;MET 1.5",
+          "source_row_count": 632003
+        },
+        {
+          "raw_annotation": "occupation;interruption;13030 eating sitting;MET 1.5",
+          "source_row_count": 256105
+        },
+        {
+          "raw_annotation": "occupation;interruption;sitting;13030 eating sitting;MET 1.5",
+          "source_row_count": 169405
+        },
+        {
+          "raw_annotation": "home activity;eating;13035 eating standing alone or with others;MET 2.0",
+          "source_row_count": 85804
+        },
+        {
+          "raw_annotation": "leisure;eating;5060 buying foods or drinks as a takeaway;MET 2.3",
+          "source_row_count": 9201
+        },
+        {
+          "raw_annotation": "leisure;eating;13035 eating standing indoor/outdoor;MET 2.0",
+          "source_row_count": 9001
+        }
+      ],
+      "other_unknown": [
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;11580 office/computer work general;MET 1.5",
+          "source_row_count": 5891613
+        },
+        {
+          "raw_annotation": "occupation;office and administrative support;11580 office/computer work general;MET 1.5",
+          "source_row_count": 5153861
+        },
+        {
+          "raw_annotation": "home activity;household chores;preparing meals/cooking/washing dishes;5035 kitchen activity general cooking/washing/dishes/cleaning up;MET 3.3",
+          "source_row_count": 4934685
+        },
+        {
+          "raw_annotation": "occupation;office and administrative support;11580 office wok/computer work general;MET 1.5",
+          "source_row_count": 3319127
+        },
+        {
+          "raw_annotation": "transportation;private transportation;16010 driving automobile or light truck (not a semi);MET 2.5",
+          "source_row_count": 2986246
+        },
+        {
+          "raw_annotation": "household-chores;sitstand+activity;MET 2.5",
+          "source_row_count": 2923118
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;11580 office work such as writing and typing (with or without eating at the same time);MET 1.5",
+          "source_row_count": 2603648
+        },
+        {
+          "raw_annotation": "occupation;interruption;sitting;11585 sitting meeting/talking to colleagues with or without eating;MET 1.5",
+          "source_row_count": 2109692
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;9030 sitting desk entertainment/hobby (with or without eating at the same time);MET 1.3",
+          "source_row_count": 1299047
+        },
+        {
+          "raw_annotation": "transportation;private transportation;1010 bicycling;MET 4.0",
+          "source_row_count": 1287551
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;9030  sitting desk work (with or without eating at the same time);MET 1.3",
+          "source_row_count": 1078814
+        },
+        {
+          "raw_annotation": "sitting;sitstand+lowactivity;screen;MET 1.0",
+          "source_row_count": 1070634
+        },
+        {
+          "raw_annotation": "transportation;public transportation;16016 riding in a bus or train;MET 1.3",
+          "source_row_count": 1021702
+        },
+        {
+          "raw_annotation": "home activity;household chores;washing/ironing/mending clothes;5090 folding or hanging clothes/put clothes in or out of washer or dryer/packing suitcase limited walking;MET 2.0",
+          "source_row_count": 861935
+        },
+        {
+          "raw_annotation": "sports/gym;MET 3.5",
+          "source_row_count": 851436
+        },
+        {
+          "raw_annotation": "transportation;private transportation;16015 riding in a car or truck;MET 1.3",
+          "source_row_count": 737830
+        },
+        {
+          "raw_annotation": "sports/gym;MET 6.0",
+          "source_row_count": 607906
+        },
+        {
+          "raw_annotation": "leisure;miscellaneous;5060 shopping miscellaneous;MET 2.3",
+          "source_row_count": 574419
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;5080 sitting non-desk work (with or without eating at the same time);MET 1.3",
+          "source_row_count": 567351
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;standing;9050 standing talking in person/on the phone/computer (skype chatting) or using a mobile phone/smartphone/tablet;MET 1.8",
+          "source_row_count": 559419
+        },
+        {
+          "raw_annotation": "leisure;miscellaneous;sitting;21000 sitting meeting;MET 1.5",
+          "source_row_count": 462218
+        },
+        {
+          "raw_annotation": "occupation;office and administrative support;11600 (generic) standing tasks such as store clerk/libarian/packing boxes/repair heavy parts;MET 3.0",
+          "source_row_count": 455006
+        },
+        {
+          "raw_annotation": "occupation;interruption;11585 sitting meeting/talking to colleages with or without eating;MET 1.5",
+          "source_row_count": 433703
+        },
+        {
+          "raw_annotation": "occupation;interruption;standing;9050 standing talking in person/using a phone/smartphone/tablet;MET 1.8",
+          "source_row_count": 430515
+        },
+        {
+          "raw_annotation": "home activity;household chores;washing/ironing/mending clothes;5070 ironing;MET 1.8",
+          "source_row_count": 420910
+        }
+      ],
+      "sleep_or_lying_candidate": [
+        {
+          "raw_annotation": "7030 sleeping;MET 0.95",
+          "source_row_count": 47190036
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;9060 sitting/lying reading or without observable/identifiable activities;MET 1.3",
+          "source_row_count": 3815350
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;9055 sitting/lying talking in person/using a mobile phone/smartphone/tablet or talking on the phone/computer (skype chatting);MET 1.5",
+          "source_row_count": 2247086
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;7010 sitting/lying and watching television with TV on as the primary activity;MET 1.0",
+          "source_row_count": 1640971
+        },
+        {
+          "raw_annotation": "leisure;miscellaneous;sitting;9060 (generic) sitting/lying reading or without observable/identifiable activities;MET 1.3",
+          "source_row_count": 1592656
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;9060 sitting/lying reading or without observable activities;MET 1.3",
+          "source_row_count": 626709
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;sitting;7010 lying and watching television with TV on as the primary activity;MET 1.0",
+          "source_row_count": 591112
+        }
+      ],
+      "walking": [
+        {
+          "raw_annotation": "home activity;miscellaneous;walking;17150 walking household without observable loads;MET 2.0",
+          "source_row_count": 2353718
+        },
+        {
+          "raw_annotation": "transportation;walking;17161 walking not as the single means of transports e.g.from house to transports or vice versa/from car to places or vice versa/between transports;MET 2.5",
+          "source_row_count": 1288153
+        },
+        {
+          "raw_annotation": "leisure;miscellaneous;walking;5060 shopping miscellaneous;MET 2.3",
+          "source_row_count": 1239336
+        },
+        {
+          "raw_annotation": "transportation;walking;17250 walking as the single means to a destination not to work or class;MET 3.0",
+          "source_row_count": 759629
+        },
+        {
+          "raw_annotation": "transportation;walking;17270 walking as the single means to work or class (not from);MET 3.5",
+          "source_row_count": 464714
+        },
+        {
+          "raw_annotation": "leisure;miscellaneous;walking;21070 (generic) walking and occasional standing (no more than two consecutive images);MET 2.5",
+          "source_row_count": 386918
+        },
+        {
+          "raw_annotation": "occupation;interruption;11791 walking on job in office or lab area;MET 2.0",
+          "source_row_count": 326420
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;walking;5165 (generic) walking non-cleaning task such as closing windows lock door putting away items;MET 3.5",
+          "source_row_count": 231508
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;walking;5121 walking with moving and lifting loads such as bikes and furniture;MET 4.0",
+          "source_row_count": 211212
+        },
+        {
+          "raw_annotation": "occupation;interruption;walking;11791 walking on job in office or lab area;MET 2.0",
+          "source_row_count": 181409
+        },
+        {
+          "raw_annotation": "home activity;miscellaneous;walking;5147 walking moving away light items (pens/papers/keys not included);MET 3.0",
+          "source_row_count": 168608
+        },
+        {
+          "raw_annotation": "transportation;walking;9050 standing miscellaneous (talking to others etc.);MET 1.8",
+          "source_row_count": 90106
+        },
+        {
+          "raw_annotation": "transportation;walking;9071 standing miscellaneous (talking to others etc.);MET 2.5",
+          "source_row_count": 21601
+        },
+        {
+          "raw_annotation": "home activity;household chores;preparing meals/cooking/washing dishes;5051 serving food/setting table implied walking and standing;MET 2.5",
+          "source_row_count": 18202
+        },
+        {
+          "raw_annotation": "occupation;interruption;17133 walking upstairs;MET 4.0",
+          "source_row_count": 7801
+        },
+        {
+          "raw_annotation": "home activity;household chores;preparing meals/cooking/washing dishes;5035 cleaning up table after meal implied walking (e.g. leaving from eating table to the kitchen);MET 3.3",
+          "source_row_count": 6901
+        },
+        {
+          "raw_annotation": "occupation;interruption;walking;17070 walking downstairs;MET 3.5",
+          "source_row_count": 101
+        }
+      ]
+    },
+    "window_counts": {
+      "eating_candidate": 1565,
+      "other_unknown": 1920,
+      "sleep_or_lying_candidate": 1920,
+      "walking": 1835
+    }
+  }
+}

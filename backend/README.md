@@ -1,6 +1,6 @@
 # FastAPI 本地后端
 
-当前后端已经建立统一领域合同、SQLite 结构版本 4，从固定版本 WEDA-FALL 本机检出导入 100 个可追溯案例，并注册 1 个 100 天合成规律案例、跌倒 ONNX 与规律统计规则；仍不包含真实设备通信。
+当前后端已经建立统一领域合同、SQLite 结构版本 4，从固定版本 WEDA-FALL 本机检出导入 100 个可追溯案例，注册 1 个 100 天合成规律案例和 4 个 CAPTURE-24 真实自由生活活动窗口，并接入跌倒 ONNX、规律统计规则与活动识别 ONNX；仍不包含真实设备通信。
 
 ## 已实现
 
@@ -48,7 +48,7 @@ backend/
 
 ## SQLite 结构版本 4 的边界
 
-结构版本 3 增加 `import_runs`、`case_import_runs`、`case_source_files`、`sensor_quality` 和 `ground_truth_events`；结构版本 4 再增加 `routine_profiles` 和 `routine_events`。同一标识的等价同步可以安全重跑；只要哈希或元数据冲突，事务就会回滚。当前已写入 100 个 WEDA-FALL 案例和 1 个合成规律案例，并注册两个研究模型 manifest；交互回放与模型输出会在后续迁移中实现。
+结构版本 3 增加 `import_runs`、`case_import_runs`、`case_source_files`、`sensor_quality` 和 `ground_truth_events`；结构版本 4 再增加 `routine_profiles` 和 `routine_events`。同一标识的等价同步可以安全重跑；只要哈希或元数据冲突，事务就会回滚。当前默认库共 105 个案例并注册三个研究模型 manifest；单案例只读回放会在读取时复核文件哈希、形状和有限值，并运行对应的独立模型适配器。
 
 导入命令必须指向保留 `.git` 元数据且 HEAD 为固定提交的本机 WEDA-FALL 检出：
 

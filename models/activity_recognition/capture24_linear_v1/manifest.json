@@ -1,0 +1,88 @@
+{
+  "approval_status": "EXTERNAL_VALIDATION_REQUIRED",
+  "artifact_relative_path": "models/activity_recognition/capture24_linear_v1/model.onnx",
+  "artifact_sha256": "47a552b23092920ffbd74c14f3de3abce2aad33771066180f31a42f6e6be667e",
+  "contract": {
+    "model_kind": "ACTIVITY_RECOGNITION",
+    "name_zh_cn": "腕部活动识别",
+    "output_labels": [
+      {
+        "code": "walking",
+        "label_zh_cn": "走路",
+        "meaning": "当前窗口的活动候选为走路。"
+      },
+      {
+        "code": "eating_candidate",
+        "label_zh_cn": "进食候选",
+        "meaning": "当前腕部动作可能与进食有关，仍需上下文确认。"
+      },
+      {
+        "code": "sleep_or_lying_candidate",
+        "label_zh_cn": "睡眠或躺卧候选",
+        "meaning": "当前窗口可能是睡眠或躺卧，不能仅凭腕部动作确认睡眠。"
+      },
+      {
+        "code": "other_unknown",
+        "label_zh_cn": "其他或未知",
+        "meaning": "当前模型不能可靠归入前三类。"
+      }
+    ],
+    "routine_event_input": null,
+    "safety_boundary": "输出是活动候选，不是生活规律异常，也不是医学风险评分。",
+    "task": "把腕部加速度转换为生活事件候选",
+    "tensor_input": {
+      "channels": [
+        {
+          "name": "ax",
+          "quantity": "acceleration",
+          "unit": "m/s^2"
+        },
+        {
+          "name": "ay",
+          "quantity": "acceleration",
+          "unit": "m/s^2"
+        },
+        {
+          "name": "az",
+          "quantity": "acceleration",
+          "unit": "m/s^2"
+        }
+      ],
+      "input_shape": [
+        null,
+        400,
+        3
+      ],
+      "sample_count": 400,
+      "sample_rate_hz": 20.0,
+      "window_seconds": 20.0
+    }
+  },
+  "created_at": "2026-08-29T01:20:41+08:00",
+  "deployment_approved": false,
+  "evaluation_reference": "reports/models/activity_capture24_group_holdout.json",
+  "external_validation_completed": false,
+  "format": "ONNX",
+  "limitations": [
+    "训练来源只是从官方不完整下载前缀恢复并逐成员校验的 48 人可用子集，不是完整 151 人数据包。",
+    "CAPTURE-24 以年轻参与者为主，不能描述为老人活动数据。",
+    "标签来自自由生活相机/睡眠日记注释和本项目显式关键词映射；进食与睡眠输出仍是候选。",
+    "评估是同一数据集内未见参与者组，不是独立外部数据集验证。",
+    "每名参与者每类窗口有固定上限，报告指标只适用于保存的选择与处理配置。",
+    "模型未完成外部验证，deployment_approved=false。"
+  ],
+  "manifest_id": "activity-capture24-linear-1.0.0",
+  "model_id": "activity_capture24_linear_features",
+  "model_kind": "ACTIVITY_RECOGNITION",
+  "source_commit": "9addc6b7f2f5e7fc198936c9fc0e114e08a5f1e6",
+  "training_data_references": [
+    "CAPTURE-24 recovered official prefix subset sha256=e1d44ba9bd6cb12f7d0e4dc2cbb0be56ce00182de7fbcb070907b8bf36fff4ba",
+    "data/catalog/capture24_recovered_prefix_v1.json sha256=8eca64947ace5d654a87172203f79598aa3e9a8d98d6b3af157424e5b7d8d837",
+    "data/catalog/capture24_activity_availability_v1.json sha256=6981c12f927ae9dd1f04a871070e05c78f4adec1d91a352fab13b45a37fafa1e",
+    "data/catalog/capture24_activity_training_v1.json sha256=e8b3cc80bc721f02758270dfe6fd85ba1a3a0409a9fc4a4fc19a649409305281"
+  ],
+  "training_truth_categories": [
+    "REAL_FREE_LIVING"
+  ],
+  "version": "1.0.0"
+}

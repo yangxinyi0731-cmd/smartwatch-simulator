@@ -32,7 +32,7 @@ from .schemas import (
 )
 
 
-SERVICE_VERSION = "0.5.0"
+SERVICE_VERSION = "0.6.0"
 STATUS_INTERVAL_SECONDS = 15
 
 

@@ -31,7 +31,7 @@ routine_profiles / routine_events
 模型适配器
 ├─ 跌倒检测 ONNX（已接入研究版）
 ├─ 个人规律异常统计规则（已接入研究版）
-└─ 腕部活动识别 ONNX（训练与登记中）
+└─ 腕部活动识别 ONNX（已接入研究版）
 ```
 
 ## 当前数据流
@@ -43,9 +43,9 @@ routine_profiles / routine_events
 5. WebSocket 立即发送一次状态，并每 15 秒发送新快照；
 6. 前端断线后使用 1/2/5/10 秒有上限退避自动重试，旧请求会被取消或忽略；
 7. `/api/contracts` 返回五种真实性类别、三模型固定输入输出职责和回放事件类型；
-8. `/api/cases` 使用服务端分页与白名单排序；当前数据库已导入 100 个可追溯 WEDA-FALL 来源案例和 1 个合成规律案例；
+8. `/api/cases` 使用服务端分页与白名单排序；当前数据库已导入 100 个可追溯 WEDA-FALL 来源案例、1 个合成规律案例和 4 个 CAPTURE-24 真实自由生活活动窗口；
 9. `/api/models` 返回已登记 manifest 的版本、artifact 哈希、评估引用、限制和审批状态；
-10. `/api/cases/{case_id}/replay-preview` 从 SQLite 重建合同，再次校验本地路径、文件 SHA-256、NPY 形状和有限数值；WEDA 案例运行固定跌倒 ONNX，合成规律案例运行保存的统计规则；
+10. `/api/cases/{case_id}/replay-preview` 从 SQLite 重建合同，再次校验本地路径、文件 SHA-256、NPY 形状和有限数值；WEDA 案例运行固定跌倒 ONNX，合成规律案例运行保存的统计规则，CAPTURE-24 案例运行固定活动 ONNX；
 11. 前端只读播放 API 返回的真实波形、标签、候选告警或合成规律逐日判断；开始、暂停和重置当前不写数据库，WebSocket 仍只传系统状态；
 12. `/api/reports` 只读取已登记 manifest 对应的本地评估文件，按模型语义规范化展示并重新计算报告 SHA-256；导出端点返回同一结构的可下载 JSON；
 13. 原始文件保持只读，处理后的 50 Hz 六轴数组保存在 Git 忽略目录，SQLite 只保存相对路径、哈希、质量和标签。
@@ -159,5 +159,5 @@ npm --prefix frontend run generate:api
 - 可用 `SMARTWATCH_DATABASE_PATH` 指定绝对路径；
 - Uvicorn 只监听 `127.0.0.1`；
 - 当前无账号、权限、局域网服务或互联网发布；
-- 当前已有两个研究版模型推理和本机案例文件，但无真实设备流；WebSocket 只发送系统状态；
+- 当前已有三个研究版模型推理和本机案例文件，但无真实设备流；WebSocket 只发送系统状态；
 - GitHub 远程仓库仍未配置，本阶段只有公开资料检索，没有发布项目。

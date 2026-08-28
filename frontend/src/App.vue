@@ -326,7 +326,7 @@ function activityLabelText(label: string): string {
 
 const replayOutputs = computed(() => [
   {
-    label: '六轴 / 三轴波形',
+    label: preview.value?.sensor_stream?.channels.length === 6 ? '六轴真实波形' : '三轴真实波形',
     status: preview.value?.sensor_samples.length
       ? `${preview.value.sensor_samples.length} 个真实显示点`
       : preview.value?.routine_profile
@@ -344,7 +344,11 @@ const replayOutputs = computed(() => [
     icon: IconTimeline,
   },
   {
-    label: '告警事件',
+    label: preview.value?.activity_result
+      ? '活动识别候选'
+      : currentRoutineDay.value
+        ? '规律偏离'
+        : '候选告警',
     status: preview.value?.fall_alarm_episodes.length
       ? `${visibleAlarmEpisodes.value.length} / ${preview.value.fall_alarm_episodes.length} 段已到达`
       : currentRoutineDay.value
@@ -560,7 +564,9 @@ const replayOutputs = computed(() => [
         <section v-if="preview?.sensor_stream" class="replay-evidence" aria-labelledby="sensor-waveform-title">
           <div class="replay-evidence__header">
             <div>
-              <h3 id="sensor-waveform-title">真实六轴传感器波形</h3>
+              <h3 id="sensor-waveform-title">
+                真实{{ preview.sensor_stream.channels.length }}轴传感器波形
+              </h3>
               <p>
                 {{ preview.sensor_stream.sample_rate_hz }} Hz ·
                 {{ preview.sensor_stream.sample_count }} 个原始采样 ·
@@ -580,7 +586,7 @@ const replayOutputs = computed(() => [
           />
 
           <div class="evidence-timeline" aria-label="真实标签、模型候选与当前进度时间线">
-            <div class="evidence-timeline__row">
+            <div v-if="preview.fall_windows.length" class="evidence-timeline__row">
               <span>真实标签</span>
               <div class="evidence-timeline__track">
                 <i
@@ -608,7 +614,7 @@ const replayOutputs = computed(() => [
             <i class="evidence-timeline__cursor" :style="{ left: `${replayProgress * 100}%` }" aria-hidden="true"></i>
           </div>
 
-          <div class="model-evidence-grid">
+          <div v-if="preview.fall_windows.length" class="model-evidence-grid">
             <div>
               <span>当前跌倒候选概率</span>
               <strong>{{ currentFallWindow ? currentFallWindow.fall_probability.toFixed(3) : '尚未到达模型窗口' }}</strong>

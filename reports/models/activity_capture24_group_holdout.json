@@ -1,0 +1,296 @@
+{
+  "evaluation": {
+    "class_counts": {
+      "eating_candidate": 848,
+      "other_unknown": 960,
+      "sleep_or_lying_candidate": 960,
+      "walking": 960
+    },
+    "participant_group_holdout_metrics": {
+      "accuracy": 0.6075643776824035,
+      "confusion_matrix": [
+        [
+          570,
+          112,
+          24,
+          254
+        ],
+        [
+          62,
+          403,
+          133,
+          250
+        ],
+        [
+          2,
+          72,
+          864,
+          22
+        ],
+        [
+          175,
+          175,
+          182,
+          428
+        ]
+      ],
+      "labels": [
+        "walking",
+        "eating_candidate",
+        "sleep_or_lying_candidate",
+        "other_unknown"
+      ],
+      "macro_f1": 0.5977935900949525,
+      "per_class": {
+        "eating_candidate": {
+          "f1": 0.5006211180124223,
+          "precision": 0.5288713910761155,
+          "recall": 0.47523584905660377,
+          "support": 848
+        },
+        "other_unknown": {
+          "f1": 0.44723092998955066,
+          "precision": 0.44863731656184486,
+          "recall": 0.44583333333333336,
+          "support": 960
+        },
+        "sleep_or_lying_candidate": {
+          "f1": 0.7988904299583911,
+          "precision": 0.7182044887780549,
+          "recall": 0.9,
+          "support": 960
+        },
+        "walking": {
+          "f1": 0.644431882419446,
+          "precision": 0.7045735475896168,
+          "recall": 0.59375,
+          "support": 960
+        }
+      }
+    },
+    "window_count": 3728
+  },
+  "execution_command": "python -m backend.scripts.train_activity_model --source-zip data/raw/capture24/capture24_recovered_prefix.zip --source-recovery-catalog data/catalog/capture24_recovered_prefix_v1.json --source-selection-catalog data/catalog/capture24_activity_availability_v1.json --source-commit 9addc6b7f2f5e7fc198936c9fc0e114e08a5f1e6 --train-participants P023,P026,P070,P034,P031,P043,P011,P135,P028,P099,P053,P035,P029,P058,P089,P150,P097,P072,P116,P051,P127,P118,P113,P087 --evaluation-participants P123,P078,P024,P129,P103,P079,P117,P019,P066,P046,P022,P016 --per-class-limit 80",
+  "limitations": [
+    "训练来源只是从官方不完整下载前缀恢复并逐成员校验的 48 人可用子集，不是完整 151 人数据包。",
+    "CAPTURE-24 以年轻参与者为主，不能描述为老人活动数据。",
+    "标签来自自由生活相机/睡眠日记注释和本项目显式关键词映射；进食与睡眠输出仍是候选。",
+    "评估是同一数据集内未见参与者组，不是独立外部数据集验证。",
+    "每名参与者每类窗口有固定上限，报告指标只适用于保存的选择与处理配置。",
+    "模型未完成外部验证，deployment_approved=false。"
+  ],
+  "onnx": {
+    "artifact_sha256": "47a552b23092920ffbd74c14f3de3abce2aad33771066180f31a42f6e6be667e",
+    "max_abs_error_vs_numpy": 3.337860107421875e-06,
+    "onnx_version": "1.22.0",
+    "onnxruntime_version": "1.29.0",
+    "providers": [
+      "CPUExecutionProvider"
+    ]
+  },
+  "report_version": "1.0.0",
+  "source_catalog": {
+    "path": "data/catalog/capture24_activity_training_v1.json",
+    "sha256": "e8b3cc80bc721f02758270dfe6fd85ba1a3a0409a9fc4a4fc19a649409305281"
+  },
+  "source_recovery_catalog": {
+    "available_participants": [
+      "P023",
+      "P026",
+      "P070",
+      "P034",
+      "P031",
+      "P043",
+      "P011",
+      "P135",
+      "P028",
+      "P099",
+      "P053",
+      "P035",
+      "P030",
+      "P037",
+      "P029",
+      "P095",
+      "P058",
+      "P089",
+      "P150",
+      "P097",
+      "P072",
+      "P049",
+      "P102",
+      "P134",
+      "P116",
+      "P051",
+      "P127",
+      "P118",
+      "P113",
+      "P087",
+      "P123",
+      "P083",
+      "P078",
+      "P024",
+      "P129",
+      "P103",
+      "P079",
+      "P117",
+      "P019",
+      "P066",
+      "P046",
+      "P022",
+      "P016",
+      "P130",
+      "P006",
+      "P002",
+      "P093",
+      "P077"
+    ],
+    "official_declared_bytes": 6902652480,
+    "participant_count": 48,
+    "path": "data/catalog/capture24_recovered_prefix_v1.json",
+    "scope": "recovered_official_prefix_subset",
+    "sha256": "8eca64947ace5d654a87172203f79598aa3e9a8d98d6b3af157424e5b7d8d837",
+    "source_zip_bytes": 2348094346,
+    "source_zip_relative_path": "data/raw/capture24/capture24_recovered_prefix.zip",
+    "source_zip_sha256": "e1d44ba9bd6cb12f7d0e4dc2cbb0be56ce00182de7fbcb070907b8bf36fff4ba",
+    "truncated_member_excluded": {
+      "available_compressed_bytes": 16877134,
+      "expected_compressed_size": 37398434,
+      "header_offset": 2203868879,
+      "name": "capture24/P008.csv.gz"
+    }
+  },
+  "source_selection_catalog": {
+    "path": "data/catalog/capture24_activity_availability_v1.json",
+    "per_class_limit": 20,
+    "scan_source_commit": "0eacb10e778511895c3949b26a85951e7eac92d5",
+    "scanned_participant_count": 43,
+    "selection_policy": "按恢复目录原始顺序扫描；只依据四个映射类别是否各取得固定数量的最先完整窗口。前 train_count 名合格参与者进入训练，随后 evaluation_count 名进入评估；不读取或比较任何模型预测与指标。",
+    "sha256": "6981c12f927ae9dd1f04a871070e05c78f4adec1d91a352fab13b45a37fafa1e",
+    "unscanned_participants": [
+      "P130",
+      "P006",
+      "P002",
+      "P093",
+      "P077"
+    ]
+  },
+  "split": {
+    "evaluation_participants": [
+      "P123",
+      "P078",
+      "P024",
+      "P129",
+      "P103",
+      "P079",
+      "P117",
+      "P019",
+      "P066",
+      "P046",
+      "P022",
+      "P016"
+    ],
+    "method": "fixed disjoint participant groups",
+    "overlap": [],
+    "training_participants": [
+      "P023",
+      "P026",
+      "P070",
+      "P034",
+      "P031",
+      "P043",
+      "P011",
+      "P135",
+      "P028",
+      "P099",
+      "P053",
+      "P035",
+      "P029",
+      "P058",
+      "P089",
+      "P150",
+      "P097",
+      "P072",
+      "P116",
+      "P051",
+      "P127",
+      "P118",
+      "P113",
+      "P087"
+    ]
+  },
+  "training": {
+    "class_counts": {
+      "eating_candidate": 1565,
+      "other_unknown": 1920,
+      "sleep_or_lying_candidate": 1920,
+      "walking": 1835
+    },
+    "final_weighted_loss": 0.8915715340869688,
+    "iterations": 1200,
+    "l2": 0.001,
+    "learning_rate": 0.05,
+    "resubstitution_metrics": {
+      "accuracy": 0.6327348066298343,
+      "confusion_matrix": [
+        [
+          1130,
+          230,
+          102,
+          373
+        ],
+        [
+          100,
+          921,
+          287,
+          257
+        ],
+        [
+          6,
+          44,
+          1826,
+          44
+        ],
+        [
+          473,
+          389,
+          354,
+          704
+        ]
+      ],
+      "labels": [
+        "walking",
+        "eating_candidate",
+        "sleep_or_lying_candidate",
+        "other_unknown"
+      ],
+      "macro_f1": 0.6157786869712438,
+      "per_class": {
+        "eating_candidate": {
+          "f1": 0.5849476024134647,
+          "precision": 0.5814393939393939,
+          "recall": 0.5884984025559106,
+          "support": 1565
+        },
+        "other_unknown": {
+          "f1": 0.4269254093389933,
+          "precision": 0.5108853410740203,
+          "recall": 0.36666666666666664,
+          "support": 1920
+        },
+        "sleep_or_lying_candidate": {
+          "f1": 0.8135442192024951,
+          "precision": 0.7107824056052939,
+          "recall": 0.9510416666666667,
+          "support": 1920
+        },
+        "walking": {
+          "f1": 0.6376975169300225,
+          "precision": 0.6612053832650673,
+          "recall": 0.6158038147138964,
+          "support": 1835
+        }
+      }
+    },
+    "window_count": 7240
+  }
+}

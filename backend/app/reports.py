@@ -203,8 +203,8 @@ def _summary(record: ModelListRecord) -> ReportSummaryItem:
         title = "腕部活动参与者分组留出评估"
         scope = "same_dataset_participant_holdout"
         scope_note = (
-            "CAPTURE-24 同一数据集内不重叠参与者组评估；该数据以年轻参与者为主，"
-            "不是老人数据，也不是独立外部验证。"
+            "CAPTURE-24 恢复前缀子集内不重叠参与者组评估；不是完整 151 人数据包，"
+            "该数据以年轻参与者为主，不是老人数据，也不是独立外部验证。"
         )
         metrics = _activity_metrics(payload)
     else:  # pragma: no cover - ModelKind currently has exactly three values.

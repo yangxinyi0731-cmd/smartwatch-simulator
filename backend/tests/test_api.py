@@ -145,7 +145,7 @@ def test_report_catalog_normalizes_saved_evidence_without_overclaiming(
     assert response.status_code == 200
     assert response.headers["cache-control"] == "no-store"
     payload = response.json()
-    assert payload["total"] == 2
+    assert payload["total"] == 3
     by_kind = {item["model_kind"]: item for item in payload["items"]}
     fall = by_kind["FALL_DETECTION"]
     assert fall["evidence_scope"] == "same_source_behavior_replay"
@@ -160,6 +160,15 @@ def test_report_catalog_normalizes_saved_evidence_without_overclaiming(
     assert {
         metric["key"]: metric["display_value"] for metric in routine["metrics"]
     }["rule_scenarios_passed"] == "5 / 5 通过"
+    activity = by_kind["ACTIVITY_RECOGNITION"]
+    assert activity["evidence_scope"] == "same_dataset_participant_holdout"
+    activity_metrics = {
+        metric["key"]: metric["display_value"] for metric in activity["metrics"]
+    }
+    assert activity_metrics["evaluation_windows"] == "3728 个"
+    assert activity_metrics["participant_holdout_accuracy"] == "60.8%"
+    assert activity_metrics["participant_holdout_macro_f1"] == "0.598"
+    assert "不是完整 151 人" in activity["evidence_scope_note"]
     assert all(item["external_validation_completed"] is False for item in payload["items"])
     assert any("不合并" in item for item in payload["disclaimers"])
 
@@ -176,7 +185,7 @@ def test_report_export_is_a_downloadable_json_snapshot(tmp_path: Path) -> None:
     assert response.headers["content-disposition"] == (
         'attachment; filename="smartwatch-model-evaluation-reports.json"'
     )
-    assert response.json()["total"] == 2
+    assert response.json()["total"] == 3
 
 
 def test_routine_replay_preview_uses_registered_synthetic_events(tmp_path: Path) -> None:
