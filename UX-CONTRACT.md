@@ -33,7 +33,7 @@
 - Token drift gate：`designmd lint`、静态审计、前端构建、浏览器检查。
 - Supported themes：首版浅色；系统 forced-colors；不自动启用暗色。
 - Design-context owner/review policy：任何全局颜色、字体、圆角和空间变化必须同时修改 CSS 与 DESIGN.md。
-- Typography：标题与正文统一使用简体中文无衬线系统字体；不再使用宋体展示标题。
+- Typography：页面、模块和卡片标题使用离线可用的中西文衬线字体栈；正文、导航与控件使用简体中文无衬线系统字体；数据值使用等宽字体。具体字号、字重和行高以 `DESIGN.md` 为准。
 - Motion：不使用持续环境动画；只有表达交互状态的短过渡，并支持 `prefers-reduced-motion`。
 
 ## Canonical UI Map
@@ -52,7 +52,7 @@
 
 | 能力 | Canonical owner | 当前规则 |
 |---|---|---|
-| 页面壳与主导航 | `frontend/src/components/AppShell.vue` | 桌面固定侧栏；窄屏顶部品牌区和横向导航；未开放功能不是假链接 |
+| 页面壳与主导航 | `frontend/src/components/AppShell.vue` | 桌面悬浮顶栏；不大于 1180px 变为品牌/状态行与横向导航两行；未开放功能不是假链接 |
 | 内容分组 | `frontend/src/components/AppCard.vue` | 只包装真实信息组，不把每个数字做成独立卡片 |
 | 状态标签 | `frontend/src/components/StatusBadge.vue` | neutral / info / success / warning / danger；颜色必须配文字 |
 | 空状态 | `frontend/src/components/EmptyState.vue` | 说明缺少的内容和原因；不得提供无作用按钮或虚构数据 |
@@ -101,7 +101,7 @@
 - Route document title policy：`{页面} — 模拟智能手表`；当前单页固定为“系统总览 — 模拟智能手表”，未来路由、加载、错误、403/404 使用各自诚实标题。
 - Route error / 403：首版本地单用户无 403；404 和 5xx 保留应用导航、说明原因与返回/重试。
 - Breadcrumb/tab/route state：顶层页面使用路由链接；同一案例的同级视图才使用 route-backed tabs。
-- Sidebar transformation：桌面固定侧栏；小于 760px 转为顶部品牌区和可横向滚动导航，不隐藏当前项。三模型子项在窄屏收拢到“三模型中心”顶层入口，内容区仍保留三个模型锚点。
+- Header transformation：桌面使用悬浮顶栏；不大于 1180px 时品牌与状态操作保留第一行，功能导航在第二行横向滚动且不隐藏当前项。三模型内容仍保留三个真实页面锚点，顶栏只显示“三模型中心”总入口。
 - Unavailable navigation：尚未实现的案例库和告警记录显示“未开放”，使用非交互元素并附原因，不使用空 `href`、`href="#"` 或无效果按钮；测试报告使用真实 `#reports` 锚点。
 - Responsive table：优先横向滚动并保留案例 ID 与来源；详情页显示全部字段。
 - Truncation：来源、错误与真实性说明不截断；长哈希可显示短预览并提供复制。
@@ -150,7 +150,7 @@
 - Required static commands：DESIGN lint、premium strict audit、anti-pattern rg、前端构建。
 - Browser matrix：Windows Chrome/Edge；1440×900、1024×768、窄窗口 390×844；200% zoom 为扩展检查。
 - Accessibility：键盘、可见焦点、语义、对比度、reduced motion、forced colors。
-- Current page states：总览必须验证检查中、后端未连接、HTTP 成功但实时通道断开、完整连接、SQLite 结构版本 4、101 案例、两个已登记研究模型、活动模型待训练、案例读取失败、回放读取失败、WEDA 六轴回放和 100 天合成规律回放。波形只能来自已核验文件，规律时间线必须标记合成。
+- Current page states：总览必须验证检查中、后端未连接、HTTP 成功但实时通道断开、完整连接、SQLite 结构版本 5、105 案例、三个已登记研究模型、案例读取失败、回放读取失败、批量任务空/运行/完成、WEDA 六轴回放、CAPTURE-24 三轴回放和 100 天合成规律回放。波形只能来自已核验文件，规律时间线必须标记合成，三个模型结果不得合并成综合医学风险。
 - Component-state：后续组件建立 Vitest、Playwright 与视觉状态覆盖。
 - Canonical sibling：第 1 步为新项目无 sibling；以后以守望台总览为视觉基线。
 - CRUD/failure evidence：当前无 CRUD；第 2 步开始记录 API 失败路径。
