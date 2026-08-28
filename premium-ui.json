@@ -7,10 +7,10 @@
   "ownership": {
     "Scrollbar": "global-application-stylesheet"
   },
-  "requiredCommands": ["build"],
+  "requiredCommands": ["backend-tests", "build"],
   "commands": {
+    "backend-tests": ".\\.venv\\Scripts\\python.exe -m pytest .\\backend\\tests -q",
     "build": "npm --prefix frontend run build"
   },
   "evidence": {}
 }
-

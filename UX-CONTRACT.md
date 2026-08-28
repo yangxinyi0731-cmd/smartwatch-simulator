@@ -18,7 +18,7 @@
 | 数据与模型真实性 | `DATA_AND_MODEL_NOTICE.md` | 真实性合同 | 2026-08-28 |
 | 跌倒模型输入与审批状态 | 现有跌倒模型仓库 `models/fall_detector/tcn_final_candidate/manifest.json` | 模型合同，待第 11 步复制并固定哈希 | 2026-08-28 |
 | 权限模型 | 本地单用户演示，首版无账号和角色 | 产品决定 | 2026-08-28 |
-| 数据生命周期 | 第 2 步 SQLite 合同中定义 | 待实现 | 未评审 |
+| 数据生命周期 | `docs/ARCHITECTURE.md` 的 SQLite 结构版本 1；完整案例生命周期待后续定义 | 已实现的最小合同 | 2026-08-28 |
 | 删除 / 保留 | 首版不提供删除原始来源数据的界面 | 产品决定 | 2026-08-28 |
 | 计费 / 支付 | 不适用 | 不在范围 | 2026-08-28 |
 | 法律 / 监管文案 | `DATA_AND_MODEL_NOTICE.md`；非医疗诊断 | 产品边界 | 2026-08-28 |
@@ -57,6 +57,8 @@
 | 状态标签 | `frontend/src/components/StatusBadge.vue` | neutral / info / success / warning / danger；颜色必须配文字 |
 | 空状态 | `frontend/src/components/EmptyState.vue` | 说明缺少的内容和原因；不得提供无作用按钮或虚构数据 |
 | 全局滚动条 | `frontend/src/style.css` | 根级标准属性 + WebKit 回退；forced-colors 交还系统处理 |
+| 按钮 | `frontend/src/components/AppButton.vue` | 强调程度 × 语义意图；忙碌时尺寸稳定；当前用于真实刷新状态 |
+| 系统连接状态 | `frontend/src/composables/useSystemConnection.ts` | HTTP 健康检查后建立 WebSocket；旧请求取消；断线有上限地自动重试 |
 
 ## Component behavior
 
@@ -89,6 +91,7 @@
 | Search | 案例搜索框 | 保留列表框架 | 当前路由查询 | 结果数状态 | 搜索区重试 | 搜索框 | 本合同 |
 | Upload/background job | “运行全部案例” | 持久阶段进度 | 报告详情 | 报告已生成 | 可恢复/重试失败案例 | 报告标题 | PRODUCT.md |
 | Cancel/back | “返回案例库” | 无 | 来源页面 | 通常无 | 未保存时应用对话框 | 原触发位置 | 本合同 |
+| 刷新系统状态 | “刷新状态” | 按钮保持尺寸并显示“检查中” | 当前总览 | 状态条和连接说明更新 | 保留空状态并自动重试 | 原按钮 | `docs/ARCHITECTURE.md` |
 
 ## Navigation and responsive behavior
 
@@ -116,8 +119,8 @@
 - Mutation default：悲观确认。
 - Idempotency：回放会话、报告任务使用客户端请求 ID，按钮阻止重复提交。
 - Auto-save：首版不自动保存敏感设置；本地草稿必须明确标记。
-- Offline：保留已加载案例，显示连接 banner；后端写操作不静默排队。
-- Retry：只自动重试安全 GET；指数退避有上限；其他操作提供明确重试。
+- Offline：保留已加载案例，显示持续连接状态；后端写操作不静默排队。
+- Retry：健康检查只重试安全 GET，使用 1/2/5/10 秒有上限退避；切换页面可见性或手动刷新时取消旧请求并重新核验。其他操作提供明确重试。
 - Conflict：首版本地单进程；版本冲突时重新读取，不覆盖较新记录。
 - Session：首版无账号；未来认证另行更新合同。
 - Progress：已知总数用确定进度，未知使用阶段名称，不显示假百分比。
@@ -144,7 +147,7 @@
 - Required static commands：DESIGN lint、premium strict audit、anti-pattern rg、前端构建。
 - Browser matrix：Windows Chrome/Edge；1440×900、1024×768、窄窗口 390×844；200% zoom 为扩展检查。
 - Accessibility：键盘、可见焦点、语义、对比度、reduced motion、forced colors。
-- Current page states：总览必须验证后端未连接、0 案例、暂无回放数据、三模型未运行和来源未选择；当前没有成功、错误、搜索、表单或 CRUD 流程，不伪造这些状态。
+- Current page states：总览必须验证检查中、后端未连接、HTTP 成功但实时通道断开、完整连接、0 案例、暂无回放数据、三模型未运行和来源未选择；当前没有案例搜索、表单或 CRUD 流程，不伪造这些状态。
 - Component-state：后续组件建立 Vitest、Playwright 与视觉状态覆盖。
 - Canonical sibling：第 1 步为新项目无 sibling；以后以守望台总览为视觉基线。
 - CRUD/failure evidence：当前无 CRUD；第 2 步开始记录 API 失败路径。

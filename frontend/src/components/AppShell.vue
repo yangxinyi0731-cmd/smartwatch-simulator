@@ -10,7 +10,19 @@ import {
   IconPlayerPlay,
 } from '@tabler/icons-vue'
 
+import AppButton from './AppButton.vue'
 import StatusBadge from './StatusBadge.vue'
+
+defineProps<{
+  connectionLabel: string
+  connectionTone: 'neutral' | 'info' | 'success' | 'warning' | 'danger'
+  connectionDetail: string
+  isRefreshing: boolean
+}>()
+
+const emit = defineEmits<{
+  refresh: []
+}>()
 
 const navigation = [
   { label: '系统总览', href: '#overview', icon: IconLayoutDashboard, current: true },
@@ -79,8 +91,8 @@ const navigation = [
 
         <div class="app-sidebar__status">
           <p>当前阶段</p>
-          <strong>Tabler 前端壳</strong>
-          <span>后端、数据库和模型均未连接。</span>
+          <strong>本地数据闭环</strong>
+          <span>{{ connectionDetail }}</span>
         </div>
       </div>
     </aside>
@@ -93,7 +105,17 @@ const navigation = [
             <span class="app-topbar__separator" aria-hidden="true"></span>
             <span class="app-topbar__meta">本地 Windows 运行</span>
           </div>
-          <StatusBadge tone="warning">后端未连接</StatusBadge>
+          <div class="app-topbar__status" aria-live="polite">
+            <StatusBadge :tone="connectionTone">{{ connectionLabel }}</StatusBadge>
+            <AppButton
+              intent="neutral"
+              emphasis="outline"
+              :busy="isRefreshing"
+              @click="emit('refresh')"
+            >
+              {{ isRefreshing ? '检查中' : '刷新状态' }}
+            </AppButton>
+          </div>
         </div>
       </header>
 

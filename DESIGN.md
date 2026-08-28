@@ -54,6 +54,14 @@ components:
   app-card:
     backgroundColor: "{colors.surface-subtle}"
     rounded: "{rounded.lg}"
+  app-button:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.md}"
+  connection-message:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink-muted}"
+    rounded: "{rounded.md}"
   status-success:
     backgroundColor: "{colors.success-soft}"
   status-success-marker:
@@ -137,11 +145,11 @@ components:
 
 ### Foundational visual states
 
-所有真实链接必须有默认、悬停、键盘焦点和按下状态。暂未开放的功能显示为非交互文字并明确写“未开放”，不能伪装成可点击链接。加载、空数据、无结果和错误状态必须使用文字说明；当前静态阶段只实现诚实的空状态，不制造加载或成功状态。
+所有真实链接和按钮必须有默认、悬停、键盘焦点和按下状态。暂未开放的功能显示为非交互文字并明确写“未开放”，不能伪装成可点击链接。加载、空数据、无结果和错误状态必须使用文字说明。系统总览现在显示真实健康检查的检查中、已连接、部分可用和未连接状态；案例与模型区域仍保留诚实空状态。
 
 ### Buttons and actions
 
-共享按钮未来按“强调程度 × 语义意图”实现。一个决策区域只有一个主要操作，危险操作与普通操作分离，忙碌时尺寸稳定。本次静态总览没有可执行的业务按钮，不添加没有作用的“开始体验”或“连接设备”。
+`AppButton` 按“强调程度 × 语义意图”实现，并首先用于真实的“刷新状态”操作。一个决策区域只有一个主要操作，危险操作与普通操作分离，忙碌时尺寸稳定。不得添加没有作用的“开始体验”或“连接设备”。
 
 ### Navigation and data display
 
@@ -163,7 +171,7 @@ components:
 
 ### Content and data visualization
 
-使用“后端未连接”“尚未导入”“暂无数据”“待训练”等主动、可核验的表述。不使用“开启守护”“智慧洞察”“临床级准确率”等宣传词。未来图表必须有文字摘要、单位、来源和原始值访问路径；没有真实输入时显示空状态，不画随机波形。
+使用“正在检查”“本地服务已连接”“后端未连接”“尚未导入”“暂无数据”“待训练”等主动、可核验的表述。连接状态来自 HTTP 健康检查和 WebSocket，不从静态文案推断。不使用“开启守护”“智慧洞察”“临床级准确率”等宣传词。未来图表必须有文字摘要、单位、来源和原始值访问路径；没有真实输入时显示空状态，不画随机波形。
 
 ## Do's and Don'ts
 

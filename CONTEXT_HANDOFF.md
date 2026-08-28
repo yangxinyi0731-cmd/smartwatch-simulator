@@ -26,7 +26,7 @@ git log -3 --oneline
 git remote -v
 ```
 
-不得从空白上下文自行发明新目标。下一项已获用户确认的工作是“Tabler 前端迁移”，不是后端、模型训练或 GitHub 发布。
+不得从空白上下文自行发明新目标。Tabler 前端迁移和“FastAPI + SQLite + WebSocket 最小本地数据闭环”均已完成；当前没有下一大关授权，必须先报告现场状态并等待确认。
 
 ---
 
@@ -409,22 +409,26 @@ Windows 电脑浏览器中的 Vue 前端
 - 三模型连续状态列表；
 - 数据真实性与来源面板；
 - 共享 `AppCard`、`StatusBadge` 和 `EmptyState` 组件；
+- 共享 `AppButton` 和真实系统连接状态组合式函数；
+- FastAPI `GET /api/health` 健康检查；
+- WebSocket `/ws/system` 实时状态；
+- SQLite 结构版本 1、迁移记录和空案例表；
+- 前端自动重试、旧请求取消和手动“刷新状态”；
+- 后端健康检查、WebSocket 和数据库版本自动测试；
 - `PRODUCT.md`；
 - `DATA_AND_MODEL_NOTICE.md`；
 - `DESIGN.md`；
 - `UX-CONTRACT.md`；
 - `THIRD_PARTY_NOTICES.md`；
 - `TASK_STATE.md`；
-- 后端、模型、数据、测试和文档占位目录。
+- 后端、模型、数据、测试和文档目录。
 
-当前页面显示的“未连接”“待训练”“暂无数据”是真实状态，不是错误。
+当前页面的后端、SQLite 和 WebSocket 状态来自真实连接；“0 个案例”“待训练”“暂无数据”也是真实状态，不是演示填充。
 
 明确未完成：
 
-- FastAPI；
-- SQLite；
-- WebSocket；
 - 100 案例；
+- 完整案例、传感器、模型输入输出、回放、告警和报告 schema；
 - 模型二正式接入；
 - 模型三训练；
 - 跌倒 ONNX 接入新平台；
@@ -450,15 +454,33 @@ Windows 电脑浏览器中的 Vue 前端
 - 页面没有持续动画，并保留 `prefers-reduced-motion` 降级规则；
 - 实际浏览器验证使用 Codex 应用内 Chromium；当前任务未连接用户 Chrome/Edge 扩展，因此不得写成已完成用户 Chrome 专项验收。
 
-### 8.2 当前运行命令
+### 8.2 最小本地数据闭环验证
+
+- 后端 4 个自动测试通过，无警告；
+- Python `pip check` 无依赖冲突，锁定清单与实装环境一致；
+- 前端类型检查和 Vite 生产构建通过；
+- npm 审计 0 个已知漏洞；
+- DESIGN lint 0 错误 / 0 警告；
+- Premium 严格审计 0 findings；
+- 离线、连接、运行中断线、重新启动自动恢复和手动刷新均已在真实 Chromium 中验证；
+- 1440×900、1024×768、390×844 均无页面级横向溢出；
+- 浏览器控制台 0 错误 / 0 警告；
+- Google Chrome 已安装，但 ChatGPT/Codex Chrome 控制扩展未安装，本轮浏览器验收使用 Codex 应用内 Chromium，不能称为 Chrome 专项兼容性验证。
+
+### 8.3 当前运行命令
 
 ```powershell
 cd "C:\Users\yangxinyi\Documents\Codex\2026-08-27\smartwatch-health-simulator"
-npm --prefix frontend install
+.\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+```
+
+另开一个位于同一项目根目录的 PowerShell：
+
+```powershell
 npm --prefix frontend run dev
 ```
 
-默认本地地址通常为：`http://127.0.0.1:5173/`
+默认前端地址通常为：`http://127.0.0.1:5173/`；健康检查为 `http://127.0.0.1:8000/api/health`。
 
 生产构建：
 
@@ -580,17 +602,14 @@ Tabler 只作为视觉系统和必要组件来源，不把整个演示后台复�
 
 ## 10. 当前停止点与下一授权边界
 
-Tabler 前端迁移已经完成：依赖和许可证已固定，设计与 UX 合同已同步，页面已迁移并通过构建、设计 lint、严格审计、反模式检查和三种视口的真实浏览器验证。
+Tabler 前端迁移与最小本地数据闭环已经完成：FastAPI、SQLite、WebSocket 和前端真实连接状态均已实现并测试。
 
-当前必须停止，不自动进入后端。下一大关尚未获得用户确认。
+当前必须停止，下一大关尚未获得用户确认。若用户明确确认继续，建议的下一大关是：
 
-若用户明确确认继续，建议的下一大关是：
-
-> 建立 FastAPI、SQLite 与 WebSocket，并让前端“后端未连接”状态来自真实健康检查。
+> 定义统一案例、三模型输入输出、回放事件和模型 manifest 合同，并建立 SQLite 结构版本 2、Pydantic schema 与合同测试。这个大关不自动下载数据或接入/训练模型。
 
 在再次确认前仍然不允许：
 
-- 开发 FastAPI、SQLite 或 WebSocket；
 - 导入 100 个案例；
 - 解压并重构模型二；
 - 训练模型三；
@@ -607,8 +626,8 @@ Tabler 前端迁移已经完成：依赖和许可证已固定，设计与 UX 合
 
 1. 已完成：独立本地仓库、Vue 空壳、产品/真实性/设计/交互合同；
 2. 已完成：Tabler 风格迁移；
-3. 待用户确认：建立 FastAPI、SQLite、WebSocket，并让前端状态来自真实健康检查；
-4. 定义三个模型统一输入输出、案例 schema 和 manifest；
+3. 已完成：建立 FastAPI、SQLite、WebSocket，并让前端状态来自真实健康检查；
+4. 待用户确认：定义三个模型统一输入输出、案例 schema、回放事件和 manifest；
 5. 核验并导入可公开追溯的数据与 100 个测试案例；
 6. 接入跌倒模型和事件级解释；
 7. 重构并接入个人规律异常模型；
@@ -660,7 +679,7 @@ smartwatch-health-simulator/
 ├─ premium-ui.json             # 严格审计配置
 ├─ premium-audit.json          # 最近静态审计证据
 ├─ frontend/                   # Vue 3 + TypeScript + Vite
-├─ backend/                    # 第 2 步后端，目前只有说明
+├─ backend/                    # FastAPI、SQLite、WebSocket 与自动测试
 ├─ models/                     # 后续三模型适配器
 ├─ data/
 │  ├─ catalog/                 # 数据来源登记
@@ -679,15 +698,15 @@ C:\Users\yangxinyi\Documents\Codex\2026-08-27\smartwatch-health-simulator
 
 开始前完整阅读项目根目录的 CONTEXT_HANDOFF.md，并按其权威顺序继续阅读 PRODUCT.md、DATA_AND_MODEL_NOTICE.md、TASK_STATE.md、DESIGN.md、UX-CONTRACT.md 和 THIRD_PARTY_NOTICES.md。先执行只读 Git 检查并报告。
 
-Tabler 前端迁移已经完成并保存在 codex/tabler-ui-migration 分支：保留 Vue 3 + TypeScript + Vite，已固定 Tabler 依赖和许可证，首页已迁移并完成构建、设计 lint、严格审计、反模式检查和三种视口验证。
+Tabler 前端迁移和最小本地数据闭环已经完成并保存在 codex/tabler-ui-migration 分支：FastAPI 健康检查、SQLite 结构版本 1、WebSocket 系统状态、前端自动重连和手动刷新均已实现。案例实数仍为 0，三个模型仍未接入。
 
-不要重复 Tabler 迁移，也不要自动开始 FastAPI、SQLite、WebSocket、数据导入或模型训练。先报告当前分支、提交、工作区和验证状态，等待用户明确确认下一大关。
+不要重复 Tabler 迁移或本地数据闭环，也不要自动开始 schema 第 2 版、数据导入、模型接入或模型训练。先报告当前分支、提交、工作区和验证状态，等待用户明确确认下一大关。
 ```
 
 ---
 
 ## 15. 当前交接结论
 
-项目不是从零开始：Vue 3 + TypeScript + Vite 基础工程、真实性/交互合同和 Tabler 成熟软件风格首页已经完成；跌倒 ONNX 仍只存在于独立仓库，且未获部署批准。
+项目不是从零开始：Vue 3 + TypeScript + Vite、Tabler 工作台、真实性/交互合同以及 FastAPI + SQLite + WebSocket 最小本地数据闭环已经完成；跌倒 ONNX 仍只存在于独立仓库，且未获部署批准。
 
-当前停在 Tabler 迁移完成点。下一大关建议建立 FastAPI、SQLite 和 WebSocket，但必须先得到用户明确确认；不能自动进入后端、数据导入或模型阶段。
+当前停在本地数据闭环完成点。下一大关建议先定义统一案例与三模型合同，但必须得到用户明确确认；不能自动进入 schema 第 2 版、数据导入或模型阶段。

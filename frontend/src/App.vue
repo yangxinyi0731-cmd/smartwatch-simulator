@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Component } from 'vue'
+import { computed, type Component } from 'vue'
 import {
   IconActivityHeartbeat,
   IconAlertTriangle,
@@ -18,6 +18,7 @@ import AppCard from './components/AppCard.vue'
 import AppShell from './components/AppShell.vue'
 import EmptyState from './components/EmptyState.vue'
 import StatusBadge from './components/StatusBadge.vue'
+import { useSystemConnection } from './composables/useSystemConnection'
 
 type BadgeTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger'
 
@@ -32,17 +33,81 @@ interface ModelSummary {
   icon: Component
 }
 
-const systemStatus: Array<{
+interface SystemStatusItem {
   label: string
   value: string
   detail: string
   tone: BadgeTone
-}> = [
-  { label: '前端界面', value: '已就绪', detail: 'Vue 3 · Tabler', tone: 'success' },
-  { label: 'FastAPI 后端', value: '未连接', detail: '尚未开始', tone: 'warning' },
-  { label: 'SQLite 数据库', value: '未连接', detail: '尚未开始', tone: 'warning' },
-  { label: '测试案例', value: '0 个', detail: '尚未导入', tone: 'neutral' },
-]
+}
+
+const { phase, status, errorMessage, isRefreshing, refresh } = useSystemConnection()
+
+const connectionTone = computed<BadgeTone>(() => {
+  if (phase.value === 'connected') return 'success'
+  if (phase.value === 'checking' || phase.value === 'connecting') return 'info'
+  return 'warning'
+})
+
+const connectionLabel = computed(() => {
+  if (phase.value === 'connected') return '本地服务已连接'
+  if (phase.value === 'checking') return '正在检查本地服务'
+  if (phase.value === 'connecting') return '正在连接实时通道'
+  if (phase.value === 'degraded') return '本地服务部分可用'
+  return '后端未连接'
+})
+
+const connectionDetail = computed(() => {
+  if (phase.value === 'connected') {
+    return '后端、SQLite 与实时通道已连接；案例和模型尚未接入。'
+  }
+  if (phase.value === 'checking' || phase.value === 'connecting') {
+    return '正在核对后端、SQLite 与实时通道的真实状态。'
+  }
+  return '本地服务当前不可完整使用；案例和模型仍未接入。'
+})
+
+const connectionMessage = computed(() => {
+  if (phase.value === 'connected') {
+    return '本地后端、SQLite 和 WebSocket 已连通；案例库当前为空，三个模型仍未接入。'
+  }
+  if (phase.value === 'checking') {
+    return '正在向本地后端发送健康检查，请稍候。'
+  }
+  if (phase.value === 'connecting') {
+    return '健康检查已通过，正在建立 WebSocket 实时状态通道。'
+  }
+  return errorMessage.value || '本地服务当前不可用，页面会自动重试。'
+})
+
+const systemStatus = computed<SystemStatusItem[]>(() => {
+  const backendReady = status.value?.service.state === 'ready'
+  const databaseReady = status.value?.database.state === 'ready'
+  const caseCount = status.value?.cases.count
+
+  return [
+    { label: '前端界面', value: '已就绪', detail: 'Vue 3 · Tabler', tone: 'success' },
+    {
+      label: 'FastAPI 后端',
+      value: backendReady ? '已连接' : phase.value === 'checking' ? '检查中' : '未连接',
+      detail: backendReady
+        ? `v${status.value?.service.version}${phase.value === 'connected' ? ' · 实时通道' : ''}`
+        : '自动重试中',
+      tone: backendReady ? (phase.value === 'connected' ? 'success' : 'info') : connectionTone.value,
+    },
+    {
+      label: 'SQLite 数据库',
+      value: databaseReady ? '已就绪' : phase.value === 'checking' ? '检查中' : '未连接',
+      detail: databaseReady ? `结构版本 ${status.value?.database.schema_version}` : '等待健康检查',
+      tone: databaseReady ? 'success' : connectionTone.value,
+    },
+    {
+      label: '测试案例',
+      value: typeof caseCount === 'number' ? `${caseCount} 个` : '—',
+      detail: caseCount === 0 ? '尚未导入' : typeof caseCount === 'number' ? '数据库实数' : '暂不可读取',
+      tone: typeof caseCount === 'number' && caseCount > 0 ? 'info' : 'neutral',
+    },
+  ]
+})
 
 const modelSummaries: ModelSummary[] = [
   {
@@ -85,7 +150,13 @@ const replayOutputs = [
 </script>
 
 <template>
-  <AppShell>
+  <AppShell
+    :connection-label="connectionLabel"
+    :connection-tone="connectionTone"
+    :connection-detail="connectionDetail"
+    :is-refreshing="isRefreshing"
+    @refresh="refresh"
+  >
     <div id="overview" class="page-header app-page-header">
       <div>
         <p class="page-pretitle">老年人 AI 模拟智能手表</p>
@@ -107,6 +178,10 @@ const replayOutputs = [
         </div>
       </div>
     </section>
+
+    <p class="connection-message" :class="`connection-message--${connectionTone}`" role="status">
+      {{ connectionMessage }}
+    </p>
 
     <div class="dashboard-grid">
       <AppCard id="replay" class="replay-card" aria-labelledby="replay-title">

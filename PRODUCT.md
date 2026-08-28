@@ -14,7 +14,7 @@
 
 - Windows 桌面程序；
 - Vue 3 + TypeScript 前端；
-- 后续接入 FastAPI、SQLite、WebSocket、ONNX Runtime；
+- 已接入 FastAPI、SQLite 和 WebSocket；后续接入 ONNX Runtime；
 - 三个模型的独立结果和可追溯事件；
 - 100 天合成生活规律和 100 个公开来源测试案例；
 - 本地优先、离线演示。
@@ -36,12 +36,13 @@
 | 个人规律异常 | 判断用餐、午睡、散步是否偏离个人长期规律 | 多日生活事件 |
 | 腕部活动识别 | 识别走路、进食候选、睡眠/躺卧候选 | 20 Hz、20 秒、400×3 加速度 |
 
-## 第 1 步验收
+## 已完成基础阶段
 
 - 独立 Git 仓库存在；
 - 前端可以安装、构建、运行；
 - 有一个明确标记“暂无数据”的虚拟手表首页；
 - 三模型位置、输入和当前状态清楚；
 - 有 `DESIGN.md`、`UX-CONTRACT.md`、`TASK_STATE.md` 和真实性声明；
-- 不实现或假装实现第 2 步内容。
-
+- Tabler 前端工作台已完成；
+- FastAPI、SQLite 和 WebSocket 已形成最小本地状态闭环；
+- SQLite 案例实数当前为 0，三个模型仍未接入。

@@ -2,6 +2,8 @@
 
 > 本文是新对话的首要入口。接手者必须先完整阅读本文，再按下文列出的顺序阅读其他项目文档，并先做只读 Git 检查。
 
+> **2026-08-28 后续状态：** 本文主体保留 Tabler 迁移完成时的历史停点。用户随后已授权并完成“FastAPI + SQLite + WebSocket 最小本地数据闭环”。当前状态和下一授权边界以 `CONTEXT_HANDOFF.md`、`TASK_STATE.md` 与现场 Git 输出为准；不要因本文的历史措辞重复任何已完成阶段。
+
 ## 1. 项目位置与 Git 状态
 
 - 实际项目目录：`C:\Users\yangxinyi\Documents\Codex\2026-08-27\smartwatch-health-simulator`
