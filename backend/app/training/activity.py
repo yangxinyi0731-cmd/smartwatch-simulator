@@ -38,6 +38,8 @@ class ParticipantWindows:
     references: tuple["WindowReference", ...]
     label_counts: dict[str, int]
     raw_annotation_counts: dict[str, int]
+    source_rows_scanned: int
+    scan_stopped_after_selection_complete: bool
 
 
 @dataclass(frozen=True, slots=True)
@@ -124,6 +126,11 @@ def load_participant_windows(
     current_label: str | None = None
     current_samples: list[tuple[float, float, float]] = []
     current_source_rows: list[int] = []
+    source_rows_scanned = 0
+    scan_stopped_after_selection_complete = False
+
+    def selection_complete() -> bool:
+        return all(label_counts[label] >= per_class_limit for label in LABELS)
 
     def flush_complete_windows() -> None:
         nonlocal current_samples, current_source_rows
@@ -167,12 +174,16 @@ def load_participant_windows(
             if reader.fieldnames is None or not required <= set(reader.fieldnames):
                 raise ValueError(f"{member} 缺少列：{sorted(required)}")
             for row_index, row in enumerate(reader, start=2):
+                source_rows_scanned += 1
                 annotation = row["annotation"] or ""
                 target = map_annotation(annotation)
                 if annotation:
                     raw_counts[annotation] += 1
                 if target != current_label:
                     flush_complete_windows()
+                    if selection_complete():
+                        scan_stopped_after_selection_complete = True
+                        break
                     current_samples = []
                     current_source_rows = []
                     current_label = target
@@ -194,7 +205,11 @@ def load_participant_windows(
                 current_source_rows.append(row_index)
                 if len(current_samples) >= SOURCE_WINDOW_SAMPLES:
                     flush_complete_windows()
-            flush_complete_windows()
+                    if selection_complete():
+                        scan_stopped_after_selection_complete = True
+                        break
+            if not scan_stopped_after_selection_complete:
+                flush_complete_windows()
     if not windows:
         array = np.empty((0, TARGET_WINDOW_SAMPLES, 3), dtype=np.float32)
     else:
@@ -206,6 +221,8 @@ def load_participant_windows(
         references=tuple(references),
         label_counts=dict(sorted(label_counts.items())),
         raw_annotation_counts=dict(sorted(raw_counts.items())),
+        source_rows_scanned=source_rows_scanned,
+        scan_stopped_after_selection_complete=scan_stopped_after_selection_complete,
     )
 
 

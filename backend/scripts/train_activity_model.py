@@ -69,6 +69,57 @@ def _parse_participants(value: str) -> tuple[str, ...]:
     return result
 
 
+def validate_recovery_catalog(
+    *,
+    source_zip: Path,
+    recovery_catalog_path: Path,
+    participant_ids: tuple[str, ...],
+    project_root: Path = PROJECT_ROOT,
+) -> dict[str, object]:
+    project_root = project_root.resolve()
+    source_zip = source_zip.resolve()
+    recovery_catalog_path = recovery_catalog_path.resolve()
+    try:
+        source_relative = source_zip.relative_to(project_root).as_posix()
+        catalog_relative = recovery_catalog_path.relative_to(project_root).as_posix()
+    except ValueError as error:
+        raise ValueError("来源 ZIP 和恢复目录必须位于项目目录内。") from error
+    payload = json.loads(recovery_catalog_path.read_text(encoding="utf-8"))
+    if payload.get("dataset") != "CAPTURE-24":
+        raise ValueError("恢复目录的数据集必须是 CAPTURE-24。")
+    if payload.get("raw_or_recovered_data_committed") is not False:
+        raise ValueError("恢复目录必须明确 raw_or_recovered_data_committed=false。")
+    source_hash = _sha256(source_zip)
+    if payload.get("recovered_zip_relative_path") != source_relative:
+        raise ValueError("恢复目录中的 ZIP 相对路径与训练来源不一致。")
+    if payload.get("recovered_zip_sha256") != source_hash:
+        raise ValueError("恢复目录中的 ZIP SHA-256 与训练来源不一致。")
+    if payload.get("recovered_zip_bytes") != source_zip.stat().st_size:
+        raise ValueError("恢复目录中的 ZIP 字节数与训练来源不一致。")
+    available = payload.get("participants")
+    if (
+        not isinstance(available, list)
+        or len(available) != len(set(available))
+        or payload.get("participant_count") != len(available)
+    ):
+        raise ValueError("恢复目录中的参与者列表或数量无效。")
+    missing = sorted(set(participant_ids) - set(available))
+    if missing:
+        raise ValueError(f"训练或评估参与者不在已恢复完整成员中：{missing}")
+    return {
+        "scope": "recovered_official_prefix_subset",
+        "path": catalog_relative,
+        "sha256": _sha256(recovery_catalog_path),
+        "participant_count": len(available),
+        "available_participants": available,
+        "source_zip_relative_path": source_relative,
+        "source_zip_sha256": source_hash,
+        "source_zip_bytes": source_zip.stat().st_size,
+        "official_declared_bytes": payload.get("official_declared_bytes"),
+        "truncated_member_excluded": payload.get("truncated_member_excluded"),
+    }
+
+
 def _load_group(
     source_zip: Path,
     participant_ids: tuple[str, ...],
@@ -114,6 +165,18 @@ def _group_summary(participants) -> dict[str, object]:
         "window_counts": dict(sorted(label_counts.items())),
         "per_participant_window_counts": per_participant,
         "top_raw_annotations_by_target": raw_mapping_summary,
+        "annotation_count_scope": (
+            "rows scanned until every mapped class reached its fixed cap, or end of member"
+        ),
+        "scan": {
+            item.participant_id: {
+                "source_rows_scanned": item.source_rows_scanned,
+                "stopped_after_selection_complete": (
+                    item.scan_stopped_after_selection_complete
+                ),
+            }
+            for item in participants
+        },
     }
 
 
@@ -182,6 +245,7 @@ def _write_demo_cases(
 def train(
     *,
     source_zip: Path,
+    source_recovery_catalog: Path,
     source_commit: str,
     train_participants: tuple[str, ...],
     evaluation_participants: tuple[str, ...],
@@ -206,8 +270,17 @@ def train(
             encoding="utf-8",
         ).stdout.strip()
     )
-    source_hash = _sha256(source_zip)
-    print(f"source_sha256={source_hash} bytes={source_zip.stat().st_size}", flush=True)
+    recovery_provenance = validate_recovery_catalog(
+        source_zip=source_zip,
+        recovery_catalog_path=source_recovery_catalog,
+        participant_ids=train_participants + evaluation_participants,
+    )
+    source_hash = str(recovery_provenance["source_zip_sha256"])
+    print(
+        f"source_sha256={source_hash} bytes={source_zip.stat().st_size} "
+        f"scope={recovery_provenance['scope']}",
+        flush=True,
+    )
     training = _load_group(
         source_zip, train_participants, per_class_limit, "training"
     )
@@ -249,6 +322,15 @@ def train(
         session,
         source_zip_sha256=source_hash,
     )
+    execution_command = (
+        "python -m backend.scripts.train_activity_model "
+        f"--source-zip {recovery_provenance['source_zip_relative_path']} "
+        f"--source-recovery-catalog {recovery_provenance['path']} "
+        f"--source-commit {source_commit} "
+        f"--train-participants {','.join(train_participants)} "
+        f"--evaluation-participants {','.join(evaluation_participants)} "
+        f"--per-class-limit {per_class_limit}"
+    )
     catalog = {
         "format_version": "1.0.0",
         "dataset": "CAPTURE-24",
@@ -262,6 +344,8 @@ def train(
         ),
         "source_zip_sha256": source_hash,
         "source_zip_bytes": source_zip.stat().st_size,
+        "source_archive_scope": recovery_provenance["scope"],
+        "source_recovery_catalog": recovery_provenance,
         "source_device": "Axivity AX3 wrist-worn accelerometer",
         "source_rate_hz": 100,
         "source_units": "g",
@@ -281,21 +365,19 @@ def train(
         "training_group": _group_summary(training),
         "evaluation_group": _group_summary(evaluation),
         "demo_cases": demo_cases,
+        "execution_command": execution_command,
         "raw_or_window_data_committed": False,
     }
     catalog_path = PROJECT_ROOT / CATALOG_PATH
     catalog_hash = _write_json(catalog_path, catalog)
     report = {
         "report_version": "1.0.0",
-        "execution_command": (
-            "python -m backend.scripts.train_activity_model "
-            "--source-zip data/raw/capture24/capture24.zip "
-            f"--source-commit {source_commit}"
-        ),
+        "execution_command": execution_command,
         "source_catalog": {
             "path": CATALOG_PATH.as_posix(),
             "sha256": catalog_hash,
         },
+        "source_recovery_catalog": recovery_provenance,
         "split": {
             "method": "fixed disjoint participant groups",
             "training_participants": list(train_participants),
@@ -328,6 +410,7 @@ def train(
             "max_abs_error_vs_numpy": onnx_max_abs_error,
         },
         "limitations": [
+            "训练来源只是从官方不完整下载前缀恢复并逐成员校验的 48 人可用子集，不是完整 151 人数据包。",
             "CAPTURE-24 以年轻参与者为主，不能描述为老人活动数据。",
             "标签来自自由生活相机/睡眠日记注释和本项目显式关键词映射；进食与睡眠输出仍是候选。",
             "评估是同一数据集内未见参与者组，不是独立外部数据集验证。",
@@ -354,7 +437,14 @@ def train(
         contract=contract,
         training_truth_categories=(TruthCategory.REAL_FREE_LIVING,),
         training_data_references=(
-            f"CAPTURE-24 DOI 10.5287/bodleian:NGx0JOMP5 sha256={source_hash}",
+            (
+                "CAPTURE-24 recovered official prefix subset "
+                f"sha256={source_hash}"
+            ),
+            (
+                f"{recovery_provenance['path']} "
+                f"sha256={recovery_provenance['sha256']}"
+            ),
             f"{CATALOG_PATH.as_posix()} sha256={catalog_hash}",
         ),
         evaluation_reference=REPORT_PATH.as_posix(),
@@ -379,6 +469,7 @@ def train(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="训练 CAPTURE-24 四类腕部活动候选模型。")
     parser.add_argument("--source-zip", type=Path, required=True)
+    parser.add_argument("--source-recovery-catalog", type=Path, required=True)
     parser.add_argument("--source-commit", required=True)
     parser.add_argument(
         "--train-participants",
@@ -400,6 +491,7 @@ def main() -> None:
         raise ValueError("每名参与者每类窗口上限不能低于 20。")
     result = train(
         source_zip=args.source_zip,
+        source_recovery_catalog=args.source_recovery_catalog,
         source_commit=args.source_commit,
         train_participants=args.train_participants,
         evaluation_participants=args.evaluation_participants,

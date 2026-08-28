@@ -58,8 +58,15 @@ def _sync_activity_demo_cases(database: Database) -> int:
         raise ValueError("CAPTURE-24 活动演示案例必须恰好覆盖四个映射类别。")
     manifest = _load_manifest(manifest_path)
     source_hash = catalog["source_zip_sha256"]
+    recovery = catalog.get("source_recovery_catalog")
+    if (
+        catalog.get("source_archive_scope") != "recovered_official_prefix_subset"
+        or not isinstance(recovery, dict)
+        or recovery.get("source_zip_sha256") != source_hash
+    ):
+        raise ValueError("活动目录必须明确指向已核验的 CAPTURE-24 恢复前缀子集。")
     source = SourceReference(
-        source_id=f"capture24-{source_hash[:12]}",
+        source_id=f"capture24-recovered-prefix-{source_hash[:12]}",
         dataset_name="CAPTURE-24",
         source_url="https://doi.org/10.5287/bodleian:NGx0JOMP5",
         fixed_version=f"sha256:{source_hash}",
@@ -70,8 +77,9 @@ def _sync_activity_demo_cases(database: Database) -> int:
         redistribution_allowed=True,
         verified_at=manifest.created_at,
         notes=(
-            "自由生活腕部加速度数据；以年轻参与者为主，案例年龄保持 UNKNOWN，"
-            "不得描述为老人活动数据。"
+            f"官方不完整下载前缀中逐成员校验恢复的 {recovery['participant_count']} 人子集，"
+            "不是完整 151 人数据包；自由生活腕部加速度数据以年轻参与者为主，"
+            "案例年龄保持 UNKNOWN，不得描述为老人活动数据。"
         ),
     )
     catalog_hash = _sha256(catalog_path)
@@ -119,8 +127,9 @@ def _sync_activity_demo_cases(database: Database) -> int:
             case_id=case_id,
             title=f"CAPTURE-24 自由生活活动：{label_titles[label]}",
             description=(
-                "从固定评估参与者组按预先声明顺序选出的真实自由生活腕部加速度窗口；"
-                "标签是候选映射，不代表医学状态，也不代表老人数据。"
+                "从已核验恢复前缀子集的固定评估参与者组，按预先声明顺序选出的"
+                "真实自由生活腕部加速度窗口；标签是候选映射，不代表医学状态，"
+                "不代表老人数据，也不代表完整 CAPTURE-24。"
             ),
             truth_category=TruthCategory.REAL_FREE_LIVING,
             source=source,
@@ -135,11 +144,7 @@ def _sync_activity_demo_cases(database: Database) -> int:
             has_accelerometer=True,
             has_gyroscope=False,
             allowed_models=(ModelKind.ACTIVITY_RECOGNITION,),
-            processing_command=(
-                "python -m backend.scripts.train_activity_model "
-                "--source-zip data/raw/capture24/capture24.zip "
-                f"--source-commit {manifest.source_commit}"
-            ),
+            processing_command=catalog["execution_command"],
             created_at=manifest.created_at,
             updated_at=manifest.created_at,
         )
@@ -175,7 +180,7 @@ def _sync_activity_demo_cases(database: Database) -> int:
             annotation_source_sha256=source_hash,
             notes=(
                 "标签来自 CAPTURE-24 自由生活注释和本项目保存的保守关键词映射；"
-                "进食、睡眠或躺卧均保留候选含义。"
+                "进食、睡眠或躺卧均保留候选含义；来源是恢复前缀子集，不是完整数据包。"
             ),
         )
         bundles.append(

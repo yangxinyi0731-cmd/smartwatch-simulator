@@ -22,6 +22,7 @@
 | [joaojtmarques/WEDA-FALL](https://github.com/joaojtmarques/WEDA-FALL) | 腕部 50 Hz 六轴案例来源与跌倒模型研究数据 | `74e0b93cb061d4ecbca12628f2d47090e97fbeea` | GitHub API 未识别到许可证；只允许本地研究核验，不默认允许再分发或商用；老人只执行 ADL |
 | [CAPTURE-24 数据集](https://doi.org/10.5287/bodleian:NGx0JOMP5) / [论文](https://doi.org/10.1038/s41597-024-03960-3) | 腕部自由生活活动识别训练与参与者分组评估 | 数据发布版本；处理路线参考仓库提交 `f861b44f5675cb3e8294cd3d560d7a71a749616f` | 数据为 CC BY 4.0；151 名参与者、100 Hz Axivity AX3 三轴腕部加速度；以年轻参与者为主，不能描述为老人数据 |
 | [OxWearables/capture24 工具代码](https://github.com/OxWearables/capture24) | 仅核对数据字段、窗口和参与者分组说明 | `f861b44f5675cb3e8294cd3d560d7a71a749616f` | Oxford Academic Use Licence；本项目不复制其代码，独立实现只读数据处理 |
+| [Forsad/Stable-Polynomial-Train](https://github.com/Forsad/Stable-Polynomial-Train) | 2025 年 CAPTURE-24 参与者隔离和隐私计算研究路线补充参考 | `9a6fee44f84a7eeb941e731e9d960c66297fd655` | MIT；只核验其公开预处理包的结构与标签范围，不复制训练指标，也不以其四类强度标签替代本项目所需的走路/进食候选/睡眠或躺卧候选/其他未知标签 |
 | [OxWearables/actinet](https://github.com/OxWearables/actinet) | 可穿戴活动识别模型路线 | `0f7848f31efb54079752e43e5b5a2efcac0c2b68` | 学术研究项目；不得把其指标直接写成本项目指标 |
 | [OxWearables/ssl-wearables](https://github.com/OxWearables/ssl-wearables) | 可穿戴传感器自监督学习路线 | `150550ea5d41800229c95e36f88f5bf0d2e7cf04` | 学术研究项目；只作为路线参考 |
 | [dapowan/LIMU-BERT-Public](https://github.com/dapowan/LIMU-BERT-Public) | IMU 时序预训练与下游分类 | `decffee7ecb4e2e5d7244b1a759cb80b752dc6c2` | MIT |
