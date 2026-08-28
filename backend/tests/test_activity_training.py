@@ -24,7 +24,10 @@ from backend.app.training.activity import (
     predict_softmax,
     train_softmax,
 )
-from backend.scripts.train_activity_model import validate_recovery_catalog
+from backend.scripts.train_activity_model import (
+    validate_recovery_catalog,
+    validate_selection_catalog,
+)
 from backend.scripts.scan_capture24_activity import select_disjoint_groups
 
 
@@ -223,3 +226,60 @@ def test_activity_group_selection_uses_catalog_order_and_label_availability() ->
     assert training == ("P003", "P010")
     assert evaluation == ("P001",)
     assert set(training).isdisjoint(evaluation)
+
+
+def test_selection_catalog_must_match_fixed_training_and_evaluation_groups(
+    tmp_path: Path,
+) -> None:
+    catalog_path = tmp_path / "data" / "catalog" / "selection.json"
+    catalog_path.parent.mkdir(parents=True)
+    catalog_path.write_text(
+        json.dumps(
+            {
+                "dataset": "CAPTURE-24",
+                "source_archive_scope": "recovered_official_prefix_subset",
+                "source_recovery_catalog": {
+                    "sha256": "recovery-catalog-hash",
+                    "source_zip_sha256": "source-zip-hash",
+                },
+                "source_commit": "0eacb10e778511895c3949b26a85951e7eac92d5",
+                "selection_policy": "fixed catalog order",
+                "per_class_limit": 20,
+                "scanned_participant_count": 3,
+                "scan_results": [
+                    {"participant_id": "P001", "eligible": True},
+                    {"participant_id": "P002", "eligible": True},
+                    {"participant_id": "P003", "eligible": False},
+                ],
+                "training_participants": ["P001"],
+                "evaluation_participants": ["P002"],
+                "unscanned_participants": [],
+                "raw_or_window_data_committed": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+    recovery = {
+        "sha256": "recovery-catalog-hash",
+        "source_zip_sha256": "source-zip-hash",
+    }
+
+    result = validate_selection_catalog(
+        selection_catalog_path=catalog_path,
+        recovery_provenance=recovery,
+        train_participants=("P001",),
+        evaluation_participants=("P002",),
+        project_root=tmp_path,
+    )
+
+    assert result["path"] == "data/catalog/selection.json"
+    assert result["scanned_participant_count"] == 3
+
+    with pytest.raises(ValueError, match="训练参与者名单"):
+        validate_selection_catalog(
+            selection_catalog_path=catalog_path,
+            recovery_provenance=recovery,
+            train_participants=("P002",),
+            evaluation_participants=("P001",),
+            project_root=tmp_path,
+        )

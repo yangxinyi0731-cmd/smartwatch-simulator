@@ -1,0 +1,688 @@
+{
+  "dataset": "CAPTURE-24",
+  "evaluation_participants": [
+    "P123",
+    "P078",
+    "P024",
+    "P129",
+    "P103",
+    "P079",
+    "P117",
+    "P019",
+    "P066",
+    "P046",
+    "P022",
+    "P016"
+  ],
+  "execution_command": "python -m backend.scripts.scan_capture24_activity --source-zip data/raw/capture24/capture24_recovered_prefix.zip --source-recovery-catalog data/catalog/capture24_recovered_prefix_v1.json --source-commit 0eacb10e778511895c3949b26a85951e7eac92d5 --output data/catalog/capture24_activity_availability_v1.json --per-class-limit 20 --train-count 24 --evaluation-count 12",
+  "format_version": "1.0.0",
+  "limitations": [
+    "来源只是 48 名完整成员的恢复前缀子集，不是完整 151 人数据包。",
+    "扫描在取得所需合格人数后停止，未扫描者不代表缺少目标标签。",
+    "标签可用性筛选不是模型性能筛选，且 CAPTURE-24 以年轻参与者为主。"
+  ],
+  "participant_overlap": [],
+  "per_class_limit": 20,
+  "raw_or_window_data_committed": false,
+  "scan_results": [
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P023",
+      "source_rows_scanned": 6321900,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P026",
+      "source_rows_scanned": 2145400,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P070",
+      "source_rows_scanned": 3196700,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P034",
+      "source_rows_scanned": 3125919,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P031",
+      "source_rows_scanned": 4321941,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P043",
+      "source_rows_scanned": 5287406,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P011",
+      "source_rows_scanned": 6577538,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P135",
+      "source_rows_scanned": 3841400,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P028",
+      "source_rows_scanned": 3052121,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P099",
+      "source_rows_scanned": 2165122,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P053",
+      "source_rows_scanned": 4574577,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P035",
+      "source_rows_scanned": 3168500,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": false,
+      "label_counts": {
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P030",
+      "source_rows_scanned": 9720001,
+      "stopped_after_selection_complete": false,
+      "window_count": 60
+    },
+    {
+      "eligible": false,
+      "label_counts": {
+        "eating_candidate": 3,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P037",
+      "source_rows_scanned": 9900001,
+      "stopped_after_selection_complete": false,
+      "window_count": 63
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P029",
+      "source_rows_scanned": 4568100,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": false,
+      "label_counts": {
+        "eating_candidate": 12,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P095",
+      "source_rows_scanned": 9360001,
+      "stopped_after_selection_complete": false,
+      "window_count": 72
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P058",
+      "source_rows_scanned": 3443230,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P089",
+      "source_rows_scanned": 3338200,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P150",
+      "source_rows_scanned": 3485650,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P097",
+      "source_rows_scanned": 4708136,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P072",
+      "source_rows_scanned": 7148954,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": false,
+      "label_counts": {
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P049",
+      "source_rows_scanned": 9540001,
+      "stopped_after_selection_complete": false,
+      "window_count": 60
+    },
+    {
+      "eligible": false,
+      "label_counts": {
+        "eating_candidate": 8,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P102",
+      "source_rows_scanned": 9000001,
+      "stopped_after_selection_complete": false,
+      "window_count": 68
+    },
+    {
+      "eligible": false,
+      "label_counts": {
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P134",
+      "source_rows_scanned": 9480001,
+      "stopped_after_selection_complete": false,
+      "window_count": 60
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P116",
+      "source_rows_scanned": 4107195,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P051",
+      "source_rows_scanned": 2029404,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P127",
+      "source_rows_scanned": 3603900,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P118",
+      "source_rows_scanned": 6210200,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P113",
+      "source_rows_scanned": 4669082,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P087",
+      "source_rows_scanned": 5102705,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P123",
+      "source_rows_scanned": 3630273,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": false,
+      "label_counts": {
+        "eating_candidate": 5,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P083",
+      "source_rows_scanned": 9180001,
+      "stopped_after_selection_complete": false,
+      "window_count": 65
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P078",
+      "source_rows_scanned": 4239900,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P024",
+      "source_rows_scanned": 6135874,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P129",
+      "source_rows_scanned": 4506200,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P103",
+      "source_rows_scanned": 1941600,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P079",
+      "source_rows_scanned": 3266825,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P117",
+      "source_rows_scanned": 3126140,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P019",
+      "source_rows_scanned": 4969247,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P066",
+      "source_rows_scanned": 5087500,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P046",
+      "source_rows_scanned": 2354814,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P022",
+      "source_rows_scanned": 3048800,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    },
+    {
+      "eligible": true,
+      "label_counts": {
+        "eating_candidate": 20,
+        "other_unknown": 20,
+        "sleep_or_lying_candidate": 20,
+        "walking": 20
+      },
+      "participant_id": "P016",
+      "source_rows_scanned": 3306061,
+      "stopped_after_selection_complete": true,
+      "window_count": 80
+    }
+  ],
+  "scanned_participant_count": 43,
+  "selection_policy": "按恢复目录原始顺序扫描；只依据四个映射类别是否各取得固定数量的最先完整窗口。前 train_count 名合格参与者进入训练，随后 evaluation_count 名进入评估；不读取或比较任何模型预测与指标。",
+  "source_archive_scope": "recovered_official_prefix_subset",
+  "source_commit": "0eacb10e778511895c3949b26a85951e7eac92d5",
+  "source_recovery_catalog": {
+    "available_participants": [
+      "P023",
+      "P026",
+      "P070",
+      "P034",
+      "P031",
+      "P043",
+      "P011",
+      "P135",
+      "P028",
+      "P099",
+      "P053",
+      "P035",
+      "P030",
+      "P037",
+      "P029",
+      "P095",
+      "P058",
+      "P089",
+      "P150",
+      "P097",
+      "P072",
+      "P049",
+      "P102",
+      "P134",
+      "P116",
+      "P051",
+      "P127",
+      "P118",
+      "P113",
+      "P087",
+      "P123",
+      "P083",
+      "P078",
+      "P024",
+      "P129",
+      "P103",
+      "P079",
+      "P117",
+      "P019",
+      "P066",
+      "P046",
+      "P022",
+      "P016",
+      "P130",
+      "P006",
+      "P002",
+      "P093",
+      "P077"
+    ],
+    "official_declared_bytes": 6902652480,
+    "participant_count": 48,
+    "path": "data/catalog/capture24_recovered_prefix_v1.json",
+    "scope": "recovered_official_prefix_subset",
+    "sha256": "8eca64947ace5d654a87172203f79598aa3e9a8d98d6b3af157424e5b7d8d837",
+    "source_zip_bytes": 2348094346,
+    "source_zip_relative_path": "data/raw/capture24/capture24_recovered_prefix.zip",
+    "source_zip_sha256": "e1d44ba9bd6cb12f7d0e4dc2cbb0be56ce00182de7fbcb070907b8bf36fff4ba",
+    "truncated_member_excluded": {
+      "available_compressed_bytes": 16877134,
+      "expected_compressed_size": 37398434,
+      "header_offset": 2203868879,
+      "name": "capture24/P008.csv.gz"
+    }
+  },
+  "training_participants": [
+    "P023",
+    "P026",
+    "P070",
+    "P034",
+    "P031",
+    "P043",
+    "P011",
+    "P135",
+    "P028",
+    "P099",
+    "P053",
+    "P035",
+    "P029",
+    "P058",
+    "P089",
+    "P150",
+    "P097",
+    "P072",
+    "P116",
+    "P051",
+    "P127",
+    "P118",
+    "P113",
+    "P087"
+  ],
+  "unscanned_participants": [
+    "P130",
+    "P006",
+    "P002",
+    "P093",
+    "P077"
+  ]
+}

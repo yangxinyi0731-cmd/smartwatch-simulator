@@ -120,6 +120,78 @@ def validate_recovery_catalog(
     }
 
 
+def validate_selection_catalog(
+    *,
+    selection_catalog_path: Path,
+    recovery_provenance: dict[str, object],
+    train_participants: tuple[str, ...],
+    evaluation_participants: tuple[str, ...],
+    project_root: Path = PROJECT_ROOT,
+    git_root: Path = PROJECT_ROOT,
+) -> dict[str, object]:
+    project_root = project_root.resolve()
+    selection_catalog_path = selection_catalog_path.resolve()
+    try:
+        catalog_relative = selection_catalog_path.relative_to(project_root).as_posix()
+    except ValueError as error:
+        raise ValueError("参与者选择报告必须位于项目目录内。") from error
+    payload = json.loads(selection_catalog_path.read_text(encoding="utf-8"))
+    if (
+        payload.get("dataset") != "CAPTURE-24"
+        or payload.get("source_archive_scope")
+        != "recovered_official_prefix_subset"
+    ):
+        raise ValueError("参与者选择报告的数据集或来源范围无效。")
+    if payload.get("raw_or_window_data_committed") is not False:
+        raise ValueError("参与者选择报告必须明确 raw_or_window_data_committed=false。")
+    selection_recovery = payload.get("source_recovery_catalog")
+    if not isinstance(selection_recovery, dict) or (
+        selection_recovery.get("sha256") != recovery_provenance["sha256"]
+        or selection_recovery.get("source_zip_sha256")
+        != recovery_provenance["source_zip_sha256"]
+    ):
+        raise ValueError("参与者选择报告与恢复来源目录不一致。")
+    saved_training = tuple(payload.get("training_participants", ()))
+    saved_evaluation = tuple(payload.get("evaluation_participants", ()))
+    if saved_training != train_participants:
+        raise ValueError("训练参与者名单与固定选择报告不一致。")
+    if saved_evaluation != evaluation_participants:
+        raise ValueError("评估参与者名单与固定选择报告不一致。")
+    if set(saved_training) & set(saved_evaluation):
+        raise ValueError("参与者选择报告中的训练和评估组发生重叠。")
+    scan_results = payload.get("scan_results")
+    if not isinstance(scan_results, list):
+        raise ValueError("参与者选择报告缺少扫描结果。")
+    eligible = {
+        item.get("participant_id")
+        for item in scan_results
+        if isinstance(item, dict) and item.get("eligible") is True
+    }
+    missing_eligible = sorted(
+        (set(saved_training) | set(saved_evaluation)) - eligible
+    )
+    if missing_eligible:
+        raise ValueError(f"固定名单中存在未通过标签可用性扫描的参与者：{missing_eligible}")
+    scan_source_commit = payload.get("source_commit")
+    if not isinstance(scan_source_commit, str):
+        raise ValueError("参与者选择报告缺少扫描代码提交。")
+    subprocess.run(
+        ["git", "cat-file", "-e", f"{scan_source_commit}^{{commit}}"],
+        cwd=git_root.resolve(),
+        check=True,
+        capture_output=True,
+    )
+    return {
+        "path": catalog_relative,
+        "sha256": _sha256(selection_catalog_path),
+        "scan_source_commit": scan_source_commit,
+        "selection_policy": payload.get("selection_policy"),
+        "per_class_limit": payload.get("per_class_limit"),
+        "scanned_participant_count": payload.get("scanned_participant_count"),
+        "unscanned_participants": payload.get("unscanned_participants"),
+    }
+
+
 def _load_group(
     source_zip: Path,
     participant_ids: tuple[str, ...],
@@ -246,6 +318,7 @@ def train(
     *,
     source_zip: Path,
     source_recovery_catalog: Path,
+    source_selection_catalog: Path,
     source_commit: str,
     train_participants: tuple[str, ...],
     evaluation_participants: tuple[str, ...],
@@ -274,6 +347,12 @@ def train(
         source_zip=source_zip,
         recovery_catalog_path=source_recovery_catalog,
         participant_ids=train_participants + evaluation_participants,
+    )
+    selection_provenance = validate_selection_catalog(
+        selection_catalog_path=source_selection_catalog,
+        recovery_provenance=recovery_provenance,
+        train_participants=train_participants,
+        evaluation_participants=evaluation_participants,
     )
     source_hash = str(recovery_provenance["source_zip_sha256"])
     print(
@@ -326,6 +405,7 @@ def train(
         "python -m backend.scripts.train_activity_model "
         f"--source-zip {recovery_provenance['source_zip_relative_path']} "
         f"--source-recovery-catalog {recovery_provenance['path']} "
+        f"--source-selection-catalog {selection_provenance['path']} "
         f"--source-commit {source_commit} "
         f"--train-participants {','.join(train_participants)} "
         f"--evaluation-participants {','.join(evaluation_participants)} "
@@ -346,6 +426,7 @@ def train(
         "source_zip_bytes": source_zip.stat().st_size,
         "source_archive_scope": recovery_provenance["scope"],
         "source_recovery_catalog": recovery_provenance,
+        "source_selection_catalog": selection_provenance,
         "source_device": "Axivity AX3 wrist-worn accelerometer",
         "source_rate_hz": 100,
         "source_units": "g",
@@ -378,6 +459,7 @@ def train(
             "sha256": catalog_hash,
         },
         "source_recovery_catalog": recovery_provenance,
+        "source_selection_catalog": selection_provenance,
         "split": {
             "method": "fixed disjoint participant groups",
             "training_participants": list(train_participants),
@@ -445,6 +527,10 @@ def train(
                 f"{recovery_provenance['path']} "
                 f"sha256={recovery_provenance['sha256']}"
             ),
+            (
+                f"{selection_provenance['path']} "
+                f"sha256={selection_provenance['sha256']}"
+            ),
             f"{CATALOG_PATH.as_posix()} sha256={catalog_hash}",
         ),
         evaluation_reference=REPORT_PATH.as_posix(),
@@ -470,6 +556,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="训练 CAPTURE-24 四类腕部活动候选模型。")
     parser.add_argument("--source-zip", type=Path, required=True)
     parser.add_argument("--source-recovery-catalog", type=Path, required=True)
+    parser.add_argument("--source-selection-catalog", type=Path, required=True)
     parser.add_argument("--source-commit", required=True)
     parser.add_argument(
         "--train-participants",
@@ -492,6 +579,7 @@ def main() -> None:
     result = train(
         source_zip=args.source_zip,
         source_recovery_catalog=args.source_recovery_catalog,
+        source_selection_catalog=args.source_selection_catalog,
         source_commit=args.source_commit,
         train_participants=args.train_participants,
         evaluation_participants=args.evaluation_participants,
