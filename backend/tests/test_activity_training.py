@@ -25,6 +25,7 @@ from backend.app.training.activity import (
     train_softmax,
 )
 from backend.scripts.train_activity_model import validate_recovery_catalog
+from backend.scripts.scan_capture24_activity import select_disjoint_groups
 
 
 def _participant_csv_gzip(rows: list[tuple[float, float, float, str]]) -> bytes:
@@ -200,3 +201,25 @@ def test_recovery_catalog_must_match_archive_and_requested_participants(
             participant_ids=("P003",),
             project_root=tmp_path,
         )
+
+
+def test_activity_group_selection_uses_catalog_order_and_label_availability() -> None:
+    complete = {label: 20 for label in LABELS}
+    incomplete = {**complete, "eating_candidate": 19}
+    rows = [
+        {"participant_id": "P009", "label_counts": incomplete},
+        {"participant_id": "P003", "label_counts": complete},
+        {"participant_id": "P010", "label_counts": complete},
+        {"participant_id": "P001", "label_counts": complete},
+    ]
+
+    training, evaluation = select_disjoint_groups(
+        rows,
+        per_class_limit=20,
+        train_count=2,
+        evaluation_count=1,
+    )
+
+    assert training == ("P003", "P010")
+    assert evaluation == ("P001",)
+    assert set(training).isdisjoint(evaluation)
