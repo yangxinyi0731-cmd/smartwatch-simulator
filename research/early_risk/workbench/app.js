@@ -108,10 +108,9 @@ const WEDA_CASE_ROWS = [
   ["weda-f08-u12_r01", "SIMULATED_FALL", "YOUNG_ADULT", "F08", 0.970951, 1],
 ];
 
-const wedaCases = WEDA_CASE_ROWS.map(([id, truth, age, label, score, alarms]) => {
+const wedaCases = WEDA_CASE_ROWS.map(([id, truth, , label, score, alarms]) => {
   const participant = id.match(/u\d+/i)?.[0]?.toUpperCase() || "未知";
   const activity = label.startsWith("F") ? "受控模拟跌倒" : "受控日常活动";
-  const ageText = age === "OLDER_ADULT" ? "老年参与者" : "年轻参与者";
   return {
     id,
     kind: truth === "SIMULATED_FALL" ? "fall" : "adl",
@@ -119,39 +118,40 @@ const wedaCases = WEDA_CASE_ROWS.map(([id, truth, age, label, score, alarms]) =>
     sourceLabel: "WEDA-FALL 100 组",
     truth,
     truthLabel: truth === "SIMULATED_FALL" ? "受控模拟跌倒" : "受控日常活动",
-    title: `${ageText}${activity}`,
+    title: `参与者${activity}`,
     shortTitle: `${activity} · ${label}/${participant}`,
     note:
       truth === "SIMULATED_FALL"
-        ? "年轻参与者在受控床垫条件下模拟跌倒；不代表真实老人意外跌倒。"
-        : `${ageText}在受控环境中完成日常活动，用于核对误报。`,
+        ? "参与者在受控床垫环境中完成模拟跌倒，用于核对跌倒动作检测。"
+        : "参与者在受控环境中完成日常活动，用于核对系统是否发生误判。",
     label,
     participant,
     rate: "50 Hz",
     axes: "6 轴 IMU",
     window: "4 秒窗口",
     model: "腕部跌倒检测",
-    metricLabel: "已保存最高候选概率",
+    metricLabel: "跌倒特征匹配度",
+    metricHelp: "表示这段动作与模型见过的受控跌倒动作有多相似；越高越相似，但不是现实跌倒概率，也不能单独用来报警。",
     score,
     alarms,
   };
 });
 
 const activityCases = [
-  ["capture24-walking-p123", "走路候选", "walking"],
-  ["capture24-eating-candidate-p123", "进食候选", "eating_candidate"],
-  ["capture24-sleep-or-lying-candidate-p123", "睡眠或躺卧候选", "sleep_or_lying_candidate"],
-  ["capture24-other-unknown-p123", "其他或未知活动", "other_unknown"],
+  ["capture24-walking-p123", "走路动作", "walking"],
+  ["capture24-eating-candidate-p123", "可能是进食", "eating_candidate"],
+  ["capture24-sleep-or-lying-candidate-p123", "可能是睡眠或躺卧", "sleep_or_lying_candidate"],
+  ["capture24-other-unknown-p123", "其他或无法判断", "other_unknown"],
 ].map(([id, title, label]) => ({
   id,
   kind: "activity",
   source: "CAPTURE-24",
   sourceLabel: "CAPTURE-24 恢复前缀子集",
   truth: "REAL_FREE_LIVING",
-  truthLabel: "真实自由生活",
-  title: `腕部活动识别：${title}`,
+  truthLabel: "自由生活活动",
+  title: `参与者腕部活动：${title}`,
   shortTitle: `${title} · P123`,
-  note: "来自 CAPTURE-24 恢复前缀子集；以年轻参与者为主，不是老人专项数据。",
+  note: "来自 CAPTURE-24 恢复前缀子集，是参与者的一段自由生活腕部活动数据。",
   label,
   participant: "P123",
   rate: "20 Hz",
@@ -159,6 +159,7 @@ const activityCases = [
   window: "20 秒窗口",
   model: "腕部活动识别",
   metricLabel: "案例输入规格",
+  metricHelp: "显示这组案例的采样频率和连续动作窗口长度；当前没有逐样本识别结果。",
   score: null,
   alarms: null,
 }));
@@ -172,7 +173,7 @@ const routineCase = {
   truthLabel: "合成生活规律",
   title: "个人规律异常规则演示",
   shortTitle: "用餐、午睡与散步规律",
-  note: "固定种子生成的 100 天、551 条生活事件，只验证规则分支，不是真实老人记录。",
+  note: "程序固定生成 100 天、551 条生活事件，只验证规则分支，不是参与者生活记录。",
   label: "meal_nap_walk_routine",
   participant: "合成档案 01",
   rate: "100 天",
@@ -180,6 +181,7 @@ const routineCase = {
   window: "生活规律",
   model: "个人规律异常",
   metricLabel: "保存的合成历史",
+  metricHelp: "显示这组合成案例覆盖的天数和生活事件数量；不是参与者的生活风险分数。",
   score: null,
   alarms: null,
 };
@@ -207,7 +209,8 @@ const ids = [
   "watch-score-fill", "watch-score-text", "device-connection", "playback-form", "run-button",
   "pause-button", "reset-button", "playback-status", "result-state", "selected-truth",
   "selected-case-id", "selected-case-title", "selected-case-note", "result-metric-label",
-  "result-metric-value", "result-meter-fill", "result-metric-caption", "detection-pipeline",
+  "result-metric-value", "result-meter-fill", "result-metric-caption", "result-analysis-title",
+  "result-analysis-copy", "detection-pipeline",
   "pipeline-input", "pipeline-window", "pipeline-model", "pipeline-review", "external-count",
   "truth-notice", "limitations-list", "fixture-id",
 ];
@@ -245,6 +248,50 @@ async function fetchJson(url, options = {}) {
 
 function formatPercent(value) {
   return `${(Number(value) * 100).toFixed(1)}%`;
+}
+
+function pendingResultAnalysis() {
+  return {
+    title: "等待本次检测",
+    copy: "开始检测后，这里会用一段话说明系统看到了什么、为什么给出这个结果，以及这个结果不能说明什么。",
+  };
+}
+
+function completedResultAnalysis(item) {
+  if (item.kind === "fall" && item.alarms > 0) {
+    return {
+      title: "为什么显示“检测到跌倒动作”",
+      copy: `参与者完成的是受控模拟跌倒。系统把 ${item.window}内的 ${item.axes} 数据作为整体进行比较，跌倒特征匹配度为 ${formatPercent(item.score)}，保存回放记录了 ${item.alarms} 段跌倒动作，因此给出这一结果。当前资料没有逐轴原因说明，不能进一步断定具体哪个方向或身体部位“哪里不对”；这也不是现实跌倒概率或提前预测。`,
+    };
+  }
+  if (item.kind === "fall") {
+    return {
+      title: "为什么这次需要人工复核",
+      copy: `参与者完成的是受控模拟跌倒，但保存回放没有记录到足够明确的跌倒动作，因此这次可能被模型漏掉。跌倒特征匹配度 ${formatPercent(item.score)} 只表示整体动作相似程度，不能单独代替检测结果。`,
+    };
+  }
+  if (item.kind === "adl" && item.alarms > 0) {
+    return {
+      title: "为什么属于疑似误判",
+      copy: `参与者完成的是受控日常活动，并不是跌倒。系统认为这段整体腕部动作与受控跌倒动作较相似，匹配度为 ${formatPercent(item.score)}，并保存了 ${item.alarms} 段跌倒动作记录，因此这次应当标为疑似误判并交给人工复核，不能据此报警。`,
+    };
+  }
+  if (item.kind === "adl") {
+    return {
+      title: "为什么未给出跌倒提示",
+      copy: `参与者完成的是受控日常活动。保存回放没有把这段动作记录为跌倒动作，匹配度为 ${formatPercent(item.score)}，因此本次未给出跌倒提示；这只说明该案例的保存结果，不等于现实环境中的安全结论。`,
+    };
+  }
+  if (item.kind === "activity") {
+    return {
+      title: "这次活动案例能说明什么",
+      copy: `这是一段参与者自由生活中的腕部活动案例，输入规格为 ${item.rate}、${item.axes}、${item.window}。当前前端只确认案例已经登记，尚未接入逐样本识别结果，因此不能断定这段动作最终被识别成哪一种活动。`,
+    };
+  }
+  return {
+    title: "这次规律案例能说明什么",
+    copy: "这是程序生成的 100 天生活规律案例，用来演示用餐、午睡和散步是否偏离既定规律。它不是参与者的生活记录，也不是医学风险判断。",
+  };
 }
 
 function setLoading(isLoading) {
@@ -389,8 +436,11 @@ function selectCase(caseId, announce = true) {
   elements["selected-case-note"].textContent = selected.note;
   elements["result-metric-label"].textContent = selected.metricLabel;
   elements["result-metric-value"].textContent = "—";
-  elements["result-metric-caption"].textContent = "开始检测后显示该案例已经保存的模型回放摘要。";
+  elements["result-metric-caption"].textContent = selected.metricHelp;
   elements["result-meter-fill"].style.width = "0%";
+  const pendingAnalysis = pendingResultAnalysis();
+  elements["result-analysis-title"].textContent = pendingAnalysis.title;
+  elements["result-analysis-copy"].textContent = pendingAnalysis.copy;
 
   elements["watch-case-index"].textContent = `案例 ${String(catalogIndex).padStart(3, "0")} / 105`;
   elements["watch-case-label"].textContent = selected.source;
@@ -437,6 +487,8 @@ function startPlayback() {
   elements["watch-device"].dataset.state = "running";
   elements["result-state"].className = "result-state result-state--running";
   elements["result-state"].textContent = "检测中";
+  elements["result-analysis-title"].textContent = "正在整理判断依据";
+  elements["result-analysis-copy"].textContent = "检测完成后，这里会把案例类型、动作匹配程度和需要保留的限制合成一段通俗说明。";
 
   const advance = () => {
     state.playbackStep += 1;
@@ -470,19 +522,19 @@ function finishPlayback() {
   if (item.kind === "fall" || item.kind === "adl") {
     metricValue = formatPercent(item.score);
     if (item.alarms > 0 && item.kind === "fall") {
-      result = "检测到跌倒候选";
+      result = "检测到跌倒动作";
       resultTone = "candidate";
       watchState = "candidate";
-      caption = `已保存同源回放出现 ${item.alarms} 段候选；这是受控模拟跌倒接线核验，不是提前预测成绩。`;
+      caption = `匹配度表示与受控跌倒动作的相似程度；保存回放记录了 ${item.alarms} 段跌倒动作。它不是现实跌倒概率。`;
     } else if (item.alarms > 0) {
-      result = "出现误报候选";
+      result = "疑似误判为跌倒";
       resultTone = "warning";
       watchState = "warning";
-      caption = `日常活动中保存了 ${item.alarms} 段误报候选，需要人工复核。`;
+      caption = `参与者做的是日常活动，但保存回放记录了 ${item.alarms} 段跌倒动作，需要人工复核。`;
     } else {
-      result = "未触发跌倒候选";
+      result = "未检测到跌倒动作";
       resultTone = "clear";
-      caption = "保存的同源回放未出现候选告警；不等同于现实安全结论。";
+      caption = "保存回放未记录跌倒动作；这只说明本案例结果，不等同于现实安全结论。";
     }
   } else if (item.kind === "activity") {
     result = "活动案例已就绪";
@@ -498,12 +550,15 @@ function finishPlayback() {
   elements["watch-stage-label"].textContent = "检测完成";
   elements["watch-result"].textContent = result;
   elements["watch-score-fill"].style.width = item.score === null ? "100%" : `${Math.max(3, item.score * 100)}%`;
-  elements["watch-score-text"].textContent = item.score === null ? "案例就绪" : formatPercent(item.score);
+  elements["watch-score-text"].textContent = item.score === null ? "案例就绪" : `匹配 ${formatPercent(item.score)}`;
   elements["result-state"].className = `result-state result-state--${resultTone}`;
   elements["result-state"].textContent = result;
   elements["result-metric-value"].textContent = metricValue;
   elements["result-meter-fill"].style.width = item.score === null ? "100%" : `${Math.max(3, item.score * 100)}%`;
   elements["result-metric-caption"].textContent = caption;
+  const analysis = completedResultAnalysis(item);
+  elements["result-analysis-title"].textContent = analysis.title;
+  elements["result-analysis-copy"].textContent = analysis.copy;
   elements["pipeline-model"].textContent = `${item.model}已完成独立判断`;
   elements["pipeline-review"].textContent = "结果已显示 · 外部通知 0 次";
   elements["playback-status"].textContent = `${result}。结果来自已保存案例摘要，外部通知保持 0 次。`;
@@ -541,6 +596,9 @@ function resetPlayback(announce = true) {
   elements["watch-score-text"].textContent = "尚未运行";
   elements["result-state"].className = "result-state result-state--neutral";
   elements["result-state"].textContent = "等待运行";
+  const pendingAnalysis = pendingResultAnalysis();
+  elements["result-analysis-title"].textContent = pendingAnalysis.title;
+  elements["result-analysis-copy"].textContent = pendingAnalysis.copy;
   elements["run-button"].disabled = false;
   elements["run-button"].querySelector("span").textContent = "开始检测";
   elements["pause-button"].disabled = true;
@@ -604,17 +662,35 @@ function setupCaseControls() {
 function setupNavigationTracking() {
   const links = [...document.querySelectorAll(".sidebar-nav__link")];
   const targets = links.map((link) => document.querySelector(link.getAttribute("href"))).filter(Boolean);
+  const setCurrent = (targetId) => {
+    links.forEach((link) => {
+      const active = link.getAttribute("href") === `#${targetId}`;
+      link.classList.toggle("is-current", active);
+      if (active) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    });
+  };
+
+  links.forEach((link) => {
+    link.addEventListener("click", () => setCurrent(link.getAttribute("href").slice(1)));
+  });
   if (!("IntersectionObserver" in window)) return;
+  const visibility = new Map(targets.map((target) => [target.id, { target, isIntersecting: false, ratio: 0 }]));
   const observer = new IntersectionObserver(
     (entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (!visible) return;
-      links.forEach((link) => {
-        const active = link.getAttribute("href") === `#${visible.target.id}`;
-        link.classList.toggle("is-current", active);
-        if (active) link.setAttribute("aria-current", "page");
-        else link.removeAttribute("aria-current");
+      entries.forEach((entry) => {
+        visibility.set(entry.target.id, {
+          target: entry.target,
+          isIntersecting: entry.isIntersecting,
+          ratio: entry.intersectionRatio,
+        });
       });
+      const visibleTargets = [...visibility.values()].filter((entry) => entry.isIntersecting);
+      const requestedId = window.location.hash.replace(/^#/, "");
+      const requested = visibleTargets.find((entry) => entry.target.id === requestedId);
+      const visible = requested || visibleTargets.sort((a, b) => b.ratio - a.ratio)[0];
+      if (!visible) return;
+      setCurrent(visible.target.id);
     },
     { rootMargin: "-15% 0px -70% 0px", threshold: [0, 0.2, 0.5] },
   );

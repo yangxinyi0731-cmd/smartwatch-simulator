@@ -24,25 +24,25 @@
         </a>
 
         <nav class="sidebar-nav" aria-label="检测台目录">
-          <a class="sidebar-nav__link is-current" href="#monitor" aria-current="page">
+          <a class="sidebar-nav__link is-current" href="#monitor" aria-label="实时检测：操作模拟手表" aria-current="page">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h4l2-7 4 13 2-6h4M4 20h16" /></svg>
-            <span>实时检测</span>
+            <span class="sidebar-nav__copy"><strong>实时检测</strong><small>操作模拟手表</small></span>
           </a>
-          <a class="sidebar-nav__link" href="#cases">
+          <a class="sidebar-nav__link" href="#cases" aria-label="案例回放：选择 105 组数据">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5" /></svg>
-            <span>案例回放</span><b>105</b>
+            <span class="sidebar-nav__copy"><strong>案例回放</strong><small>选择 105 组数据</small></span><b>105</b>
           </a>
-          <a class="sidebar-nav__link" href="#analysis">
+          <a class="sidebar-nav__link" href="#analysis" aria-label="判断过程：查看判断依据">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V9M10 18V5M16 18v-7M22 18V3" /></svg>
-            <span>判断过程</span>
+            <span class="sidebar-nav__copy"><strong>判断过程</strong><small>查看判断依据</small></span>
           </a>
-          <a class="sidebar-nav__link" href="#records">
+          <a class="sidebar-nav__link" href="#records" aria-label="模型状态：了解三个模型">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5" /></svg>
-            <span>模型状态</span>
+            <span class="sidebar-nav__copy"><strong>模型状态</strong><small>了解三个模型</small></span>
           </a>
-          <a class="sidebar-nav__link" href="#about">
+          <a class="sidebar-nav__link" href="#about" aria-label="说明与边界：查看能力限制">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v5M12 8h.01" /></svg>
-            <span>说明与边界</span>
+            <span class="sidebar-nav__copy"><strong>说明与边界</strong><small>查看能力限制</small></span>
           </a>
         </nav>
 
@@ -203,18 +203,27 @@
                     <span id="selected-truth" class="truth-tag">受控模拟跌倒</span>
                     <code id="selected-case-id">weda-f01-u01_r01</code>
                   </div>
-                  <h3 id="selected-case-title">年轻参与者受控模拟跌倒</h3>
-                  <p id="selected-case-note">用于核对跌倒检测接线，不代表真实老人意外跌倒。</p>
+                  <h3 id="selected-case-title">参与者受控模拟跌倒</h3>
+                  <p id="selected-case-note">参与者在受控环境中完成模拟跌倒，用于核对跌倒动作检测。</p>
                 </article>
 
                 <div class="result-meter">
                   <div class="result-meter__copy">
-                    <span id="result-metric-label">已保存最高候选概率</span>
+                    <span id="result-metric-label">跌倒特征匹配度</span>
                     <strong id="result-metric-value">—</strong>
                   </div>
                   <div class="result-meter__track" aria-hidden="true"><i id="result-meter-fill"></i></div>
-                  <p id="result-metric-caption">开始检测后显示该案例已经保存的模型回放摘要。</p>
+                  <p id="result-metric-caption">表示这段动作与受控跌倒动作有多相似；不是现实跌倒概率。</p>
                 </div>
+
+                <article class="result-analysis" aria-labelledby="result-analysis-title" aria-live="polite" aria-atomic="true">
+                  <div class="result-analysis__label">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12H8l-4 4zM8 9h8M8 13h5" /></svg>
+                    <span>结果分析</span>
+                  </div>
+                  <h3 id="result-analysis-title">等待本次检测</h3>
+                  <p id="result-analysis-copy">开始检测后，这里会用一段话说明系统看到了什么、为什么给出这个结果，以及这个结果不能说明什么。</p>
+                </article>
 
                 <ol id="detection-pipeline" class="detection-pipeline" aria-label="检测流程">
                   <li data-step="0"><span>01</span><div><strong>读取腕部数据</strong><small id="pipeline-input">等待案例</small></div><b aria-hidden="true"></b></li>
@@ -238,19 +247,19 @@
               <div class="model-grid">
                 <article class="model-card is-ready">
                   <div class="model-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h4l2-7 4 13 2-6h4" /></svg></div>
-                  <div><span>当前可回放</span><h3>跌倒候选检测</h3><p>100 组 WEDA-FALL 案例</p></div><strong>100</strong>
+                  <div><span>当前可回放</span><h3>跌倒动作检测</h3><p>判断连续腕部动作是否与受控跌倒动作相似。</p><small>数据：100 组 WEDA-FALL 案例</small></div><strong>100</strong>
                 </article>
                 <article class="model-card is-ready">
                   <div class="model-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 19V9M12 19V5M18 19v-7" /></svg></div>
-                  <div><span>当前可回放</span><h3>腕部活动识别</h3><p>CAPTURE-24 恢复子集</p></div><strong>4</strong>
+                  <div><span>案例已登记</span><h3>腕部活动识别</h3><p>把腕部动作区分为走路、进食、躺卧等活动。</p><small>数据：4 组 CAPTURE-24 案例</small></div><strong>4</strong>
                 </article>
                 <article class="model-card is-ready">
                   <div class="model-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 8-8v8zM12 4v8h8" /></svg></div>
-                  <div><span>合成规则演示</span><h3>个人规律异常</h3><p>100 天合成生活规律</p></div><strong>1</strong>
+                  <div><span>合成规则演示</span><h3>个人规律异常</h3><p>比较用餐、午睡和散步是否偏离个人平常。</p><small>数据：1 组、100 天合成规律</small></div><strong>1</strong>
                 </article>
                 <article class="model-card is-locked">
                   <div class="model-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2M5 10h14v11H5z" /></svg></div>
-                  <div><span>后端尚未接入</span><h3>未来几秒风险预测</h3><p>需要 P3–P9 真实验证</p></div><strong>锁定</strong>
+                  <div><span>后端尚未接入</span><h3>未来几秒风险预测</h3><p>目标是根据连续动作判断接下来几秒是否可能失稳。</p><small>状态：需要 P3–P9 验证</small></div><strong>锁定</strong>
                 </article>
               </div>
             </section>
@@ -264,9 +273,9 @@
               <details>
                 <summary>查看数据来源、生活化要求和真实性说明</summary>
                 <div class="boundary-details">
-                  <p><strong>产品方向：</strong>先认识每位老人的平常，再结合连续动作研究风险。老人一天的生活路线、快速坐到沙发和摘表充电等场景仍然是未来产品逻辑说明，不是当前识别结果。</p>
+                  <p><strong>产品方向：</strong>先认识每位参与者的平常，再结合连续动作研究风险。一天的生活路线、快速坐到沙发和摘表充电等场景仍然是未来产品逻辑说明，不是当前识别结果。</p>
                   <p><strong>当前可展示：</strong>105 组已登记案例、保存的同源回放摘要、三模型独立状态和 E0 dry-run 安全边界。</p>
-                  <p><strong>当前不能宣称：</strong>真实老人提前几秒预测、正式报警、医疗诊断、家属通知或自动救援。所有前端互动都只演示，不报警。</p>
+                  <p><strong>当前不能宣称：</strong>现实环境中的提前几秒预测、正式报警、医疗诊断、家属通知或自动救援。所有前端互动都只演示，不报警。</p>
                   <ul id="limitations-list"></ul>
                 </div>
               </details>

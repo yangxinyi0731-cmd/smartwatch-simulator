@@ -1,58 +1,68 @@
 {
-  "artifact": "early-risk-e0-public-life-workbench",
+  "artifact": "early-risk-e0-smartwatch-simulator-workbench",
   "browser_verification": {
     "accessibility_baseline": {
       "duplicate_id_count": 0,
       "forms_without_novalidate_count": 0,
       "heading_level_skip_count": 0,
       "h1_count": 1,
-      "pointer_targets_below_24px_count": 0,
+      "named_sidebar_link_count": 5,
+      "pointer_targets_below_44px_count": 0,
       "unlabeled_field_count": 0,
       "unnamed_button_count": 0
     },
     "console_error_or_warning_count": 0,
-    "desktop": {
+    "desktop_1280x800": {
       "document_client_width": 1270,
       "document_scroll_width": 1270,
       "page_horizontal_overflow": false
     },
-    "failure_recovery": {
-      "friendly_local_service_error": true,
-      "message": "无法连接这台电脑上的页面服务。请重新启动提前风险研究页面，然后在这里重试。",
-      "retry_restored_content": true
-    },
     "interactions": [
-      "switch all four real-life explanation scenarios",
-      "reload local content",
-      "expand optional professional parameters",
-      "show plain-language validation error and focus the related field",
-      "recalculate deterministic demo",
-      "restore default policy",
-      "play decision timeline",
-      "pause decision timeline",
-      "reset decision timeline",
-      "expand P0-P9 research route",
-      "expand technical evidence",
-      "download allowlisted evidence"
+      "switch five case filters",
+      "search and clear one case id",
+      "select one of 105 cases",
+      "start pause continue and reset simulated watch detection",
+      "generate controlled-fall result analysis",
+      "generate controlled-ADL suspected-misclassification analysis",
+      "generate CAPTURE-24 input-ready analysis",
+      "generate synthetic-routine analysis",
+      "switch five anchored navigation entries",
+      "expand truth boundary details"
     ],
     "landscape_844x390": {
       "document_client_width": 834,
       "document_scroll_width": 834,
       "page_horizontal_overflow": false
     },
-    "life_context": {
-      "daily_route_scene_count": 5,
-      "false_alarm_example_count": 4,
-      "future_logic_is_explicitly_not_current_model_output": true,
-      "selectable_scene_count": 4
+    "model_explanations": {
+      "current_model_count": 3,
+      "future_model_locked": true,
+      "plain_chinese_explanation_count": 4
+    },
+    "navigation": {
+      "current_link_count": 1,
+      "desktop_primary_secondary_overlap_count": 0,
+      "label_count": 5,
+      "simplified_chinese_subtitle_count": 5,
+      "side_by_side_monitor_cases_collision_resolved": true
     },
     "narrow_390x844": {
       "document_client_width": 380,
       "document_scroll_width": 380,
       "page_horizontal_overflow": false
     },
+    "result_analysis": {
+      "does_not_invent_axis_or_body_part_cause": true,
+      "plain_language_branch_count_verified": 4,
+      "score_explained_as_non_probability": true
+    },
     "runtime": "Codex in-app Chromium",
-    "scrollbar_color_is_tokenized": true
+    "scrollbar_color_is_tokenized": true,
+    "terminology": {
+      "forbidden_visible_demographic_phrase_count": 0,
+      "participant_label": "参与者",
+      "saved_score_label": "跌倒特征匹配度"
+    }
   },
   "e0_evidence": {
     "audited_asset_count": 11,
@@ -67,7 +77,9 @@
   "git": {
     "base_commit": "75745e0ad0690126bde84c91df612b7f5b95a986",
     "branch": "codex/early-risk-e0-workbench",
+    "copy_refinement_base_commit": "367c34a3bb0609e0145a547364fbafae3d287154",
     "redesign_base_commit": "2d72a770d116424cbcaa74df6a944af20670568d",
+    "simulator_redesign_base_commit": "4f6df8feeaba64cbba2a9b074b981c9f595f689f",
     "remote_configured": false
   },
   "product_truth": {
@@ -75,6 +87,7 @@
     "evidence_level": "E0",
     "external_notifications_enabled": false,
     "life_scenes_are_explanatory_only": true,
+    "participant_is_neutral_ui_label": true,
     "prediction_evidence": false
   },
   "runtime": {

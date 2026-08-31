@@ -106,12 +106,27 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
 
         with urlopen(f"{base_url}/", timeout=5) as response:  # noqa: S310
             html = response.read().decode("utf-8")
-            assert "先认识每位老人的平常" in html
-            assert "老人一天的生活路线" in html
+            assert "先认识每位参与者的平常" in html
+            assert "一天的生活路线" in html
             assert "快速坐到沙发" in html
             assert "摘表充电" in html
             assert "只演示，不报警" in html
+            assert "操作模拟手表" in html
+            assert "跌倒特征匹配度" in html
+            assert "结果分析" in html
+            assert "判断连续腕部动作是否与受控跌倒动作相似" in html
+            assert "参与者受控模拟跌倒" in html
+            assert "年轻参与者" not in html
+            assert "真实老人" not in html
             assert response.headers["X-Content-Type-Options"] == "nosniff"
+
+        with urlopen(f"{base_url}/app.js", timeout=5) as response:  # noqa: S310
+            script = response.read().decode("utf-8")
+            assert "为什么显示“检测到跌倒动作”" in script
+            assert "疑似误判为跌倒" in script
+            assert "不是现实跌倒概率" in script
+            assert "年轻参与者" not in script
+            assert "真实老人" not in script
 
         request = Request(
             f"{base_url}/api/simulate",
