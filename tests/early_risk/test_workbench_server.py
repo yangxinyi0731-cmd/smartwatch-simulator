@@ -10,6 +10,8 @@ from urllib.request import Request, urlopen
 import pytest
 
 from research.early_risk.workbench_server import (
+    _downsample_indices,
+    build_case_evidence,
     build_workbench_payload,
     create_server,
     simulate_policy,
@@ -65,6 +67,27 @@ def test_policy_simulation_is_deterministic_and_never_notifies() -> None:
     assert not any(item["external_notification_sent"] for item in first["decisions"])
 
 
+def test_case_evidence_downsampling_is_bounded_and_keeps_last_sample() -> None:
+    indices = _downsample_indices(631)
+
+    assert indices[0] == 0
+    assert indices[-1] == 630
+    assert len(indices) <= 241
+    assert tuple(sorted(set(indices))) == indices
+
+
+def test_routine_evidence_uses_fixed_events_instead_of_fake_waveform() -> None:
+    evidence = build_case_evidence("synthetic-routine-100-v1")
+
+    assert evidence["evidence_type"] == "synthetic_routine_timeline"
+    assert evidence["content_verified"] is True
+    assert evidence["profile"]["history_days"] == 100
+    assert evidence["profile"]["event_count"] == 551
+    assert evidence["profile"]["displayed_day_count"] == 14
+    assert len(evidence["days"]) == 14
+    assert "不伪造波形" in " ".join(evidence["limitations"])
+
+
 @pytest.mark.parametrize(
     "payload",
     [
@@ -114,6 +137,9 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
             assert "操作模拟手表" in html
             assert "跌倒特征匹配度" in html
             assert "结果分析" in html
+            assert "动作示意、实际信号与规则对照" in html
+            assert "示意图不作为判断证据" in html
+            assert "格式化判断依据" in html
             assert "判断连续腕部动作是否与受控跌倒动作相似" in html
             assert "参与者受控模拟跌倒" in html
             assert "年轻参与者" not in html
@@ -125,8 +151,17 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
             assert "为什么显示“检测到跌倒动作”" in script
             assert "疑似误判为跌倒" in script
             assert "不是现实跌倒概率" in script
+            assert "/api/case-evidence/" in script
+            assert "renderSensorChart" in script
+            assert "renderRoutineChart" in script
             assert "年轻参与者" not in script
             assert "真实老人" not in script
+
+        routine_evidence, _ = read_json(
+            f"{base_url}/api/case-evidence/synthetic-routine-100-v1"
+        )
+        assert routine_evidence["evidence_type"] == "synthetic_routine_timeline"
+        assert routine_evidence["profile"]["event_count"] == 551
 
         request = Request(
             f"{base_url}/api/simulate",
@@ -159,6 +194,13 @@ def test_http_surface_rejects_path_traversal_and_non_json_posts() -> None:
                 f"{base_url}/evidence/%2E%2E%2Ftarget-contract.yaml", timeout=5
             )
         assert traversal_error.value.code == 404
+
+        with pytest.raises(HTTPError) as case_traversal_error:
+            urlopen(  # noqa: S310 - loopback test server
+                f"{base_url}/api/case-evidence/%2E%2E%2Fsmartwatch.sqlite3",
+                timeout=5,
+            )
+        assert case_traversal_error.value.code == 404
 
         request = Request(
             f"{base_url}/api/simulate",

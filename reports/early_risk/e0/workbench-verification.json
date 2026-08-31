@@ -17,6 +17,11 @@
       "document_scroll_width": 1270,
       "page_horizontal_overflow": false
     },
+    "desktop_1440x900": {
+      "document_client_width": 1430,
+      "document_scroll_width": 1430,
+      "page_horizontal_overflow": false
+    },
     "interactions": [
       "switch five case filters",
       "search and clear one case id",
@@ -26,6 +31,10 @@
       "generate controlled-ADL suspected-misclassification analysis",
       "generate CAPTURE-24 input-ready analysis",
       "generate synthetic-routine analysis",
+      "render verified WEDA six-axis magnitude waveforms and fall label interval",
+      "render verified CAPTURE-24 three-axis magnitude waveform and activity interval",
+      "render fixed-seed fourteen-day synthetic routine timeline without fake waveform",
+      "keep controlled ADL and walking intervals on non-danger color semantics",
       "switch five anchored navigation entries",
       "expand truth boundary details"
     ],
@@ -39,6 +48,22 @@
       "future_model_locked": true,
       "plain_chinese_explanation_count": 4
     },
+    "judgment_evidence": {
+      "action_illustration_is_explicitly_non_evidentiary": true,
+      "case_evidence_endpoint": "/api/case-evidence/{case_id}",
+      "content_hash_and_array_shape_rechecked": true,
+      "formatted_fact_count": 4,
+      "no_model_execution_or_database_write": true,
+      "routine_display_day_count": 14,
+      "routine_uses_timeline_instead_of_fake_waveform": true,
+      "sensor_display_point_cap": 241,
+      "text_alternative_and_non_color_legend": true,
+      "verified_sensor_case_types": [
+        "controlled_fall_6_axis",
+        "controlled_adl_6_axis",
+        "capture24_activity_3_axis"
+      ]
+    },
     "navigation": {
       "current_link_count": 1,
       "desktop_primary_secondary_overlap_count": 0,
@@ -49,6 +74,11 @@
     "narrow_390x844": {
       "document_client_width": 380,
       "document_scroll_width": 380,
+      "page_horizontal_overflow": false
+    },
+    "medium_1024x768": {
+      "document_client_width": 1014,
+      "document_scroll_width": 1014,
       "page_horizontal_overflow": false
     },
     "result_analysis": {
@@ -78,6 +108,7 @@
     "base_commit": "75745e0ad0690126bde84c91df612b7f5b95a986",
     "branch": "codex/early-risk-e0-workbench",
     "copy_refinement_base_commit": "367c34a3bb0609e0145a547364fbafae3d287154",
+    "evidence_visualization_base_commit": "a9d214bb7a4dac910be862d5b3f3b7c67ef355d3",
     "redesign_base_commit": "2d72a770d116424cbcaa74df6a944af20670568d",
     "simulator_redesign_base_commit": "4f6df8feeaba64cbba2a9b074b981c9f595f689f",
     "remote_configured": false
@@ -87,12 +118,14 @@
     "evidence_level": "E0",
     "external_notifications_enabled": false,
     "life_scenes_are_explanatory_only": true,
+    "local_case_evidence_is_read_only": true,
     "participant_is_neutral_ui_label": true,
     "prediction_evidence": false
   },
   "runtime": {
     "bind_address": "127.0.0.1",
     "health_path": "/api/health",
+    "case_evidence_path": "/api/case-evidence/{case_id}",
     "port": 8010,
     "strict_fractional_integer_rejection_http_status": 422,
     "windows_diagnostic": "PASS"
@@ -106,13 +139,13 @@
     "frontend_css_gzip_bytes": 72613,
     "frontend_js_bytes": 113099,
     "frontend_js_gzip_bytes": 41198,
-    "full_python_test_count": 100,
+    "full_python_test_count": 102,
     "full_python_tests": "PASS",
     "markdown_failing_files": 0,
     "npm_audit_vulnerabilities": 0,
     "pip_check": "PASS",
     "premium_strict_audit_findings": 0,
-    "workbench_test_count": 14,
+    "workbench_test_count": 16,
     "workbench_tests": "PASS"
   }
 }

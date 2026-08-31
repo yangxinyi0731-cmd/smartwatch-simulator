@@ -198,6 +198,8 @@ const state = {
   playbackStep: -1,
   playbackTimer: null,
   clockTimer: null,
+  evidenceController: null,
+  evidenceCache: new Map(),
 };
 
 const ids = [
@@ -212,7 +214,11 @@ const ids = [
   "result-metric-value", "result-meter-fill", "result-metric-caption", "result-analysis-title",
   "result-analysis-copy", "detection-pipeline",
   "pipeline-input", "pipeline-window", "pipeline-model", "pipeline-review", "external-count",
-  "truth-notice", "limitations-list", "fixture-id",
+  "evidence", "evidence-intro", "evidence-badge", "evidence-loading", "evidence-error",
+  "evidence-error-copy", "evidence-content", "motion-figure", "motion-title", "motion-caption",
+  "chart-kicker", "chart-title", "chart-meta", "evidence-chart", "evidence-legend",
+  "chart-summary", "evidence-source", "evidence-input", "evidence-method", "evidence-result",
+  "evidence-limit", "truth-notice", "limitations-list", "fixture-id",
 ];
 const elements = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)]));
 
@@ -226,6 +232,300 @@ function createElement(tagName, options = {}) {
     });
   }
   return element;
+}
+
+const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+
+function createSvgElement(tagName, attributes = {}, text = null) {
+  const element = document.createElementNS(SVG_NAMESPACE, tagName);
+  Object.entries(attributes).forEach(([name, value]) => {
+    if (value !== undefined && value !== null) element.setAttribute(name, String(value));
+  });
+  if (text !== null) element.textContent = String(text);
+  return element;
+}
+
+function appendSvgText(svg, text, x, y, className, anchor = "start") {
+  svg.append(createSvgElement("text", { x, y, class: className, "text-anchor": anchor }, text));
+}
+
+function motionPresentation(item) {
+  if (item.kind === "fall") {
+    return { motion: "fall", title: "受控模拟跌倒", caption: "线条人物标出跌倒动作与腕表位置；不是参与者影像。" };
+  }
+  if (item.kind === "adl") {
+    return { motion: "daily", title: "受控日常活动", caption: "用日常伸手动作代表这一类受控活动；不推断具体动作名称。" };
+  }
+  if (item.kind === "routine") {
+    return { motion: "routine", title: "生活规律时间分布", caption: "时钟示意用餐、午睡和散步发生时间；不是参与者影像。" };
+  }
+  if (item.label === "walking") {
+    return { motion: "walking", title: "走路动作", caption: "线条人物只说明案例类别；实际依据来自腕部三轴信号。" };
+  }
+  if (item.label === "eating_candidate") {
+    return { motion: "eating", title: "进食候选活动", caption: "线条人物只说明候选类别；不是摄像头识别结果。" };
+  }
+  if (item.label === "sleep_or_lying_candidate") {
+    return { motion: "resting", title: "睡眠或躺卧候选", caption: "线条人物只说明候选类别；不是参与者影像。" };
+  }
+  return { motion: "unknown", title: "其他或无法判断", caption: "问号表示类别不确定；不把未知动作强行解释成具体活动。" };
+}
+
+function evidenceMethod(item) {
+  if (item.kind === "fall" || item.kind === "adl") {
+    return "把连续 4 秒六轴腕部窗口作为整体，与固定跌倒模型学习到的动作模式比较。";
+  }
+  if (item.kind === "activity") {
+    return "并列复核 20 秒三轴腕部波形与已登记活动标签；当前页不把标签冒充新模型成绩。";
+  }
+  return "比较同一合成档案每天用餐、午睡和散步的时间、次数与持续时长。";
+}
+
+function pendingEvidenceConclusion(item) {
+  if (item.kind === "fall" || item.kind === "adl") return "开始检测后，结合保存匹配度与跌倒动作记录生成。";
+  if (item.kind === "activity") return "开始检测后，说明已登记活动类别与输入是否对应。";
+  return "开始检测后，说明这组固定种子规律输入能支持什么。";
+}
+
+function completedEvidenceConclusion(item, result) {
+  if (item.kind === "fall" || item.kind === "adl") {
+    return `${result}；匹配度 ${formatPercent(item.score)}，保存记录 ${item.alarms} 段。`;
+  }
+  if (item.kind === "activity") return `${result}；登记类别为“${item.shortTitle.split(" · ")[0]}”。`;
+  return `${result}；输入为 100 天、551 条固定种子合成事件。`;
+}
+
+function setEvidenceLegend(items) {
+  const nodes = items.map(({ className, label }) => {
+    const row = createElement("span");
+    row.append(createElement("i", { className, attrs: { "aria-hidden": "true" } }), document.createTextNode(label));
+    return row;
+  });
+  elements["evidence-legend"].replaceChildren(...nodes);
+}
+
+function renderSensorChart(evidence) {
+  const svg = elements["evidence-chart"];
+  const width = 760;
+  const height = 270;
+  const paddingLeft = 54;
+  const paddingRight = 18;
+  const paddingTop = 34;
+  const paddingBottom = 32;
+  const panelGap = evidence.series.length > 1 ? 28 : 0;
+  const panelHeight = (height - paddingTop - paddingBottom - panelGap) / evidence.series.length;
+  const durationMs = Math.max(1, evidence.stream.duration_ms);
+  const xFor = (offsetMs) => paddingLeft + (Math.min(durationMs, Math.max(0, offsetMs)) / durationMs) * (width - paddingLeft - paddingRight);
+
+  const title = createSvgElement("title", { id: "evidence-chart-title" }, "当前案例的真实传感器波形");
+  const description = createSvgElement(
+    "desc",
+    { id: "evidence-chart-description" },
+    `显示 ${evidence.stream.displayed_point_count} 个实际抽样点；每条曲线按自己的单位单独缩放。`,
+  );
+  svg.replaceChildren(title, description);
+
+  evidence.events.forEach((event, index) => {
+    const startX = xFor(event.start_offset_ms);
+    const endX = xFor(event.end_offset_ms);
+    const truthTone = evidence.truth_category === "SIMULATED_FALL" ? "fall" : "activity";
+    svg.append(createSvgElement("rect", {
+      x: startX,
+      y: paddingTop - 12,
+      width: Math.max(1, endX - startX),
+      height: height - paddingTop - paddingBottom + 18,
+      class: `evidence-chart__truth evidence-chart__truth--${truthTone}`,
+    }));
+    if (index === 0 && endX - startX > 48) {
+      appendSvgText(svg, `已登记标签 ${event.label}`, startX + 5, 16, `evidence-chart__annotation evidence-chart__annotation--${truthTone}`);
+    }
+  });
+
+  [0, 0.25, 0.5, 0.75, 1].forEach((ratio) => {
+    const x = paddingLeft + ratio * (width - paddingLeft - paddingRight);
+    svg.append(createSvgElement("line", { x1: x, x2: x, y1: paddingTop - 4, y2: height - paddingBottom, class: "evidence-chart__grid" }));
+    appendSvgText(svg, `${(durationMs * ratio / 1000).toFixed(ratio === 0 ? 0 : 1)}s`, x, height - 11, "evidence-chart__tick", "middle");
+  });
+
+  const peakSummaries = [];
+  evidence.series.forEach((series, seriesIndex) => {
+    const panelTop = paddingTop + seriesIndex * (panelHeight + panelGap);
+    const panelBottom = panelTop + panelHeight;
+    const values = series.values;
+    const maximum = Math.max(...values.map((point) => Number(point[1])), 0.000001);
+    const yMaximum = maximum * 1.08;
+    const yFor = (value) => panelBottom - (Math.max(0, Number(value)) / yMaximum) * panelHeight;
+
+    [0, 0.5, 1].forEach((ratio) => {
+      const y = panelTop + ratio * panelHeight;
+      svg.append(createSvgElement("line", { x1: paddingLeft, x2: width - paddingRight, y1: y, y2: y, class: ratio === 1 ? "evidence-chart__axis" : "evidence-chart__grid" }));
+    });
+    appendSvgText(svg, `${series.label} · ${series.unit}`, paddingLeft, panelTop - 8, "evidence-chart__label");
+    appendSvgText(svg, yMaximum.toFixed(yMaximum >= 10 ? 1 : 2), paddingLeft - 7, panelTop + 4, "evidence-chart__tick", "end");
+    appendSvgText(svg, "0", paddingLeft - 7, panelBottom + 3, "evidence-chart__tick", "end");
+
+    const pathData = values.map((point, index) => {
+      const command = index === 0 ? "M" : "L";
+      return `${command}${xFor(point[0]).toFixed(2)},${yFor(point[1]).toFixed(2)}`;
+    }).join(" ");
+    svg.append(createSvgElement("path", { d: pathData, class: `evidence-chart__line evidence-chart__line--${seriesIndex}` }));
+
+    const peak = values.reduce((current, point) => Number(point[1]) > Number(current[1]) ? point : current, values[0]);
+    svg.append(createSvgElement("circle", {
+      cx: xFor(peak[0]), cy: yFor(peak[1]), r: 4,
+      class: `evidence-chart__peak evidence-chart__peak--${seriesIndex}`,
+    }));
+    peakSummaries.push(`${series.label}峰值 ${Number(peak[1]).toFixed(series.unit === "m/s²" ? 1 : 2)} ${series.unit}（${(Number(peak[0]) / 1000).toFixed(1)} 秒）`);
+  });
+
+  elements["chart-summary"].textContent = `${peakSummaries.join("；")}。峰值只描述输入变化，不等同于模型作出判断的单一原因。`;
+  const legend = [
+    { className: "", label: "实际加速度合量（动作强弱）" },
+  ];
+  if (evidence.series.length > 1) legend.push({ className: "legend-blue", label: "实际角速度合量（转动快慢）" });
+  if (evidence.events.length) {
+    legend.push({
+      className: evidence.truth_category === "SIMULATED_FALL" ? "legend-red" : "legend-activity",
+      label: evidence.truth_category === "SIMULATED_FALL" ? "已登记跌倒标签区间" : "已登记活动标签区间",
+    });
+  }
+  setEvidenceLegend(legend);
+}
+
+function renderRoutineChart(evidence) {
+  const svg = elements["evidence-chart"];
+  const width = 760;
+  const height = 270;
+  const paddingLeft = 80;
+  const paddingRight = 18;
+  const paddingTop = 34;
+  const paddingBottom = 30;
+  const plotWidth = width - paddingLeft - paddingRight;
+  const rowHeight = (height - paddingTop - paddingBottom) / evidence.days.length;
+  const xFor = (minute) => paddingLeft + (Math.min(1440, Math.max(0, minute)) / 1440) * plotWidth;
+
+  const title = createSvgElement("title", { id: "evidence-chart-title" }, "最近十四天的合成生活规律时间图");
+  const description = createSvgElement(
+    "desc",
+    { id: "evidence-chart-description" },
+    "每一行代表一天，圆形是用餐，三角形是散步，方形是午睡；横向位置表示一天中的发生时间。",
+  );
+  svg.replaceChildren(title, description);
+
+  [0, 360, 720, 1080, 1440].forEach((minute) => {
+    const x = xFor(minute);
+    svg.append(createSvgElement("line", { x1: x, x2: x, y1: paddingTop - 12, y2: height - paddingBottom, class: "evidence-chart__grid" }));
+    appendSvgText(svg, `${String(Math.round(minute / 60)).padStart(2, "0")}:00`, x, height - 10, "evidence-chart__tick", "middle");
+  });
+
+  let displayedEventCount = 0;
+  evidence.days.forEach((day, dayIndex) => {
+    const y = paddingTop + dayIndex * rowHeight + rowHeight / 2;
+    svg.append(createSvgElement("line", { x1: paddingLeft, x2: width - paddingRight, y1: y, y2: y, class: "evidence-chart__routine-row" }));
+    appendSvgText(svg, day.day.slice(5), paddingLeft - 9, y + 3, "evidence-chart__tick", "end");
+    day.events.forEach((event) => {
+      displayedEventCount += 1;
+      const x = xFor(event.start_minute);
+      if (event.event_type === "meal") {
+        svg.append(createSvgElement("circle", { cx: x, cy: y, r: 4.2, class: "evidence-chart__event--meal" }));
+      } else if (event.event_type === "walk") {
+        svg.append(createSvgElement("path", { d: `M${x},${y - 5} L${x + 5},${y + 4} L${x - 5},${y + 4} Z`, class: "evidence-chart__event--walk" }));
+      } else if (event.event_type === "nap") {
+        svg.append(createSvgElement("rect", { x: x - 4, y: y - 4, width: 8, height: 8, rx: 1, class: "evidence-chart__event--nap" }));
+      }
+    });
+  });
+
+  appendSvgText(svg, "合成日期", paddingLeft - 9, 18, "evidence-chart__label", "end");
+  appendSvgText(svg, "一天中的发生时间", paddingLeft, 18, "evidence-chart__label");
+  elements["chart-summary"].textContent = `图中显示最近 ${evidence.days.length} 天的 ${displayedEventCount} 条合成事件；完整档案为 ${evidence.profile.history_days} 天、${evidence.profile.event_count} 条。形状与文字共同区分事件类型。`;
+  setEvidenceLegend([
+    { className: "legend-meal", label: "用餐（圆形）" },
+    { className: "legend-walk", label: "散步（三角形）" },
+    { className: "legend-nap", label: "午睡（方形）" },
+  ]);
+}
+
+function showEvidenceLoading(item) {
+  elements["evidence"].dataset.state = "loading";
+  elements["evidence-loading"].hidden = false;
+  elements["evidence-error"].hidden = true;
+  elements["evidence-content"].hidden = true;
+  elements["evidence-badge"].className = "evidence-badge";
+  elements["evidence-badge"].textContent = "正在核对";
+  elements["evidence-intro"].textContent = `正在读取 ${item.id} 对应的本机依据，不生成随机曲线。`;
+}
+
+function showEvidenceError(item, error) {
+  elements["evidence"].dataset.state = "error";
+  elements["evidence-loading"].hidden = true;
+  elements["evidence-content"].hidden = true;
+  elements["evidence-error"].hidden = false;
+  elements["evidence-error-copy"].textContent = `${error?.message || "本机文件暂时无法读取。"} 页面不会用示意波形替代。`;
+  elements["evidence-badge"].className = "evidence-badge is-error";
+  elements["evidence-badge"].textContent = "依据不可用";
+  elements["evidence-intro"].textContent = `${item.id} 的检测流程仍可演示，但缺失依据时不能把图表当作证据。`;
+}
+
+function renderEvidence(item, evidence) {
+  const motion = motionPresentation(item);
+  elements["evidence"].dataset.state = "ready";
+  elements["evidence-loading"].hidden = true;
+  elements["evidence-error"].hidden = true;
+  elements["evidence-content"].hidden = false;
+  elements["motion-figure"].dataset.motion = motion.motion;
+  elements["motion-title"].textContent = motion.title;
+  elements["motion-caption"].textContent = motion.caption;
+  elements["evidence-method"].textContent = evidenceMethod(item);
+  elements["evidence-result"].textContent = state.playbackStep >= 3
+    ? completedEvidenceConclusion(item, elements["result-state"].textContent)
+    : pendingEvidenceConclusion(item);
+
+  if (evidence.evidence_type === "sensor_waveform") {
+    const seconds = (evidence.stream.duration_ms / 1000).toFixed(1);
+    const qualityText = evidence.quality.flag_count
+      ? `保留 ${evidence.quality.flag_count} 项质量标记`
+      : "未登记质量异常";
+    elements["evidence-badge"].className = "evidence-badge is-verified";
+    elements["evidence-badge"].textContent = "本机文件已核验";
+    elements["evidence-intro"].textContent = "波形来自所选案例的本机登记文件；示意图只帮助理解动作类别。";
+    elements["chart-kicker"].textContent = "实际信号";
+    elements["chart-title"].textContent = `由真实${evidence.stream.axis_count}轴信号计算的合量波形`;
+    elements["chart-meta"].textContent = `${evidence.stream.sample_rate_hz} Hz · ${evidence.stream.sample_count} 个原始采样 · 显示 ${evidence.stream.displayed_point_count} 个实际抽样点`;
+    elements["evidence-source"].textContent = `${evidence.source_label} · 文件哈希与数组形状已核对 · ${qualityText}`;
+    elements["evidence-input"].textContent = `${evidence.stream.sample_rate_hz} Hz · ${evidence.stream.axis_count} 轴 · 记录 ${seconds} 秒；模型窗口为 ${item.window}`;
+    elements["evidence-limit"].textContent = evidence.limitations.slice(1).join(" ");
+    renderSensorChart(evidence);
+  } else {
+    elements["evidence-badge"].className = "evidence-badge is-synthetic";
+    elements["evidence-badge"].textContent = "固定种子合成";
+    elements["evidence-intro"].textContent = "这类案例没有腕部传感器流，因此用事件时间图展示规律依据，不伪造波形。";
+    elements["chart-kicker"].textContent = "规律输入";
+    elements["chart-title"].textContent = "最近 14 天合成规律时间图";
+    elements["chart-meta"].textContent = `固定种子 ${evidence.profile.seed} · 完整档案 ${evidence.profile.history_days} 天 / ${evidence.profile.event_count} 条事件`;
+    elements["evidence-source"].textContent = `${evidence.source_label} · 固定种子 ${evidence.profile.seed} · 文件内容已读取`;
+    elements["evidence-input"].textContent = `${evidence.profile.history_days} 天 · ${evidence.profile.event_count} 条用餐、午睡和散步事件`;
+    elements["evidence-limit"].textContent = evidence.limitations.join(" ");
+    renderRoutineChart(evidence);
+  }
+}
+
+async function loadCaseEvidence(item) {
+  state.evidenceController?.abort();
+  state.evidenceController = new AbortController();
+  showEvidenceLoading(item);
+  try {
+    let evidence = state.evidenceCache.get(item.id);
+    if (!evidence) {
+      evidence = await fetchJson(`/api/case-evidence/${encodeURIComponent(item.id)}`, {
+        signal: state.evidenceController.signal,
+      });
+      state.evidenceCache.set(item.id, evidence);
+    }
+    if (state.selectedCase?.id === item.id) renderEvidence(item, evidence);
+  } catch (error) {
+    if (error.name !== "AbortError" && state.selectedCase?.id === item.id) showEvidenceError(item, error);
+  }
 }
 
 async function fetchJson(url, options = {}) {
@@ -458,6 +758,7 @@ function selectCase(caseId, announce = true) {
   if (announce) {
     elements["playback-status"].textContent = `已选择 ${selected.id}，可以开始检测。`;
   }
+  loadCaseEvidence(selected);
 }
 
 function stepCopy(step, item) {
@@ -489,6 +790,7 @@ function startPlayback() {
   elements["result-state"].textContent = "检测中";
   elements["result-analysis-title"].textContent = "正在整理判断依据";
   elements["result-analysis-copy"].textContent = "检测完成后，这里会把案例类型、动作匹配程度和需要保留的限制合成一段通俗说明。";
+  elements["evidence-result"].textContent = "正在把案例结果与已核验输入依据并列复核。";
 
   const advance = () => {
     state.playbackStep += 1;
@@ -559,6 +861,7 @@ function finishPlayback() {
   const analysis = completedResultAnalysis(item);
   elements["result-analysis-title"].textContent = analysis.title;
   elements["result-analysis-copy"].textContent = analysis.copy;
+  elements["evidence-result"].textContent = completedEvidenceConclusion(item, result);
   elements["pipeline-model"].textContent = `${item.model}已完成独立判断`;
   elements["pipeline-review"].textContent = "结果已显示 · 外部通知 0 次";
   elements["playback-status"].textContent = `${result}。结果来自已保存案例摘要，外部通知保持 0 次。`;
@@ -599,6 +902,7 @@ function resetPlayback(announce = true) {
   const pendingAnalysis = pendingResultAnalysis();
   elements["result-analysis-title"].textContent = pendingAnalysis.title;
   elements["result-analysis-copy"].textContent = pendingAnalysis.copy;
+  if (state.selectedCase) elements["evidence-result"].textContent = pendingEvidenceConclusion(state.selectedCase);
   elements["run-button"].disabled = false;
   elements["run-button"].querySelector("span").textContent = "开始检测";
   elements["pause-button"].disabled = true;
@@ -714,6 +1018,7 @@ elements["playback-form"].addEventListener("submit", (event) => {
 window.addEventListener("beforeunload", () => {
   stopPlayback();
   state.loadController?.abort();
+  state.evidenceController?.abort();
   if (state.clockTimer) window.clearInterval(state.clockTimer);
 });
 

@@ -1,17 +1,24 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import mimetypes
+import sqlite3
 from dataclasses import asdict
+from datetime import datetime
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from math import ceil
 from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlparse
 
+import numpy as np
 import yaml
 
+from backend.app.config import Settings
+from backend.app.database import Database
 from research.early_risk.common import PROJECT_ROOT, sha256_file
 from research.early_risk.policy import PolicyConfig, PolicyInput, run_dry_policy
 
@@ -35,8 +42,11 @@ FIXTURE_REPORT_PATH = (
 DATA_AUDIT_PATH = (
     PROJECT_ROOT / "reports" / "early_risk" / "e0" / "current_data_audit.json"
 )
+ROUTINE_CASE_PATH = PROJECT_ROOT / "data" / "cases" / "synthetic_routine_100_v1.json"
 
 MAX_REQUEST_BYTES = 16 * 1024
+MAX_EVIDENCE_POINTS = 240
+ROUTINE_DISPLAY_DAYS = 14
 DOWNLOADS: dict[str, Path] = {
     "target-contract.yaml": TARGET_CONTRACT_PATH,
     "gate-summary.json": GATE_REPORT_PATH,
@@ -123,6 +133,170 @@ def _read_yaml(path: Path) -> dict[str, Any]:
     return payload
 
 
+def _downsample_indices(sample_count: int) -> tuple[int, ...]:
+    if sample_count < 2:
+        raise ValueError("传感器记录至少需要两个采样点。")
+    stride = max(1, ceil(sample_count / MAX_EVIDENCE_POINTS))
+    indices = list(range(0, sample_count, stride))
+    if indices[-1] != sample_count - 1:
+        indices.append(sample_count - 1)
+    return tuple(indices)
+
+
+def _build_sensor_evidence(case_id: str) -> dict[str, Any]:
+    settings = Settings.from_environment()
+    if not settings.database_path.is_file():
+        raise FileNotFoundError("本机案例数据库不存在。")
+
+    bundle = Database(settings.database_path).get_case_runtime_bundle(case_id)
+    if bundle is None:
+        raise LookupError("没有找到这组已登记案例。")
+    if len(bundle.streams) != 1:
+        raise ValueError("该案例必须且只能有一条已登记传感器流。")
+
+    stream = bundle.streams[0]
+    path = (PROJECT_ROOT / stream.relative_path).resolve()
+    if PROJECT_ROOT not in path.parents or not path.is_file():
+        raise FileNotFoundError("案例登记的本地传感器文件不存在。")
+    if hashlib.sha256(path.read_bytes()).hexdigest() != stream.content_sha256:
+        raise ValueError("案例传感器文件哈希与登记记录不一致。")
+    if stream.storage_format.value != "NPY":
+        raise ValueError("判断依据只读取已核验的 NPY 传感器流。")
+
+    values = np.load(path, allow_pickle=False)
+    if values.shape != (stream.sample_count, len(stream.channels)):
+        raise ValueError("传感器数组形状与登记记录不一致。")
+    if values.dtype != np.float32 or not np.isfinite(values).all():
+        raise ValueError("传感器数组必须是有限 float32 数值。")
+
+    channel_index = {name: index for index, name in enumerate(stream.channels)}
+    acceleration_indices = [channel_index[name] for name in ("ax", "ay", "az")]
+    acceleration = np.linalg.norm(values[:, acceleration_indices], axis=1)
+    series: list[dict[str, Any]] = [
+        {
+            "id": "acceleration_magnitude",
+            "label": "加速度合量",
+            "unit": "m/s²",
+            "values": [],
+        }
+    ]
+    angular_velocity: np.ndarray | None = None
+    if all(name in channel_index for name in ("gx", "gy", "gz")):
+        gyroscope_indices = [channel_index[name] for name in ("gx", "gy", "gz")]
+        angular_velocity = np.linalg.norm(values[:, gyroscope_indices], axis=1)
+        series.append(
+            {
+                "id": "angular_velocity_magnitude",
+                "label": "角速度合量",
+                "unit": "rad/s",
+                "values": [],
+            }
+        )
+
+    indices = _downsample_indices(stream.sample_count)
+    for index in indices:
+        offset_ms = int(round(index * 1000 / stream.sample_rate_hz))
+        series[0]["values"].append([offset_ms, round(float(acceleration[index]), 6)])
+        if angular_velocity is not None:
+            series[1]["values"].append(
+                [offset_ms, round(float(angular_velocity[index]), 6)]
+            )
+
+    quality = bundle.qualities[0] if bundle.qualities else None
+    return {
+        "case_id": case_id,
+        "evidence_type": "sensor_waveform",
+        "source_label": bundle.case.source.dataset_name,
+        "truth_category": bundle.case.truth_category.value,
+        "content_verified": True,
+        "stream": {
+            "sample_rate_hz": stream.sample_rate_hz,
+            "sample_count": stream.sample_count,
+            "displayed_point_count": len(indices),
+            "duration_ms": stream.duration_ms,
+            "channels": list(stream.channels),
+            "axis_count": len(stream.channels),
+        },
+        "quality": {
+            "flag_count": len(quality.flags) if quality is not None else 0,
+            "flags": list(quality.flags) if quality is not None else [],
+        },
+        "events": [
+            {
+                "event_type": event.event_type.value,
+                "label": event.label,
+                "start_offset_ms": event.start_offset_ms,
+                "end_offset_ms": event.end_offset_ms,
+            }
+            for event in bundle.ground_truth_events
+        ],
+        "series": series,
+        "limitations": [
+            "波形来自本机已登记文件，经内容哈希和数组形状核对后抽样显示。",
+            "合量曲线由三个真实方向轴计算，用于简化读图，不表示某个方向或身体部位造成了结果。",
+            "此依据只解释当前保存案例，不构成现实报警或未来几秒风险预测。",
+        ],
+    }
+
+
+def _build_routine_evidence(case_id: str) -> dict[str, Any]:
+    if case_id != "synthetic-routine-100-v1":
+        raise LookupError("没有找到这组合成规律案例。")
+    payload = _read_json(ROUTINE_CASE_PATH)
+    events = payload.get("events")
+    if not isinstance(events, list) or not events:
+        raise ValueError("合成规律案例没有可显示的事件。")
+
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for event in events:
+        started_at = datetime.fromisoformat(str(event["started_at"]))
+        day = started_at.date().isoformat()
+        grouped.setdefault(day, []).append(
+            {
+                "event_type": str(event["event_type"]),
+                "slot_key": str(event["slot_key"]),
+                "start_minute": round(
+                    started_at.hour * 60
+                    + started_at.minute
+                    + started_at.second / 60,
+                    2,
+                ),
+                "duration_minutes": round(float(event["duration_minutes"]), 2),
+            }
+        )
+    displayed_days = sorted(grouped)[-ROUTINE_DISPLAY_DAYS:]
+    return {
+        "case_id": case_id,
+        "evidence_type": "synthetic_routine_timeline",
+        "source_label": "固定种子合成生活规律",
+        "truth_category": "SYNTHETIC_ROUTINE",
+        "content_verified": True,
+        "profile": {
+            "history_days": int(payload["history_days"]),
+            "event_count": len(events),
+            "seed": int(payload["seed"]),
+            "displayed_day_count": len(displayed_days),
+        },
+        "days": [
+            {"day": day, "events": grouped[day]}
+            for day in displayed_days
+        ],
+        "limitations": [
+            "时间图来自固定种子生成的合成生活事件，不是参与者生活记录。",
+            "生活规律案例没有腕部传感器流，因此不伪造波形，改用最近 14 天事件时间图。",
+            "此依据只演示规律比较的输入结构，不构成医学风险判断。",
+        ],
+    }
+
+
+def build_case_evidence(case_id: str) -> dict[str, Any]:
+    if not case_id or len(case_id) > 128 or "/" in case_id or "\\" in case_id:
+        raise LookupError("案例编号无效。")
+    if case_id == "synthetic-routine-100-v1":
+        return _build_routine_evidence(case_id)
+    return _build_sensor_evidence(case_id)
+
+
 def build_workbench_payload() -> dict[str, Any]:
     contract = _read_yaml(TARGET_CONTRACT_PATH)
     baseline_config = _read_yaml(BASELINE_CONFIG_PATH)
@@ -152,8 +326,9 @@ def build_workbench_payload() -> dict[str, Any]:
             "allowed_claims": contract["allowed_e0_claims"],
             "limitations": gate["limitations"],
             "notice": (
-                "本工作台只读取仓库中的 E0 合同、审计报告和人工确定性夹具。"
-                "它不会读取真实个人数据，不会训练预测模型，也不会发送任何通知。"
+                "本工作台读取仓库中的 E0 合同与保存摘要；选择案例时，只读核验"
+                "本机已登记传感器文件或固定种子合成事件。它不会修改案例数据，"
+                "不会训练预测模型，也不会发送任何通知。"
             ),
         },
         "pipeline": list(PIPELINE_STAGES),
@@ -432,6 +607,19 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
             if route == "/api/workbench":
                 self._write_json(HTTPStatus.OK, build_workbench_payload())
                 return
+            if route.startswith("/api/case-evidence/"):
+                case_id = unquote(route.removeprefix("/api/case-evidence/"))
+                try:
+                    payload = build_case_evidence(case_id)
+                except LookupError as exc:
+                    self._write_error(
+                        HTTPStatus.NOT_FOUND,
+                        code="CASE_EVIDENCE_NOT_FOUND",
+                        message=str(exc),
+                    )
+                    return
+                self._write_json(HTTPStatus.OK, payload)
+                return
             if route.startswith("/evidence/"):
                 name = unquote(route.removeprefix("/evidence/"))
                 path = DOWNLOADS.get(name)
@@ -456,11 +644,18 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
                 )
                 return
             self._serve_static(route)
-        except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
+        except (
+            OSError,
+            sqlite3.Error,
+            KeyError,
+            TypeError,
+            ValueError,
+            json.JSONDecodeError,
+        ):
             self._write_error(
                 HTTPStatus.SERVICE_UNAVAILABLE,
                 code="WORKBENCH_DATA_UNAVAILABLE",
-                message="本地 E0 证据暂时无法读取，请检查仓库文件后重试。",
+                message="本机案例依据暂时无法读取，请检查数据库和案例文件后重试。",
                 retryable=True,
             )
 
