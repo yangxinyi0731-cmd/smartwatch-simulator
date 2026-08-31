@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light" />
-    <meta name="description" content="用老人一天中的真实生活场景，通俗解释个体规律、连续动作与未来提前风险研究。" />
-    <title>一眼看懂：提前风险研究 — 模拟智能手表</title>
+    <meta name="description" content="以 105 组已登记研究案例为输入的模拟智能手表前端检测台。" />
+    <title>模拟手表检测台 — 模拟智能手表</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/tokens.css" />
     <link rel="stylesheet" href="/app.css" />
@@ -14,225 +14,273 @@
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
 
-    <header class="site-header" aria-label="页面顶部">
-      <div class="site-header__inner">
-        <a class="brand" href="#understand" aria-label="智能手表提前风险研究首页">
-          <span class="brand__mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h4l2-7 4 14 2-7h6" /></svg></span>
-          <span class="brand__text"><strong>智能手表提前风险研究</strong><small>给普通人看的生活化说明</small></span>
+    <div class="app-frame">
+      <aside class="sidebar" aria-label="主导航">
+        <a class="brand" href="#monitor" aria-label="模拟智能手表检测台首页">
+          <span class="brand__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M8 2h8l1 5v10l-1 5H8l-1-5V7zM7 8h10M7 16h10M10 11h4v2h-4z" /></svg>
+          </span>
+          <span><strong>安衡腕表</strong><small>风险检测模拟系统</small></span>
         </a>
-        <nav class="nav" aria-label="页面目录">
-          <a class="nav__link is-current" href="#understand" aria-current="page">一眼看懂</a>
-          <a class="nav__link" href="#day-life">真实场景</a>
-          <a class="nav__link" href="#simulator">互动演示</a>
-          <a class="nav__link" href="#progress">现在做到哪</a>
-          <a class="nav__link" href="#technical">技术依据</a>
+
+        <nav class="sidebar-nav" aria-label="检测台目录">
+          <a class="sidebar-nav__link is-current" href="#monitor" aria-current="page">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h4l2-7 4 13 2-6h4M4 20h16" /></svg>
+            <span>实时检测</span>
+          </a>
+          <a class="sidebar-nav__link" href="#cases">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5" /></svg>
+            <span>案例回放</span><b>105</b>
+          </a>
+          <a class="sidebar-nav__link" href="#analysis">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V9M10 18V5M16 18v-7M22 18V3" /></svg>
+            <span>判断过程</span>
+          </a>
+          <a class="sidebar-nav__link" href="#records">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5" /></svg>
+            <span>模型状态</span>
+          </a>
+          <a class="sidebar-nav__link" href="#about">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v5M12 8h.01" /></svg>
+            <span>说明与边界</span>
+          </a>
         </nav>
-        <div class="header-actions">
-          <span class="stage-badge"><b aria-hidden="true"></b>工程演示阶段 E0</span>
-          <span id="service-status" class="service-state" role="status" aria-live="polite">正在读取本机内容</span>
-          <form id="reload-form" class="inline-action" action="/" method="get" novalidate>
-            <button id="reload-button" class="button button--outline button--compact" type="submit">重新读取</button>
-          </form>
+
+        <div class="sidebar-status" aria-label="本机运行边界">
+          <span class="connection-dot" aria-hidden="true"></span>
+          <div><strong>本机演示模式</strong><small>不发送外部通知</small></div>
         </div>
-      </div>
-    </header>
+        <p class="sidebar-version">E0 FRONTEND · 127.0.0.1</p>
+      </aside>
 
-    <main id="main-content" tabindex="-1">
-      <div id="page-loading" class="loading-state" role="status" aria-live="polite">
-        <span class="spinner" aria-hidden="true"></span><span>正在准备生活场景和本机工程演示……</span>
-      </div>
-      <section id="page-error" class="page-error content-width" role="alert" hidden>
-        <div><strong>页面内容暂时没有读出来</strong><p id="page-error-message">请检查本机服务后重试。</p></div>
-        <form id="retry-form" class="inline-action" action="/" method="get" novalidate>
-          <button id="retry-button" class="button button--solid" type="submit">再试一次</button>
-        </form>
-      </section>
-
-      <div id="app-content" hidden>
-        <section id="understand" class="hero anchor-section" aria-labelledby="page-title">
-          <div class="hero__content content-width">
-            <div class="hero__copy">
-              <p class="eyebrow">先看生活，再看数字</p>
-              <h1 id="page-title">先认识每位老人的平常，再判断此刻是否真的不对劲</h1>
-              <p class="hero__summary">同样是突然坐下，可能只是累了，也可能是腿软；同样是手腕剧烈晃动，可能是差点跌倒，也可能只是在坐车。真正有用的手表，不能只看一次动作有多大，而要结合这个人平时怎么生活、刚才连续发生了什么，再决定是否值得关注。</p>
-              <div class="hero__actions">
-                <a class="button button--solid" href="#day-life">从一天的生活开始看</a>
-                <a class="button button--outline" href="#simulator">亲手试一次判断过程</a>
-              </div>
-              <p class="hero__boundary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6zM9 12l2 2 4-5" /></svg>当前页面是只在这台电脑运行的工程演示，还不能给真实老人报警。</p>
-            </div>
-            <div class="hero__visual" aria-label="从生活规律到谨慎提醒的三步示意">
-              <div class="watch-card">
-                <div class="watch-card__top"><span class="watch-card__label">生活中的一天</span><span class="watch-card__time">02:15</span></div>
-                <div class="watch-card__person" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="18" r="8" /><path d="M21 52c1-13 4-21 11-21s10 8 11 21M17 36l9 5M47 36l-9 5" /></svg></div>
-                <strong>夜里起身去卫生间</strong>
-                <p>先看是不是平常时间，再看起身后有没有连续发晃。</p>
-                <div class="watch-card__signal" aria-hidden="true"><span></span><span></span><span class="is-raised"></span><span class="is-raised"></span><span></span></div>
-              </div>
-              <ol class="hero-steps" aria-label="判断的三步">
-                <li><span>1</span><div><strong>认识平常</strong><small>什么时候起床、吃饭、散步</small></div></li>
-                <li><span>2</span><div><strong>看连续变化</strong><small>是否偏离规律并出现不稳</small></div></li>
-                <li><span>3</span><div><strong>验证后再提醒</strong><small>先证明有效，也不能太打扰</small></div></li>
-              </ol>
-            </div>
+      <div class="app-main">
+        <header class="topbar" aria-label="页面工具栏">
+          <div class="topbar__context">
+            <span>设备实验室</span><i aria-hidden="true">/</i><strong>模拟腕带 01</strong>
           </div>
-        </section>
-
-        <section class="truth-note content-width" aria-labelledby="truth-title">
-          <div class="truth-note__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 10v6M12 7h.01" /></svg></div>
-          <div><p class="truth-note__label">先把边界说清楚</p><h2 id="truth-title">下面讲的是未来产品应该怎样判断，不是已经测出的真实预警效果</h2><p id="truth-notice"></p></div>
-          <span class="status-pill status-pill--warning"><b aria-hidden="true"></b>现在不报警</span>
-        </section>
-
-        <section class="section content-width" aria-labelledby="plain-logic-title">
-          <header class="section-heading section-heading--center">
-            <p class="section-kicker">一句话原理</p><h2 id="plain-logic-title">不是“动作大就报警”，而是三层证据一起看</h2><p>每一层都回答一个普通人能理解的问题，缺一层就要谨慎。</p>
-          </header>
-          <div class="logic-steps">
-            <article class="logic-card"><span class="logic-card__number">01</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V8l8-5 8 5v11M8 19v-6h8v6M3 19h18" /></svg><h3>这个人平时怎样生活？</h3><p>先学习他自己的起床、用餐、午睡、散步和夜间活动规律，不拿一个“所有老人平均值”硬套。</p><small>长期个人规律</small></article>
-            <article class="logic-card"><span class="logic-card__number">02</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2-7 4 14 2-7h6" /></svg><h3>现在连续发生了什么？</h3><p>观察起身、走路和转身后的连续动作，区分一次正常晃动与持续踉跄、反复补步等失稳前兆。</p><small>当前连续动作</small></article>
-            <article class="logic-card"><span class="logic-card__number">03</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6zM9 12l2 2 4-5" /></svg><h3>提醒真的有帮助吗？</h3><p>必须证明能提前发现，又不会一天误报很多次。证据不足、手表摘下或信号异常时，宁可说明无法判断。</p><small>验证、克制与拒判</small></article>
-          </div>
-        </section>
-
-        <section id="day-life" class="section section--tinted anchor-section" aria-labelledby="day-life-title">
-          <div class="content-width">
-            <header class="section-heading"><p class="section-kicker">老人一天的生活路线</p><h2 id="day-life-title">风险不是实验室里的一个数字，它藏在具体生活里</h2><p>以下是生活场景解释，用来说明未来系统为什么需要“个人规律 + 连续动作 + 环境语境”。这些不是当前模型的真实识别结果。</p></header>
-            <ol class="day-route" aria-label="从早到晚的五个生活场景">
-              <li class="day-route__item"><time>06:40</time><span class="day-route__dot" aria-hidden="true"></span><article><div class="scene-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 17h16M6 17v-6h12v6M8 11V8h8v3M4 20v-3M20 20v-3" /></svg></div><p class="scene-tag">从床上起身</p><h3>起得慢，不一定危险</h3><p>老人可能只是刚睡醒。更值得留意的是：起身后连续发晃、反复扶床、几步都站不稳。</p></article></li>
-              <li class="day-route__item"><time>08:05</time><span class="day-route__dot" aria-hidden="true"></span><article><div class="scene-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 3v8a4 4 0 0 0 4 4V3M7 3v12M9 3v12M15 3v18M15 3c3 1 4 4 4 7h-4" /></svg></div><p class="scene-tag">早餐与服药</p><h3>今天晚一点，也许只是周末</h3><p>单独一次晚吃饭没有意义。若连续多天明显偏离自己的规律，并伴随活动减少，才值得进一步了解。</p></article></li>
-              <li class="day-route__item"><time>10:30</time><span class="day-route__dot" aria-hidden="true"></span><article><div class="scene-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM10 22l1-7-3-3M14 8l3 3 4 1M8 12l3-5 4 1M14 14l3 8" /></svg></div><p class="scene-tag">公园散步</p><h3>步子变乱，要看是不是连续出现</h3><p>绕开行人会突然变向；真正可疑的是无明显原因地连续补步、身体快速失衡，并与个人平常走路不同。</p></article></li>
-              <li class="day-route__item"><time>16:20</time><span class="day-route__dot" aria-hidden="true"></span><article><div class="scene-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 19h12M8 19v-6h8v6M7 13c0-4 2-7 5-7s5 3 5 7M12 6V3" /></svg></div><p class="scene-tag">弯腰捡东西</p><h3>手腕突然向下，不等于要跌倒</h3><p>弯腰、拿菜篮或整理衣物都会产生大动作。要结合动作前后、身体恢复速度和是否出现连续不稳。</p></article></li>
-              <li class="day-route__item"><time>夜间 02:15</time><span class="day-route__dot" aria-hidden="true"></span><article><div class="scene-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9zM12 7v5l3 2" /></svg></div><p class="scene-tag">夜里去卫生间</p><h3>同样的摇晃，夜里更需要结合情境</h3><p>刚起床、光线暗、地面有障碍，都可能增加风险。未来系统仍需真实验证，不能仅凭“发生在夜里”就报警。</p></article></li>
-            </ol>
-          </div>
-        </section>
-
-        <section class="section content-width" aria-labelledby="context-title">
-          <header class="section-heading"><p class="section-kicker">同一个动作，不同的含义</p><h2 id="context-title">点一个真实场景，看看系统为什么不能草率下结论</h2><p>这是未来产品逻辑的生活化解释，不是当前模型正在识别这些场景。</p></header>
-          <div class="context-lab">
-            <form id="scene-choices" class="scene-choices" action="/" method="get" aria-label="选择生活场景" novalidate>
-              <button class="scene-choice is-selected" type="submit" data-scene="stand" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 21v-7h10v7M8 14l2-5h4l2 5M12 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" /></svg><span><strong>起身后发晃</strong><small>可能值得继续观察</small></span></button>
-              <button class="scene-choice" type="submit" data-scene="sit" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20h12M8 20v-7h8v7M9 13V8h6v5" /></svg><span><strong>快速坐到沙发</strong><small>很容易被误会</small></span></button>
-              <button class="scene-choice" type="submit" data-scene="bus" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14V6H5zM7 17v3M17 17v3M8 20h.01M16 20h.01M5 11h14" /></svg><span><strong>坐车遇到颠簸</strong><small>动作大但未必危险</small></span></button>
-              <button class="scene-choice" type="submit" data-scene="offwrist" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8l1 4v10l-1 4H8l-1-4V7zM7 8h10M7 16h10" /></svg><span><strong>摘表充电</strong><small>此时应承认无法判断</small></span></button>
+          <div class="topbar__actions">
+            <span id="service-status" class="service-state" role="status" aria-live="polite">正在读取本机内容</span>
+            <span class="local-chip">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2M5 10h14v11H5zM12 14v3" /></svg>
+              仅本机
+            </span>
+            <form id="reload-form" action="/" method="get" novalidate>
+              <button id="reload-button" class="icon-button" type="submit" aria-label="重新读取本机内容">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2 5M20 4v7h-7" /></svg>
+              </button>
             </form>
-            <article class="scene-explanation" aria-live="polite" aria-atomic="true">
-              <div class="scene-explanation__header"><span id="scene-detail-kicker">起身后连续发晃</span><strong id="scene-detail-title">可能需要关注，但不能马上报警</strong></div>
-              <div class="scene-explanation__grid">
-                <div><span class="explain-label">手表可能看到</span><p id="scene-detail-signal">手腕先快速抬起，随后连续几次左右摆动，走出几步后仍没有恢复平稳。</p></div>
-                <div><span class="explain-label">还要结合什么</span><p id="scene-detail-context">是不是刚从床上起来、过去是否经常这样、动作是否连续、信号质量是否可靠。</p></div>
-                <div><span class="explain-label">谨慎做法</span><p id="scene-detail-action">先记录为值得研究的候选；只有未来真实验证证明有提前量且误报可接受，才讨论提醒。</p></div>
+          </div>
+        </header>
+
+        <main id="main-content" tabindex="-1">
+          <div id="page-loading" class="page-state" role="status" aria-live="polite">
+            <span class="spinner" aria-hidden="true"></span>
+            <div><strong>正在启动模拟手表检测台</strong><p>读取本机合同、105 组案例摘要与 E0 安全状态。</p></div>
+          </div>
+
+          <section id="page-error" class="page-state page-state--error" role="alert" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 16H3zM12 9v4M12 16h.01" /></svg>
+            <div><strong>检测台暂时无法连接本机服务</strong><p id="page-error-message">请重新启动页面后重试。</p></div>
+            <form id="retry-form" action="/" method="get" novalidate>
+              <button id="retry-button" class="button button--primary" type="submit">重新连接</button>
+            </form>
+          </section>
+
+          <div id="app-content" hidden>
+            <section class="workspace-heading" aria-labelledby="page-title">
+              <div>
+                <p class="eyebrow">评委演示模式 · 前端交互成品</p>
+                <h1 id="page-title">模拟手表检测台</h1>
+                <p>选择一组已登记案例，让模拟手表完成读取、窗口整理、模型判断和结果复核。</p>
               </div>
-              <p id="scene-detail-boundary" class="scene-explanation__boundary">当前没有真实老人数据证明这套判断有效。</p>
-            </article>
-          </div>
-        </section>
+              <div class="workspace-heading__status">
+                <span><b aria-hidden="true"></b>105 组案例已登记</span>
+                <span class="boundary-chip">只演示，不报警</span>
+              </div>
+            </section>
 
-        <section class="section section--mistake" aria-labelledby="mistake-title">
-          <div class="content-width mistake-layout">
-            <header class="section-heading"><p class="section-kicker">先防误报</p><h2 id="mistake-title">生活里有很多“看起来像危险”的正常动作</h2><p>如果忽略这些情况，手表一天响很多次，老人和家属很快就不会再相信它。</p></header>
-            <div class="mistake-list">
-              <article><span>01</span><div><h3>快速坐下</h3><p>身体和手腕会突然加速，但人可能只是主动坐到沙发上。</p></div></article>
-              <article><span>02</span><div><h3>坐车颠簸</h3><p>手表会跟着车辆连续震动，需要识别活动环境和动作模式。</p></div></article>
-              <article><span>03</span><div><h3>甩手上的水</h3><p>短时间高频摆动很剧烈，却与身体失稳完全不同。</p></div></article>
-              <article><span>04</span><div><h3>摘表或松动</h3><p>信号突然消失时，正确答案不是“安全”，而是“现在无法判断”。</p></div></article>
-            </div>
-          </div>
-        </section>
+            <section class="simulator-layout" aria-label="模拟手表操作区">
+              <section id="cases" class="panel case-panel anchor-section" aria-labelledby="case-panel-title">
+                <header class="panel-heading panel-heading--stacked">
+                  <div><p class="panel-kicker">输入</p><h2 id="case-panel-title">案例库</h2></div>
+                  <span id="case-count" class="count-badge">105 组</span>
+                </header>
 
-        <section id="simulator" class="section content-width anchor-section" aria-labelledby="simulator-title">
-          <header class="section-heading section-heading--split"><div><p class="section-kicker">亲手看一次</p><h2 id="simulator-title">为什么要看“连续证据”，不能看见一个大动作就报警</h2><p>下面只有 7 个工程人员事先写好的分数点，用来检查判断步骤是否按规则运行。它不来自真实手表，也不对应某位老人。</p></div><span id="dry-run-badge" class="status-pill status-pill--success"><b aria-hidden="true"></b>只演示，不报警</span></header>
-          <div class="demo-shell">
-            <div class="demo-intro">
-              <div class="demo-intro__steps" aria-label="演示过程说明"><span><b>1</b>普通变化</span><i aria-hidden="true"></i><span><b>2</b>连续升高</span><i aria-hidden="true"></i><span><b>3</b>只记候选</span><i aria-hidden="true"></i><span><b>4</b>缺信号就拒判</span></div>
-              <p>默认规则要求连续两个点达到门槛。你可以直接播放，也可以在“专业参数”里改变规则，观察程序怎样变化。</p>
-            </div>
-            <div class="timeline-panel">
-              <div class="timeline-panel__toolbar">
-                <div><span class="demo-label">人工动作分数</span><h3>从普通变化到“值得记录”</h3><p id="timeline-summary">等待本机固定示例。</p></div>
-                <form id="timeline-form" class="timeline-controls" action="/" method="get" aria-label="演示播放控制" novalidate>
-                  <button id="play-button" class="button button--solid button--with-icon" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" /></svg>播放判断过程</button>
-                  <button id="pause-button" class="icon-button" type="submit" aria-label="暂停判断过程" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3v14H7zM14 5h3v14h-3z" /></svg></button>
-                  <button id="reset-timeline-button" class="icon-button" type="submit" aria-label="重新从头播放"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6M4 4v6h6" /></svg></button>
+                <form id="case-search-form" class="search-field" role="search" novalidate>
+                  <label class="visually-hidden" for="case-search">搜索案例编号</label>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12zM15 15l5 5" /></svg>
+                  <input id="case-search" name="case-search" type="search" autocomplete="off" placeholder="搜索案例编号" />
+                  <button id="clear-search" class="clear-search" type="submit" aria-label="清除案例搜索" hidden>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
+                  </button>
                 </form>
-              </div>
-              <div id="score-chart" class="score-chart" role="img" aria-label="人工固定分数随时间变化的折线图"></div>
-              <div id="chart-status" class="chart-status" role="status" aria-live="polite">演示停在起点。</div>
-              <div class="legend" aria-label="图表说明"><span><i class="legend__line legend__line--score" aria-hidden="true"></i>人工写入的动作分数</span><span><i class="legend__line legend__line--threshold" aria-hidden="true"></i>开始关注的门槛</span><span><i class="legend__marker" aria-hidden="true"></i>当前时间</span></div>
-            </div>
-            <div class="decision-summary" aria-label="这次演示的结果摘要">
-              <article><span>一共观察</span><strong id="decision-count">—</strong><small>个固定时刻</small></article>
-              <article><span>值得继续研究</span><strong id="candidate-count">—</strong><small>个候选记录</small></article>
-              <article><span>信息不够</span><strong id="unassessable-count">—</strong><small>次明确拒判</small></article>
-              <article class="decision-summary__safe"><span>真的通知家属</span><strong id="external-count">—</strong><small>次，始终关闭</small></article>
-            </div>
 
-            <details class="advanced-panel">
-              <summary><span><strong>专业参数（可选）</strong><small>普通读者可以跳过；这里只改变工程演示规则</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg></summary>
-              <div class="advanced-panel__body">
-                <form id="policy-form" class="policy-form" novalidate>
-                  <fieldset><legend>工程演示参数</legend>
-                    <div class="field-grid field-grid--ranges">
-                      <div class="field"><div class="field__label-row"><label for="threshold-on">从多高开始关注</label><output id="threshold-on-value" for="threshold-on">0.80</output></div><input id="threshold-on" name="threshold_on" type="range" min="0.51" max="0.99" step="0.01" value="0.80" /><p id="threshold-on-help">技术名：触发阈值。人工分数达到这里后，程序才开始连续计数。</p></div>
-                      <div class="field"><div class="field__label-row"><label for="threshold-off">降到多低才重新开始</label><output id="threshold-off-value" for="threshold-off">0.40</output></div><input id="threshold-off" name="threshold_off" type="range" min="0" max="0.90" step="0.05" value="0.40" /><p id="threshold-off-help">技术名：复位阈值。低于这里时，尚未完成的连续计数会清零。</p></div>
+                <form id="case-filters" class="filter-tabs" role="group" aria-label="按案例类型筛选" novalidate>
+                  <button type="submit" data-filter="all" aria-pressed="false">全部 <span>105</span></button>
+                  <button class="is-active" type="submit" data-filter="fall" aria-pressed="true">受控跌倒 <span>40</span></button>
+                  <button type="submit" data-filter="adl" aria-pressed="false">日常活动 <span>60</span></button>
+                  <button type="submit" data-filter="activity" aria-pressed="false">活动识别 <span>4</span></button>
+                  <button type="submit" data-filter="routine" aria-pressed="false">生活规律 <span>1</span></button>
+                </form>
+
+                <div id="case-list" class="case-list" role="list" aria-label="可回放案例"></div>
+                <div id="case-empty" class="case-empty" hidden>
+                  <strong>没有匹配的案例</strong><p>清除搜索或切换其他案例类型。</p>
+                </div>
+                <nav aria-label="案例分页">
+                  <form id="case-pagination-form" class="case-pagination" novalidate>
+                    <button id="case-prev" class="icon-button icon-button--small" type="submit" aria-label="上一页案例">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+                    </button>
+                    <span id="case-page-status" role="status" aria-live="polite">第 1 / 1 页</span>
+                    <button id="case-next" class="icon-button icon-button--small" type="submit" aria-label="下一页案例">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                  </form>
+                </nav>
+              </section>
+
+              <section id="monitor" class="device-panel anchor-section" aria-labelledby="device-title">
+                <header class="device-panel__header">
+                  <div><p class="panel-kicker">模拟设备</p><h2 id="device-title">腕部检测界面</h2></div>
+                  <span id="device-connection" class="device-connection"><b aria-hidden="true"></b>模拟传感器就绪</span>
+                </header>
+
+                <div class="device-stage">
+                  <div class="watch-strap watch-strap--top" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                  <div id="watch-device" class="watch-device" data-state="idle">
+                    <span class="watch-crown" aria-hidden="true"></span>
+                    <div class="watch-screen">
+                      <div class="watch-screen__top">
+                        <span id="watch-time">09:41</span>
+                        <span class="watch-battery"><i aria-hidden="true"></i><span class="visually-hidden">电量 82%</span></span>
+                      </div>
+                      <div class="watch-screen__identity">
+                        <span id="watch-case-index">案例 01 / 105</span>
+                        <strong id="watch-case-label">WEDA-FALL</strong>
+                      </div>
+                      <div class="watch-sensor" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M3 12h4l2-7 4 14 2-7h6" /></svg>
+                        <span></span><span></span><span></span>
+                      </div>
+                      <p id="watch-stage-label" class="watch-stage-label">等待检测</p>
+                      <strong id="watch-result" class="watch-result">准备就绪</strong>
+                      <div class="watch-score" aria-label="当前保存结果">
+                        <div class="watch-score__track"><i id="watch-score-fill"></i></div>
+                        <span id="watch-score-text">尚未运行</span>
+                      </div>
+                      <div class="watch-screen__footer">
+                        <span><b aria-hidden="true"></b>IMU</span><span>50 Hz</span><span>6 轴</span>
+                      </div>
                     </div>
-                    <div class="field-grid"><div class="field"><label for="consecutive-required">连续几次才记下来</label><select id="consecutive-required" name="consecutive_required"><option value="1">1 次</option><option value="2" selected>2 次</option><option value="3">3 次</option><option value="4">4 次</option><option value="5">5 次</option></select></div><div class="field"><label for="cooldown-ms">记一次后多久不重复</label><select id="cooldown-ms" name="cooldown_ms"><option value="0">不等待</option><option value="2000">2 秒</option><option value="5000" selected>5 秒</option><option value="10000">10 秒</option><option value="30000">30 秒</option></select></div></div>
-                  </fieldset>
-                  <p id="policy-error" class="form-error" role="alert" hidden></p>
-                  <div class="button-row"><button id="simulate-button" class="button button--solid" type="submit">按这个规则重新判断</button><button id="reset-policy-button" class="button button--outline" type="submit">恢复默认规则</button></div>
+                  </div>
+                  <div class="watch-strap watch-strap--bottom" aria-hidden="true"><i></i><i></i></div>
+                </div>
+
+                <form id="playback-form" class="playback-controls" aria-label="案例检测控制" novalidate>
+                  <button id="run-button" class="button button--primary button--wide" type="submit">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" /></svg>
+                    <span>开始检测</span>
+                  </button>
+                  <button id="pause-button" class="icon-button" type="submit" aria-label="暂停检测" disabled>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3v14H7zM14 5h3v14h-3z" /></svg>
+                  </button>
+                  <button id="reset-button" class="icon-button" type="submit" aria-label="重置本次检测">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6M4 4v6h6" /></svg>
+                  </button>
                 </form>
+                <p id="playback-status" class="playback-status" role="status" aria-live="polite">请选择案例并开始检测。</p>
+              </section>
+
+              <section id="analysis" class="panel analysis-panel anchor-section" aria-labelledby="analysis-title">
+                <header class="panel-heading">
+                  <div><p class="panel-kicker">输出</p><h2 id="analysis-title">判断过程</h2></div>
+                  <span id="result-state" class="result-state result-state--neutral">等待运行</span>
+                </header>
+
+                <article class="selected-case" aria-labelledby="selected-case-title">
+                  <div class="selected-case__head">
+                    <span id="selected-truth" class="truth-tag">受控模拟跌倒</span>
+                    <code id="selected-case-id">weda-f01-u01_r01</code>
+                  </div>
+                  <h3 id="selected-case-title">年轻参与者受控模拟跌倒</h3>
+                  <p id="selected-case-note">用于核对跌倒检测接线，不代表真实老人意外跌倒。</p>
+                </article>
+
+                <div class="result-meter">
+                  <div class="result-meter__copy">
+                    <span id="result-metric-label">已保存最高候选概率</span>
+                    <strong id="result-metric-value">—</strong>
+                  </div>
+                  <div class="result-meter__track" aria-hidden="true"><i id="result-meter-fill"></i></div>
+                  <p id="result-metric-caption">开始检测后显示该案例已经保存的模型回放摘要。</p>
+                </div>
+
+                <ol id="detection-pipeline" class="detection-pipeline" aria-label="检测流程">
+                  <li data-step="0"><span>01</span><div><strong>读取腕部数据</strong><small id="pipeline-input">等待案例</small></div><b aria-hidden="true"></b></li>
+                  <li data-step="1"><span>02</span><div><strong>整理连续窗口</strong><small id="pipeline-window">等待输入</small></div><b aria-hidden="true"></b></li>
+                  <li data-step="2"><span>03</span><div><strong>独立模型判断</strong><small id="pipeline-model">尚未运行</small></div><b aria-hidden="true"></b></li>
+                  <li data-step="3"><span>04</span><div><strong>结果复核</strong><small id="pipeline-review">外部通知保持关闭</small></div><b aria-hidden="true"></b></li>
+                </ol>
+
+                <div class="analysis-foot">
+                  <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6zM9 12l2 2 4-5" /></svg>保存结果可追溯</span>
+                  <span id="external-count">外部通知 0 次</span>
+                </div>
+              </section>
+            </section>
+
+            <section id="records" class="model-strip anchor-section" aria-labelledby="model-strip-title">
+              <header class="model-strip__heading">
+                <div><p class="panel-kicker">系统模块</p><h2 id="model-strip-title">三类现有判断与一项未来能力</h2></div>
+                <p>模型结果保持独立，不合成医学风险分数。</p>
+              </header>
+              <div class="model-grid">
+                <article class="model-card is-ready">
+                  <div class="model-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h4l2-7 4 13 2-6h4" /></svg></div>
+                  <div><span>当前可回放</span><h3>跌倒候选检测</h3><p>100 组 WEDA-FALL 案例</p></div><strong>100</strong>
+                </article>
+                <article class="model-card is-ready">
+                  <div class="model-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 19V9M12 19V5M18 19v-7" /></svg></div>
+                  <div><span>当前可回放</span><h3>腕部活动识别</h3><p>CAPTURE-24 恢复子集</p></div><strong>4</strong>
+                </article>
+                <article class="model-card is-ready">
+                  <div class="model-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 8-8v8zM12 4v8h8" /></svg></div>
+                  <div><span>合成规则演示</span><h3>个人规律异常</h3><p>100 天合成生活规律</p></div><strong>1</strong>
+                </article>
+                <article class="model-card is-locked">
+                  <div class="model-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2M5 10h14v11H5z" /></svg></div>
+                  <div><span>后端尚未接入</span><h3>未来几秒风险预测</h3><p>需要 P3–P9 真实验证</p></div><strong>锁定</strong>
+                </article>
               </div>
-            </details>
+            </section>
 
-            <details class="record-panel">
-              <summary><span><strong>查看每个时刻的完整记录</strong><small>给需要核对程序的人</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg></summary>
-              <div class="record-panel__body"><div class="table-region" tabindex="0" aria-label="工程演示逐时刻记录，可横向滚动"><table><caption>7 个固定分数点的逐时刻判断记录</caption><thead><tr><th scope="col">时间</th><th scope="col">人工分数</th><th scope="col">通俗状态</th><th scope="col">连续次数</th><th scope="col">程序动作</th><th scope="col">原因</th><th scope="col">通知</th></tr></thead><tbody id="decision-table-body"></tbody></table></div></div>
-            </details>
-            <p class="fixture-caveat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 10v6M12 7h.01" /></svg><span><strong>别把演示分数当成真实成绩：</strong>这里所有分数都是工程人员固定写入的。改变参数只能说明程序会按规则变化，不能证明现实中能提前几秒发现危险。</span></p>
+            <section id="about" class="boundary-panel anchor-section" aria-labelledby="boundary-title">
+              <div class="boundary-panel__summary">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 4v5c0 5-3.7 8.2-9 10-5.3-1.8-9-5-9-10V7zM12 8v5M12 17h.01" /></svg>
+                <div><p class="panel-kicker">说明与边界</p><h2 id="boundary-title">这是成熟软件外观的前端演示，不是新模型成绩</h2><p id="truth-notice">当前只读取本机 E0 工程证据；没有修改后端、模型或数据合同。</p></div>
+                <span class="boundary-chip">prediction_evidence=false</span>
+              </div>
+              <details>
+                <summary>查看数据来源、生活化要求和真实性说明</summary>
+                <div class="boundary-details">
+                  <p><strong>产品方向：</strong>先认识每位老人的平常，再结合连续动作研究风险。老人一天的生活路线、快速坐到沙发和摘表充电等场景仍然是未来产品逻辑说明，不是当前识别结果。</p>
+                  <p><strong>当前可展示：</strong>105 组已登记案例、保存的同源回放摘要、三模型独立状态和 E0 dry-run 安全边界。</p>
+                  <p><strong>当前不能宣称：</strong>真实老人提前几秒预测、正式报警、医疗诊断、家属通知或自动救援。所有前端互动都只演示，不报警。</p>
+                  <ul id="limitations-list"></ul>
+                </div>
+              </details>
+            </section>
+
+            <footer class="app-footer">
+              <span>安衡腕表 · 模拟智能手表检测台</span>
+              <span id="fixture-id">E0</span>
+            </footer>
           </div>
-        </section>
-
-        <section id="progress" class="section section--progress anchor-section" aria-labelledby="progress-title">
-          <div class="content-width">
-            <header class="section-heading section-heading--split"><div><p class="section-kicker">现在做到哪</p><h2 id="progress-title">软件地基已经搭好，现实世界的关键证据还没有</h2><p>代码能验证流程，却不能替代老人参与、伦理同意、长期采集和真实测试。</p></div><span class="status-pill status-pill--warning"><b aria-hidden="true"></b>真实预警尚未开放</span></header>
-            <div class="plain-progress" aria-label="从当前到未来产品的四个阶段">
-              <article class="plain-progress__item is-done"><span class="plain-progress__marker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4L19 6" /></svg></span><div><small>现在已完成</small><h3>把规则和软件检查清楚</h3><p>明确研究什么、怎样记录、怎样防止“偷看未来”，并让固定演示可重复。</p></div></article>
-              <article class="plain-progress__item is-next"><span class="plain-progress__marker">2</span><div><small>下一步必须先完成</small><h3>获得伦理、许可和本人同意</h3><p>谁能看数据、怎样撤回、怎样删除、家属何时知道，都要由真实参与者和负责机构决定。</p></div></article>
-              <article class="plain-progress__item"><span class="plain-progress__marker">3</span><div><small>未来研究</small><h3>长期认识每个人，再研究短时前兆</h3><p>需要真实目标人群的长期日常数据、足够的危险事件和大量容易混淆的正常动作。</p></div></article>
-              <article class="plain-progress__item"><span class="plain-progress__marker">4</span><div><small>证据通过以后</small><h3>先静默试运行，再决定是否提醒</h3><p>先只记录、不打扰，证明提前量、漏报、迟报和每天误报都可接受，才可能进入受控提醒。</p></div></article>
-            </div>
-            <div class="progress-facts" aria-label="当前工程事实"><article><span>基础软件检查</span><strong id="engineering-status">—</strong><small>技术阶段 P0–P2</small></article><article><span>已经核对的现有资产</span><strong id="asset-count">—</strong><small>没有新增真实采集</small></article><article><span>发现“偷看未来”问题</span><strong id="leakage-count">—</strong><small>只针对固定工程检查</small></article><article><span>真实对外通知</span><strong id="notification-count">—</strong><small>必须始终为 0</small></article></div>
-            <details id="pipeline" class="progress-details anchor-section">
-              <summary><span><strong>查看完整 P0–P9 研究路线</strong><small>P0–P2 只代表工程检查；P3–P9 仍锁定</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg></summary>
-              <div class="progress-details__body"><ol id="pipeline-list" class="evidence-rail"></ol><div class="gate-requirements"><h3>进入真实数据阶段前，现实中还必须完成</h3><ul id="external-actions"></ul></div></div>
-            </details>
-          </div>
-        </section>
-
-        <section id="technical" class="section content-width anchor-section" aria-labelledby="technical-title">
-          <header class="section-heading"><p class="section-kicker">想深入了解再打开</p><h2 id="technical-title">技术依据与原始证据</h2><p>这里保留研究人员需要的指标、合同、模型限制和原件下载。普通读者不看这一部分，也不影响理解前面的生活逻辑。</p></header>
-          <details class="technical-disclosure">
-            <summary><span><strong>查看测试指标怎么定义</strong><small>所有数字都是人工工程夹具，不是老人真实成绩</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg></summary>
-            <div id="metrics" class="technical-disclosure__body anchor-section"><div id="metric-grid" class="metric-grid"></div><div class="plain-metric-note"><strong>真正做真实测试时，至少要回答：</strong><span>有多少危险事件被及时发现？</span><span>每天会错误打扰几次？</span><span>系统说“风险高”时是否真的更常发生？</span></div><div class="table-region table-region--metrics" tabindex="0" aria-label="不同提前时间的工程夹具表，可横向滚动"><table><caption>固定工程示例在不同提前时间上的公式输出</caption><thead><tr><th scope="col">希望提前多久</th><th scope="col">及时找到 / 全部事件</th><th scope="col">及时发现比例</th><th scope="col">不确定范围（95%）</th><th scope="col">当前用途</th></tr></thead><tbody id="lead-time-table-body"></tbody></table></div></div>
-          </details>
-          <details class="technical-disclosure">
-            <summary><span><strong>查看研究目标、数据和三个现有模型</strong><small>说明它们能做什么、不能做什么</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg></summary>
-            <div class="technical-disclosure__body two-column">
-              <section id="contract" class="technical-card anchor-section" aria-labelledby="contract-title"><header><p class="section-kicker">机器可核对的研究约定</p><h3 id="contract-title">目标合同</h3><p id="contract-meta">—</p></header><dl class="contract-summary"><div><dt>要区分的事件</dt><dd id="event-count">—</dd></div><div><dt>统一的时间点</dt><dd id="anchor-count">—</dd></div><div><dt>计划检查的提前时间</dt><dd id="horizons">—</dd></div><div><dt>允许的时间同步误差</dt><dd id="sync-limit">—</dd></div></dl><h4>正式负责人签署</h4><ul id="approval-list" class="approval-list"></ul><h4>目标事件范围</h4><ul id="event-list" class="event-list"></ul><div class="hash-block"><span>合同文件校验值 SHA-256</span><code id="contract-hash">—</code></div></section>
-              <section class="technical-card" aria-labelledby="audit-title"><header><p class="section-kicker">现有材料盘点</p><h3 id="audit-title">数据与模型审计</h3><p>这些现有材料只能各做各的研究任务，不能拼成“已经会提前预警”。</p></header><div id="usage-matrix" class="usage-matrix"></div><h4>现有三个模型</h4><div id="model-registry" class="model-registry"></div></section>
-            </div>
-          </details>
-          <details id="evidence" class="technical-disclosure anchor-section">
-            <summary><span><strong>下载原始合同和检查报告</strong><small>下载仓库原件，不下载宣传截图</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg></summary>
-            <div class="technical-disclosure__body"><p id="product-definition" class="technical-definition"></p><div id="download-list" class="download-list"></div><div class="limitations"><h3>目前明确不能做的事</h3><ul id="limitations-list"></ul></div></div>
-          </details>
-        </section>
-
-        <footer class="footer content-width"><div><strong>智能手表提前风险研究 · 生活化说明版</strong><p>仅在本机运行 · 不接真实个人数据 · 不向任何人发送通知</p></div><p id="fixture-id"></p></footer>
+        </main>
       </div>
-    </main>
+    </div>
 
-    <noscript><div class="noscript-message">这个本机页面需要 JavaScript 才能读取固定工程示例。它不会连接真实手表或发送通知。</div></noscript>
+    <noscript><div class="noscript-message">此本机检测台需要 JavaScript 才能读取案例摘要。它不会连接真实手表或发送通知。</div></noscript>
   </body>
 </html>
