@@ -30,6 +30,7 @@
 - 前端按真实性筛选案例、开始/暂停/继续/重置回放、1×–16×速度、真实三轴/六轴波形、证据时间线和数据质量展示；
 - 前端测试报告区域：实读保存的评估文件、显示适用范围与限制，并提供 JSON 下载。
 - 前端批量回放区域：按当前真实性筛选创建任务，显示真实进度、失败数、恢复次数和三个模型各自完成数，不生成综合医学风险。
+- 独立 E0 提前风险研究工作台：只读展示 P0–P2 Gate、目标合同、当前资产审计、确定性时间轴、夹具指标和 dry-run 状态机；与现有三模型产品运行路径隔离。
 
 尚未完成：
 
@@ -38,9 +39,11 @@
 
 ## 提前风险研究 E0 基础
 
-独立目录 `research/early_risk/` 已完成 P0+P1+P2：产品与目标合同、数据与标签合同、当前资产适用性审计、严格事件前截断、事件级指标、误报/人日、校准、覆盖率、抑制影响和 dry-run 状态机。入口文档为 `EARLY_RISK_P0_P2_HANDOFF.md`，Gate 证据为 `docs/early_risk/GATE_DECISION.md`。
+独立目录 `research/early_risk/` 已完成 P0+P1+P2：产品与目标合同、数据与标签合同、当前资产适用性审计、严格事件前截断、事件级指标、误报/人日、校准、覆盖率、抑制影响和 dry-run 状态机。工程基础入口为 `EARLY_RISK_P0_P2_HANDOFF.md`，可打开工作台的最终交接为 `EARLY_RISK_E0_WORKBENCH_HANDOFF.md`，Gate 证据为 `docs/early_risk/GATE_DECISION.md`。
 
-这些能力只属于 E0 工程研究骨架，没有接真实个人数据，没有训练提前预测模型，也没有风险 UI 或通知。不能把夹具指标或现有三个模型写成真实老人提前预测成绩。
+这些能力只属于 E0 工程研究骨架，没有接真实个人数据，没有训练提前预测模型，也没有面向老人或家属的风险界面与通知。独立研究工作台只显示工程证据和人工确定性夹具，不能把夹具指标或现有三个模型写成真实老人提前预测成绩。
+
+完成一次“首次安装”后，可以双击 `scripts\windows\start-early-risk-workbench.cmd` 打开独立研究工作台，地址固定为 `http://127.0.0.1:8010/`。对应的停止和诊断入口为 `stop-early-risk-workbench.cmd` 与 `diagnose-early-risk-workbench.cmd`。工作台不启动现有产品服务、不读取 SQLite、不写研究报告，也不产生外部通知。
 
 当前 SQLite 案例总数为 105：40 条年轻参与者受控床垫模拟跌倒、30 条老年参与者受控日常活动、30 条年轻参与者受控日常活动、1 个明确标记为合成数据的 100 天生活规律案例，以及 4 个从固定评估参与者真实三轴窗口生成的 CAPTURE-24 自由生活活动演示案例。它们不是“100 个真实老人跌倒”。CAPTURE-24 来源只是逐成员核验的 48 人恢复前缀子集，不是完整 151 人数据包，也不能描述为老人专项数据。
 
@@ -67,6 +70,16 @@ npm --prefix frontend install
 3. 双击 `diagnose-smartwatch.cmd`：检查 Python、Node.js、依赖、前端构建、数据库、三个模型资产和服务健康状态。
 
 一键版只使用一个后台进程，同时提供前端、API 和 WebSocket，地址固定为 `http://127.0.0.1:8000/`。运行状态与日志保存在 Git 忽略目录 `backend/runtime/local-delivery/`。
+
+### 打开 E0 提前风险研究工作台
+
+在同一个 `scripts\windows` 文件夹中：
+
+1. 双击 `start-early-risk-workbench.cmd`：启动只监听本机的研究证据服务并打开页面；
+2. 双击 `stop-early-risk-workbench.cmd`：核对进程身份后停止工作台；
+3. 双击 `diagnose-early-risk-workbench.cmd`：检查证据文件、虚拟环境、E0 合同、dry-run 安全边界和运行状态。
+
+研究工作台地址固定为 `http://127.0.0.1:8010/`，健康检查为 `http://127.0.0.1:8010/api/health`。它不等同于 P9 风险 UI：P3–P9 仍然锁定，页面不会显示真实个人风险，也不会连接短信、电话、家属或救援服务。详细说明见 `docs/early_risk/WORKBENCH.md`。
 
 ### 开发模式
 
@@ -114,6 +127,7 @@ $env:SMARTWATCH_DATABASE_PATH = 'D:\smartwatch-data\smartwatch.sqlite3'
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest .\backend\tests -q
+.\.venv\Scripts\python.exe -m pytest .\tests\early_risk -q
 .\.venv\Scripts\python.exe -m backend.scripts.export_contracts
 npm --prefix frontend run generate:api
 npm --prefix frontend run build

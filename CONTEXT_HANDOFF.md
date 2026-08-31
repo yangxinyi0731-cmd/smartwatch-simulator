@@ -3,6 +3,12 @@
 更新时间：2026-08-31
 实际项目：`C:\Users\yangxinyi\Documents\Codex\2026-08-27\smartwatch-health-simulator`
 
+## 2026-08-31 独立 E0 研究工作台
+
+用户随后要求继续开发并打开最终成品。由于桌面总纲要求 P9 风险界面必须晚于伦理许可、真实采集、模型研究、独立验证和静默试运行，本轮没有伪造这些外部 Gate，而是在 `codex/early-risk-e0-workbench` 分支新增与现有产品隔离的本机研究工作台。入口为 `scripts/windows/start-early-risk-workbench.cmd`，固定地址 `http://127.0.0.1:8010/`；详细边界、接口和验收见 `docs/early_risk/WORKBENCH.md` 与 `EARLY_RISK_E0_WORKBENCH_HANDOFF.md`。
+
+工作台实读版本化合同和 E0 报告，支持确定性时间轴播放、dry-run 参数重算和原始证据下载。服务只允许绑定回环地址，策略端强制 dry-run，真实外部通知数为 0；它不是 P9 风险 UI，不读取真实个人数据，不改变三个现有模型、SQLite 或 `127.0.0.1:8000` 产品服务。
+
 ## 2026-08-31 提前风险第一大关后续状态
 
 用户已授权并完成 P0+P1+P2 第一大关。当前新增独立研究分支 `codex/early-risk-p0-p2-foundation`，在不修改产品 UI、后端服务、SQLite 结构或三个现有模型的前提下，完成产品真实性/目标合同、数据与标签合同、当前资产审计、严格事件前截断、事件级指标、误报/人日、校准、覆盖率、抑制影响和只记录不通知的 dry-run 状态机。详细接手入口为 `EARLY_RISK_P0_P2_HANDOFF.md`。
@@ -15,15 +21,16 @@
 
 先完整阅读：
 
-1. `EARLY_RISK_P0_P2_HANDOFF.md`；
-2. `TABLER_MIGRATION_HANDOFF.md`；
-3. 本文件；
-4. `PRODUCT.md`；
-5. `DATA_AND_MODEL_NOTICE.md`；
-6. `TASK_STATE.md`；
-7. `DESIGN.md`；
-8. `UX-CONTRACT.md`；
-9. `THIRD_PARTY_NOTICES.md`。
+1. `EARLY_RISK_E0_WORKBENCH_HANDOFF.md`；
+2. `EARLY_RISK_P0_P2_HANDOFF.md`；
+3. `TABLER_MIGRATION_HANDOFF.md`；
+4. 本文件；
+5. `PRODUCT.md`；
+6. `DATA_AND_MODEL_NOTICE.md`；
+7. `TASK_STATE.md`；
+8. `DESIGN.md`；
+9. `UX-CONTRACT.md`；
+10. `THIRD_PARTY_NOTICES.md`。
 
 随后只读执行：
 
@@ -33,7 +40,7 @@ git log -3 --oneline
 git remote -v
 ```
 
-必须以现场输出为准。预期分支为 `codex/tabler-ui-migration`；Tabler 迁移提交为 `11eb7f1`，后续已有多个数据、模型、回放和本地交付提交。项目仍无 Git 远程。
+必须以现场输出为准。当前交付分支为 `codex/early-risk-e0-workbench`，基础提交为 `75745e0…`；Tabler 迁移提交 `11eb7f1` 只是更早的历史节点。项目仍无 Git 远程。
 
 ## 当前完成结果
 

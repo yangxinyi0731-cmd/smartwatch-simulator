@@ -1,0 +1,84 @@
+{
+  "artifact": "early-risk-e0-workbench",
+  "browser_verification": {
+    "accessibility_baseline": {
+      "duplicate_id_count": 0,
+      "heading_level_skip_count": 0,
+      "h1_count": 1,
+      "pointer_targets_below_24px_count": 0,
+      "unlabeled_field_count": 0,
+      "unnamed_button_count": 0
+    },
+    "console_error_or_warning_count": 0,
+    "desktop": {
+      "document_client_width": 1270,
+      "document_scroll_width": 1270,
+      "page_horizontal_overflow": false
+    },
+    "failure_recovery": {
+      "friendly_local_service_error": true,
+      "retry_restored_content": true
+    },
+    "interactions": [
+      "reload evidence",
+      "recalculate dry-run",
+      "restore default policy",
+      "play timeline",
+      "pause timeline",
+      "reset timeline",
+      "download allowlisted evidence"
+    ],
+    "narrow_390x844": {
+      "document_client_width": 380,
+      "document_scroll_width": 380,
+      "page_horizontal_overflow": false
+    },
+    "runtime": "Codex in-app Chromium"
+  },
+  "e0_evidence": {
+    "audited_asset_count": 11,
+    "contract_canonical_sha256": "4f796983479cdedb5795189834d7f658599791a515396a33942f27dee6ab62b0",
+    "external_notification_count": 0,
+    "fixture_canonical_sha256": "02f97ab1d6d2fff4beab0553a69d5ff42329a7aa0ff4a28e7a78d9f78d9ff609",
+    "fixture_repeat_hashes_identical": true,
+    "participant_overlap": [],
+    "temporal_leakage_finding_count": 0
+  },
+  "generated_on": "2026-08-31",
+  "git": {
+    "base_commit": "75745e0ad0690126bde84c91df612b7f5b95a986",
+    "branch": "codex/early-risk-e0-workbench",
+    "remote_configured": false
+  },
+  "product_truth": {
+    "deployment_approved": false,
+    "evidence_level": "E0",
+    "external_notifications_enabled": false,
+    "prediction_evidence": false
+  },
+  "runtime": {
+    "bind_address": "127.0.0.1",
+    "health_path": "/api/health",
+    "port": 8010,
+    "strict_fractional_integer_rejection_http_status": 422,
+    "windows_diagnostic": "PASS"
+  },
+  "verification": {
+    "claim_scan_forbidden_assertions": 0,
+    "design_lint_errors": 0,
+    "design_lint_warnings": 0,
+    "frontend_build": "PASS",
+    "frontend_css_bytes": 559481,
+    "frontend_css_gzip_bytes": 72613,
+    "frontend_js_bytes": 113099,
+    "frontend_js_gzip_bytes": 41198,
+    "full_python_test_count": 100,
+    "full_python_tests": "PASS",
+    "markdown_failing_files": 0,
+    "npm_audit_vulnerabilities": 0,
+    "pip_check": "PASS",
+    "premium_strict_audit_findings": 0,
+    "workbench_test_count": 14,
+    "workbench_tests": "PASS"
+  }
+}

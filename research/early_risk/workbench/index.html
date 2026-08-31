@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <meta
+      name="description"
+      content="仅限本机的 E0 提前风险研究证据与确定性 dry-run 工作台。"
+    />
+    <title>E0 研究工作台 — 模拟智能手表</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/tokens.css" />
+    <link rel="stylesheet" href="/app.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="研究工作台导航">
+        <a class="brand" href="#overview" aria-label="提前风险研究工作台总览">
+          <span class="brand__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M3 12h4l2-7 4 14 2-7h6" />
+            </svg>
+          </span>
+          <span>
+            <strong>提前风险研究工作台</strong>
+            <small>E0 工程证据环境</small>
+          </span>
+        </a>
+
+        <nav class="nav" aria-label="页面目录">
+          <a class="nav__link is-current" href="#overview" aria-current="page">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v10h-6zM4 14h6v6H4zM14 18h6v2h-6z" /></svg>
+            <span>证据总览</span>
+          </a>
+          <a class="nav__link" href="#pipeline">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M5 12h14M5 19h14M8 3v4M12 10v4M16 17v4" /></svg>
+            <span>阶段与 Gate</span>
+          </a>
+          <a class="nav__link" href="#simulator">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 15l3-3 2 2 3-5" /></svg>
+            <span>确定性 dry-run</span>
+          </a>
+          <a class="nav__link" href="#metrics">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2" /></svg>
+            <span>夹具指标</span>
+          </a>
+          <a class="nav__link" href="#contract">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6zM9 10h6M9 14h6M9 18h4" /></svg>
+            <span>合同与审计</span>
+          </a>
+          <a class="nav__link" href="#evidence">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 11l4 4 4-4M5 19h14" /></svg>
+            <span>证据下载</span>
+          </a>
+        </nav>
+
+        <div class="sidebar__status">
+          <p>安全边界</p>
+          <strong>仅本机 · 只读 · 无通知</strong>
+          <span>127.0.0.1:8010</span>
+        </div>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar" aria-label="工作台状态栏">
+          <div class="topbar__scope">
+            <span>提前风险研究</span>
+            <i aria-hidden="true"></i>
+            <span>确定性工程夹具</span>
+          </div>
+          <div class="topbar__actions">
+            <span class="status-pill status-pill--info"><b aria-hidden="true"></b>E0</span>
+            <span id="service-status" class="service-state" role="status" aria-live="polite">
+              正在读取证据
+            </span>
+            <form id="reload-form" class="inline-action" action="/" method="get" novalidate>
+              <button id="reload-button" class="button button--outline" type="submit">
+                重新读取
+              </button>
+            </form>
+          </div>
+        </header>
+
+        <main id="main-content" tabindex="-1">
+          <div id="page-loading" class="loading-state" role="status" aria-live="polite">
+            <span class="spinner" aria-hidden="true"></span>
+            <span>正在读取本地 E0 合同、审计报告与夹具……</span>
+          </div>
+
+          <section id="page-error" class="page-error" role="alert" hidden>
+            <div>
+              <strong>工作台证据未能加载</strong>
+              <p id="page-error-message">请检查本地服务后重试。</p>
+            </div>
+            <form id="retry-form" class="inline-action" action="/" method="get" novalidate>
+              <button id="retry-button" class="button button--solid" type="submit">重新读取证据</button>
+            </form>
+          </section>
+
+          <div id="app-content" hidden>
+            <section id="overview" class="page-header anchor-section" aria-labelledby="page-title">
+              <div>
+                <p class="eyebrow">E0 ENGINEERING WORKBENCH</p>
+                <h1 id="page-title">提前风险研究证据与 dry-run</h1>
+                <p id="product-definition" class="page-header__summary"></p>
+              </div>
+              <div class="truth-stamp" aria-label="当前证据边界">
+                <span>证据等级</span>
+                <strong>E0</strong>
+                <small>不提供预测有效性证据</small>
+              </div>
+            </section>
+
+            <section class="truth-banner" aria-labelledby="truth-title">
+              <div class="truth-banner__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6zM9 12l2 2 4-5" /></svg>
+              </div>
+              <div>
+                <h2 id="truth-title">这是一套可运行的研究工程成品，不是已验证的老人预警产品</h2>
+                <p id="truth-notice"></p>
+              </div>
+              <span class="status-pill status-pill--warning"><b aria-hidden="true"></b>禁止真实通知</span>
+            </section>
+
+            <section class="system-strip" aria-label="工作台关键状态">
+              <article>
+                <span>工程 Gate</span>
+                <strong id="engineering-status">—</strong>
+                <small>P0–P2</small>
+              </article>
+              <article>
+                <span>审计资产</span>
+                <strong id="asset-count">—</strong>
+                <small>本轮不下载</small>
+              </article>
+              <article>
+                <span>时间泄漏发现</span>
+                <strong id="leakage-count">—</strong>
+                <small>确定性检查</small>
+              </article>
+              <article>
+                <span>外部通知</span>
+                <strong id="notification-count">—</strong>
+                <small>强制保持关闭</small>
+              </article>
+            </section>
+
+            <section id="pipeline" class="panel anchor-section" aria-labelledby="pipeline-title">
+              <header class="panel__header">
+                <div>
+                  <p class="section-kicker">证据链轨道</p>
+                  <h2 id="pipeline-title">阶段与 Gate</h2>
+                  <p>绿色对勾只代表工程检查通过；锁定阶段需要真实外部条件，不会由代码自动解锁。</p>
+                </div>
+                <span class="status-pill status-pill--warning"><b aria-hidden="true"></b>P3–P9 锁定</span>
+              </header>
+              <div class="panel__body">
+                <ol id="pipeline-list" class="evidence-rail"></ol>
+                <div class="gate-requirements">
+                  <h3>P3 前仍需要外部完成</h3>
+                  <ul id="external-actions"></ul>
+                </div>
+              </div>
+            </section>
+
+            <section id="simulator" class="panel anchor-section" aria-labelledby="simulator-title">
+              <header class="panel__header panel__header--split">
+                <div>
+                  <p class="section-kicker">可操作演示</p>
+                  <h2 id="simulator-title">确定性 dry-run 状态机</h2>
+                  <p>调节工程阈值，观察同一人工夹具的状态变化。输出只记录候选，不触发设备或外部动作。</p>
+                </div>
+                <span id="dry-run-badge" class="status-pill status-pill--success"><b aria-hidden="true"></b>dry-run 强制开启</span>
+              </header>
+              <div class="panel__body simulator-layout">
+                <form id="policy-form" class="policy-form" novalidate>
+                  <fieldset>
+                    <legend>工程策略参数</legend>
+                    <div class="field">
+                      <div class="field__label-row">
+                        <label for="threshold-on">触发阈值</label>
+                        <output id="threshold-on-value" for="threshold-on">0.80</output>
+                      </div>
+                      <input id="threshold-on" name="threshold_on" type="range" min="0.51" max="0.99" step="0.01" value="0.80" />
+                      <p id="threshold-on-help">人工分数达到此值时开始累积证据。</p>
+                    </div>
+                    <div class="field">
+                      <div class="field__label-row">
+                        <label for="threshold-off">复位阈值</label>
+                        <output id="threshold-off-value" for="threshold-off">0.40</output>
+                      </div>
+                      <input id="threshold-off" name="threshold_off" type="range" min="0" max="0.90" step="0.05" value="0.40" />
+                      <p id="threshold-off-help">分数低于此值时清空尚未完成的连续证据。</p>
+                    </div>
+                    <div class="field-grid">
+                      <div class="field">
+                        <label for="consecutive-required">连续证据数</label>
+                        <select id="consecutive-required" name="consecutive_required">
+                          <option value="1">1 个</option>
+                          <option value="2" selected>2 个</option>
+                          <option value="3">3 个</option>
+                          <option value="4">4 个</option>
+                          <option value="5">5 个</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="cooldown-ms">候选冷却期</label>
+                        <select id="cooldown-ms" name="cooldown_ms">
+                          <option value="0">不冷却</option>
+                          <option value="2000">2 秒</option>
+                          <option value="5000" selected>5 秒</option>
+                          <option value="10000">10 秒</option>
+                          <option value="30000">30 秒</option>
+                        </select>
+                      </div>
+                    </div>
+                  </fieldset>
+                  <p id="policy-error" class="form-error" role="alert" hidden></p>
+                  <div class="button-row">
+                    <button id="simulate-button" class="button button--solid" type="submit">重新计算 dry-run</button>
+                    <button id="reset-policy-button" class="button button--outline" type="submit">恢复默认参数</button>
+                  </div>
+                </form>
+
+                <div class="timeline-panel">
+                  <div class="timeline-panel__toolbar">
+                    <div>
+                      <h3>人工分数时间轴</h3>
+                      <p id="timeline-summary">等待本地夹具。</p>
+                    </div>
+                    <form id="timeline-form" class="timeline-controls" action="/" method="get" aria-label="时间轴播放控制" novalidate>
+                      <button id="play-button" class="icon-button" type="submit" aria-label="播放时间轴">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" /></svg>
+                      </button>
+                      <button id="pause-button" class="icon-button" type="submit" aria-label="暂停时间轴" disabled>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3v14H7zM14 5h3v14h-3z" /></svg>
+                      </button>
+                      <button id="reset-timeline-button" class="icon-button" type="submit" aria-label="重置时间轴">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6M4 4v6h6" /></svg>
+                      </button>
+                    </form>
+                  </div>
+                  <div id="score-chart" class="score-chart" role="img" aria-label="人工确定性分数随时间变化的折线图"></div>
+                  <div id="chart-status" class="chart-status" role="status" aria-live="polite">时间轴停在起点。</div>
+                  <div class="legend" aria-label="图表图例">
+                    <span><i class="legend__line legend__line--score" aria-hidden="true"></i>人工夹具分数</span>
+                    <span><i class="legend__line legend__line--threshold" aria-hidden="true"></i>触发阈值</span>
+                    <span><i class="legend__marker" aria-hidden="true"></i>当前时间</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="decision-summary" aria-label="dry-run 结果摘要">
+                <article><span>决策点</span><strong id="decision-count">—</strong></article>
+                <article><span>记录候选</span><strong id="candidate-count">—</strong></article>
+                <article><span>无法评估</span><strong id="unassessable-count">—</strong></article>
+                <article><span>真实外发</span><strong id="external-count">—</strong></article>
+              </div>
+
+              <div class="table-region" tabindex="0" aria-label="dry-run 决策记录，可横向滚动">
+                <table>
+                  <caption>确定性夹具的逐时刻状态机输出</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">时间</th>
+                      <th scope="col">人工分数</th>
+                      <th scope="col">状态</th>
+                      <th scope="col">证据数</th>
+                      <th scope="col">动作</th>
+                      <th scope="col">原因</th>
+                      <th scope="col">外发</th>
+                    </tr>
+                  </thead>
+                  <tbody id="decision-table-body"></tbody>
+                </table>
+              </div>
+              <p class="fixture-caveat">
+                <strong>解释边界：</strong>这里的分数和事件全部由工程人员固定写入测试夹具。阈值变化只能说明代码分支是否按合同运行，不能说明真实世界准确率或提前量。
+              </p>
+            </section>
+
+            <section id="metrics" class="panel anchor-section" aria-labelledby="metrics-title">
+              <header class="panel__header">
+                <div>
+                  <p class="section-kicker">公式验收</p>
+                  <h2 id="metrics-title">夹具指标</h2>
+                  <p>指标卡旁统一显示“工程夹具”，避免从页面截图中脱离证据语境。</p>
+                </div>
+                <span class="status-pill status-pill--neutral"><b aria-hidden="true"></b>不可外推</span>
+              </header>
+              <div class="panel__body">
+                <div id="metric-grid" class="metric-grid"></div>
+                <div class="table-region table-region--metrics" tabindex="0" aria-label="提前量召回夹具表，可横向滚动">
+                  <table>
+                    <caption>不同预注册提前量上的确定性事件级召回</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">提前量</th>
+                        <th scope="col">及时事件 / 总事件</th>
+                        <th scope="col">召回</th>
+                        <th scope="col">Wilson 95% CI</th>
+                        <th scope="col">证据用途</th>
+                      </tr>
+                    </thead>
+                    <tbody id="lead-time-table-body"></tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <div class="two-column">
+              <section id="contract" class="panel anchor-section" aria-labelledby="contract-title">
+                <header class="panel__header">
+                  <div>
+                    <p class="section-kicker">机器可校验</p>
+                    <h2 id="contract-title">目标合同</h2>
+                    <p id="contract-meta">—</p>
+                  </div>
+                </header>
+                <div class="panel__body">
+                  <dl class="contract-summary">
+                    <div><dt>目标事件</dt><dd id="event-count">—</dd></div>
+                    <div><dt>时间锚点</dt><dd id="anchor-count">—</dd></div>
+                    <div><dt>即时评估时域</dt><dd id="horizons">—</dd></div>
+                    <div><dt>同步误差上限</dt><dd id="sync-limit">—</dd></div>
+                  </dl>
+                  <h3>正式签署状态</h3>
+                  <ul id="approval-list" class="approval-list"></ul>
+                  <h3>目标事件范围</h3>
+                  <ul id="event-list" class="event-list"></ul>
+                  <div class="hash-block">
+                    <span>规范化合同 SHA-256</span>
+                    <code id="contract-hash">—</code>
+                  </div>
+                </div>
+              </section>
+
+              <section class="panel" aria-labelledby="audit-title">
+                <header class="panel__header">
+                  <div>
+                    <p class="section-kicker">当前仓库</p>
+                    <h2 id="audit-title">数据与模型审计</h2>
+                    <p>只重述已保存资产的允许用途、禁止用途和限制。</p>
+                  </div>
+                </header>
+                <div class="panel__body">
+                  <div id="usage-matrix" class="usage-matrix"></div>
+                  <h3>现有三个模型</h3>
+                  <div id="model-registry" class="model-registry"></div>
+                </div>
+              </section>
+            </div>
+
+            <section id="evidence" class="panel anchor-section" aria-labelledby="evidence-title">
+              <header class="panel__header">
+                <div>
+                  <p class="section-kicker">可追溯交接</p>
+                  <h2 id="evidence-title">证据文件</h2>
+                  <p>下载的是仓库中的原始合同、审计和夹具报告，不是页面重新拼出的宣传材料。</p>
+                </div>
+              </header>
+              <div class="panel__body">
+                <div id="download-list" class="download-list"></div>
+                <div class="limitations">
+                  <h3>当前不能解锁的能力</h3>
+                  <ul id="limitations-list"></ul>
+                </div>
+              </div>
+            </section>
+
+            <footer class="footer">
+              <p>提前风险研究工作台 · 本机 E0 工程证据 · 所有外部通知保持关闭</p>
+              <p id="fixture-id"></p>
+            </footer>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <noscript>
+      <div class="noscript-message">此本地研究工作台需要 JavaScript 才能读取并展示仓库中的 E0 证据。</div>
+    </noscript>
+  </body>
+</html>

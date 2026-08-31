@@ -1,6 +1,6 @@
 {
   "profile": "product-admin",
-  "sourceRoots": ["frontend/src"],
+  "sourceRoots": ["frontend/src", "research/early_risk/workbench"],
   "locale": "zh-CN",
   "canonicalMap": "UX-CONTRACT.md",
   "requiredCapabilities": ["Scrollbar", "Select/Listbox"],
@@ -8,12 +8,16 @@
     "Scrollbar": "global-application-stylesheet",
     "Select/Listbox": "native"
   },
-  "requiredCommands": ["contract-export", "generate-api", "backend-tests", "build"],
+  "requiredCommands": ["contract-export", "generate-api", "backend-tests", "early-risk-tests", "build"],
   "commands": {
     "contract-export": ".\\.venv\\Scripts\\python.exe -m backend.scripts.export_contracts",
     "generate-api": "npm --prefix frontend run generate:api",
     "backend-tests": ".\\.venv\\Scripts\\python.exe -m pytest .\\backend\\tests -q",
+    "early-risk-tests": ".\\.venv\\Scripts\\python.exe -m pytest .\\tests\\early_risk -q",
     "build": "npm --prefix frontend run build"
   },
-  "evidence": {}
+  "evidence": {
+    "workbenchRuntime": "tests/early_risk/test_workbench_server.py",
+    "workbenchContract": "docs/early_risk/WORKBENCH.md"
+  }
 }

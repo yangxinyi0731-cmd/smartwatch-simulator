@@ -1,0 +1,26 @@
+:root {
+  --color-ink: #182433;
+  --color-ink-muted: #667382;
+  --color-canvas: #f6f8fb;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f8fafc;
+  --color-line: #dce1e7;
+  --color-primary: #206bc4;
+  --color-primary-soft: #e9f2ff;
+  --color-success: #2fb344;
+  --color-success-soft: #eaf7ec;
+  --color-warning: #f59f00;
+  --color-warning-soft: #fff5db;
+  --color-danger: #d63939;
+  --color-danger-soft: #fdecec;
+  --color-focus: #206bc4;
+  --color-scrollbar-thumb: #a8b2bf;
+  --color-scrollbar-thumb-hover: #7f8c9b;
+  --color-scrollbar-track: #edf0f4;
+  --font-body: "Segoe UI", "Microsoft YaHei UI", "PingFang SC", "Noto Sans CJK SC", system-ui, sans-serif;
+  --font-data: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --sidebar-width: 15rem;
+}
