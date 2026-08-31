@@ -91,7 +91,7 @@ def test_server_refuses_non_loopback_binding() -> None:
         create_server("0.0.0.0", 0)
 
 
-def test_http_surface_serves_static_evidence_and_dry_run() -> None:
+def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
     with running_workbench() as base_url:
         health, health_headers = read_json(f"{base_url}/api/health")
         assert health["state"] == "ready"
@@ -106,7 +106,11 @@ def test_http_surface_serves_static_evidence_and_dry_run() -> None:
 
         with urlopen(f"{base_url}/", timeout=5) as response:  # noqa: S310
             html = response.read().decode("utf-8")
-            assert "提前风险研究证据与 dry-run" in html
+            assert "先认识每位老人的平常" in html
+            assert "老人一天的生活路线" in html
+            assert "快速坐到沙发" in html
+            assert "摘表充电" in html
+            assert "只演示，不报警" in html
             assert response.headers["X-Content-Type-Options"] == "nosniff"
 
         request = Request(

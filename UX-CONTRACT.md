@@ -2,11 +2,11 @@
 
 ## Product context
 
-- Audience：比赛评委、无代码基础项目成员、研究开发人员。
-- Primary jobs：选择案例、播放数据、理解三个模型、追溯来源、导出报告。
+- Audience：三模型产品面向比赛评委、无代码基础项目成员和研究开发人员；独立提前风险页面默认面向老人、家属、评委和不懂技术的公众，同时保留研究核对入口。
+- Primary jobs：选择案例、播放数据、理解三个模型、追溯来源、导出报告；在独立提前风险页面中，先从真实生活场景理解“个人平常 + 连续动作 + 验证后提醒”，再按需查看工程演示和证据。
 - Target market(s)：中国大陆简体中文比赛演示。
 - Active locales：`zh-CN`。
-- Language/content register：通俗、诚实、可验证；关键技术词给出简体中文解释。
+- Language/content register：通俗、诚实、可验证；公众层先用生活语言，E0、Gate、dry-run、AUPRC、ECE 等技术词只能放在次要说明或展开区，并必须给出简体中文含义。
 - Timezone/calendar policy：默认 `Asia/Shanghai`、公历；源数据保留原始时区和时间戳。
 - Accessibility target：WCAG 2.2 AA。
 
@@ -61,7 +61,7 @@
 | 系统连接状态 | `frontend/src/composables/useSystemConnection.ts` | HTTP 健康检查后建立 WebSocket；旧请求取消；断线有上限地自动重试 |
 | HTTP 类型 | `frontend/src/api/generated/` | 从 `docs/contracts/openapi.json` 自动生成，不手工修改；构建时做 TypeScript 检查 |
 | 测试报告 | `frontend/src/composables/useReports.ts` 与 `#reports` | 只读已保存报告；显示证据范围、解释、限制与 SHA-256；JSON 下载使用真实 GET 端点 |
-| E0 研究工作台 | `research/early_risk/workbench_server.py` 与 `research/early_risk/workbench/` | 独立回环服务；只读 E0 合同/报告；后端强制 dry-run；不挂载到产品 UI 或 SQLite |
+| E0 生活化研究页面 | `research/early_risk/workbench_server.py` 与 `research/early_risk/workbench/` | 独立回环服务；公众层用生活场景解释未来逻辑，技术层只读 E0 合同/报告；后端强制 dry-run；不挂载到产品 UI 或 SQLite |
 
 ## Component behavior
 
@@ -96,17 +96,18 @@
 | Cancel/back | “返回案例库” | 无 | 来源页面 | 通常无 | 未保存时应用对话框 | 原触发位置 | 本合同 |
 | 刷新系统状态 | “刷新状态” | 按钮保持尺寸并显示“检查中” | 当前总览 | 状态条和连接说明更新 | 保留空状态并自动重试 | 原按钮 | `docs/ARCHITECTURE.md` |
 | 下载报告 | “下载 JSON” | 浏览器原生下载 | 当前页面 | 获得统一报告快照 | 后端错误响应保留可重试说明 | 原链接 | `docs/ARCHITECTURE.md` |
-| 重新计算 dry-run | “重新计算 dry-run” | 按钮尺寸稳定、阻止重复提交 | 当前工作台 | 决策摘要、时间轴和表格同步更新 | 保留参数、邻近显示错误、可重试 | 原按钮 | `docs/early_risk/WORKBENCH.md` |
-| 播放确定性时间轴 | “播放时间轴” | 播放/暂停按钮互斥 | 当前工作台 | 文字状态与游标同步前进 | 可暂停或重置；不产生写入 | 播放控制区 | `docs/early_risk/WORKBENCH.md` |
+| 切换生活场景解释 | 场景名称，例如“坐车遇到颠簸” | 无网络等待 | 当前生活场景区 | 同一解释卡更新“可能看到、还要结合、谨慎做法和边界” | 始终可切回其他场景；不调用模型 | 原场景按钮 | `docs/early_risk/WORKBENCH.md` |
+| 按规则重新判断 | “按这个规则重新判断” | 按钮尺寸稳定、阻止重复提交 | 当前互动演示 | 摘要、时间轴和可展开记录同步更新 | 保留参数、邻近显示通俗错误、聚焦相关字段、可重试 | 原按钮 | `docs/early_risk/WORKBENCH.md` |
+| 播放固定判断过程 | “播放判断过程” | 播放/暂停按钮互斥 | 当前互动演示 | 通俗文字状态与游标同步前进 | 可暂停或重新开始；不产生写入 | 播放控制区 | `docs/early_risk/WORKBENCH.md` |
 
 ## Navigation and responsive behavior
 
-- Route document title policy：`{页面} — 模拟智能手表`；当前单页固定为“系统总览 — 模拟智能手表”，未来路由、加载、错误、403/404 使用各自诚实标题。
+- Route document title policy：`{页面} — 模拟智能手表`；三模型页固定为“系统总览 — 模拟智能手表”，独立提前风险页固定为“一眼看懂：提前风险研究 — 模拟智能手表”；未来路由、加载、错误、403/404 使用各自诚实标题。
 - Route error / 403：首版本地单用户无 403；404 和 5xx 保留应用导航、说明原因与返回/重试。
 - Breadcrumb/tab/route state：顶层页面使用路由链接；同一案例的同级视图才使用 route-backed tabs。
 - Sidebar transformation：桌面固定侧栏；小于 760px 转为顶部品牌区和可横向滚动导航，不隐藏当前项。三模型子项在窄屏收拢到“三模型中心”顶层入口，内容区仍保留三个模型锚点。
 - Unavailable navigation：尚未实现的案例库和告警记录显示“未开放”，使用非交互元素并附原因，不使用空 `href`、`href="#"` 或无效果按钮；测试报告使用真实 `#reports` 锚点。
-- E0 工作台导航：单文档真实锚点；P3–P9 只在证据链中显示锁定原因，不提供伪装成可点击入口的导航。
+- E0 页面导航：顶部只使用“一眼看懂、真实场景、互动演示、现在做到哪、技术依据”五个真实锚点；小于 768px 可由导航自身横向滚动。P3–P9 只在“完整 P0–P9 研究路线”展开区显示锁定原因，不提供伪装成可点击入口的导航。
 - Responsive table：优先横向滚动并保留案例 ID 与来源；详情页显示全部字段。
 - Truncation：来源、错误与真实性说明不截断；长哈希可显示短预览并提供复制。
 - Focus restoration：路由后聚焦主标题；对话框关闭回到触发器；sticky 区域不得遮挡焦点。
@@ -128,7 +129,7 @@
 - Auto-save：首版不自动保存敏感设置；本地草稿必须明确标记。
 - Offline：保留已加载案例，显示持续连接状态；后端写操作不静默排队。
 - Retry：健康检查只重试安全 GET，使用 1/2/5/10 秒有上限退避；切换页面可见性或手动刷新时取消旧请求并重新核验。其他操作提供明确重试。
-- E0 工作台：重新读取会取消旧 GET；重新计算会取消旧 dry-run 请求；所有参数只存在当前页面内，不进入 URL、本地存储或报告文件。POST 只计算确定性状态，服务端拒绝关闭 dry-run。
+- E0 页面：重新读取会取消旧 GET；按规则重新判断会取消旧 dry-run 请求；生活场景切换只更新固定说明文案；所有参数只存在当前页面内，不进入 URL、本地存储或报告文件。POST 只计算确定性状态，服务端拒绝关闭 dry-run。
 - Conflict：首版本地单进程；版本冲突时重新读取，不覆盖较新记录。
 - Session：首版无账号；未来认证另行更新合同。
 - Progress：已知总数用确定进度，未知使用阶段名称，不显示假百分比。
@@ -156,7 +157,7 @@
 - Browser matrix：Windows Chrome/Edge；1440×900、1024×768、窄窗口 390×844；200% zoom 为扩展检查。
 - Accessibility：键盘、可见焦点、语义、对比度、reduced motion、forced colors。
 - Current page states：总览必须验证检查中、后端未连接、HTTP 成功但实时通道断开、完整连接、SQLite 结构版本 5、105 案例、三个已登记研究模型、案例读取失败、回放读取失败、WEDA 六轴回放、100 天合成规律回放和 CAPTURE-24 三轴活动回放。波形只能来自已核验文件，规律时间线必须标记合成，活动数据必须标明恢复前缀子集和人群限制。
-- E0 workbench states：验证证据读取中、读取失败/重试、E0 Gate、P3–P9 锁定、默认 dry-run、阈值无效、重新计算、播放/暂停/重置、无法评估、设备抑制、下载原件和外部通知数 0；桌面与 390px 窄屏均不得产生页面级横向溢出。
+- E0 page states：验证本机内容读取中、读取失败/重试、四个生活场景切换与 `aria-pressed`、老人一天路线、误报解释、工程演示阶段 E0、P3–P9 锁定、默认“只演示、不报警”、专业参数展开、阈值无效与焦点、重新判断、播放/暂停/重置、无法判断、摘表抑制、技术依据渐进展开、下载原件和外部通知数 0；桌面与 390px 窄屏均不得产生页面级横向溢出。
 - Component-state：后续组件建立 Vitest、Playwright 与视觉状态覆盖。
 - Canonical sibling：第 1 步为新项目无 sibling；以后以守望台总览为视觉基线。
 - CRUD/failure evidence：当前无 CRUD；第 2 步开始记录 API 失败路径。

@@ -1,8 +1,9 @@
 {
-  "artifact": "early-risk-e0-workbench",
+  "artifact": "early-risk-e0-public-life-workbench",
   "browser_verification": {
     "accessibility_baseline": {
       "duplicate_id_count": 0,
+      "forms_without_novalidate_count": 0,
       "heading_level_skip_count": 0,
       "h1_count": 1,
       "pointer_targets_below_24px_count": 0,
@@ -17,23 +18,41 @@
     },
     "failure_recovery": {
       "friendly_local_service_error": true,
+      "message": "无法连接这台电脑上的页面服务。请重新启动提前风险研究页面，然后在这里重试。",
       "retry_restored_content": true
     },
     "interactions": [
-      "reload evidence",
-      "recalculate dry-run",
+      "switch all four real-life explanation scenarios",
+      "reload local content",
+      "expand optional professional parameters",
+      "show plain-language validation error and focus the related field",
+      "recalculate deterministic demo",
       "restore default policy",
-      "play timeline",
-      "pause timeline",
-      "reset timeline",
+      "play decision timeline",
+      "pause decision timeline",
+      "reset decision timeline",
+      "expand P0-P9 research route",
+      "expand technical evidence",
       "download allowlisted evidence"
     ],
+    "landscape_844x390": {
+      "document_client_width": 834,
+      "document_scroll_width": 834,
+      "page_horizontal_overflow": false
+    },
+    "life_context": {
+      "daily_route_scene_count": 5,
+      "false_alarm_example_count": 4,
+      "future_logic_is_explicitly_not_current_model_output": true,
+      "selectable_scene_count": 4
+    },
     "narrow_390x844": {
       "document_client_width": 380,
       "document_scroll_width": 380,
       "page_horizontal_overflow": false
     },
-    "runtime": "Codex in-app Chromium"
+    "runtime": "Codex in-app Chromium",
+    "scrollbar_color_is_tokenized": true
   },
   "e0_evidence": {
     "audited_asset_count": 11,
@@ -48,12 +67,14 @@
   "git": {
     "base_commit": "75745e0ad0690126bde84c91df612b7f5b95a986",
     "branch": "codex/early-risk-e0-workbench",
+    "redesign_base_commit": "2d72a770d116424cbcaa74df6a944af20670568d",
     "remote_configured": false
   },
   "product_truth": {
     "deployment_approved": false,
     "evidence_level": "E0",
     "external_notifications_enabled": false,
+    "life_scenes_are_explanatory_only": true,
     "prediction_evidence": false
   },
   "runtime": {
