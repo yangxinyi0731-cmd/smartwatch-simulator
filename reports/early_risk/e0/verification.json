@@ -1,0 +1,46 @@
+{
+  "claims": [
+    "P0、P1、P2 的工程合同、数据合同和确定性离线骨架已通过本地回归验证。"
+  ],
+  "deployment_approved": false,
+  "evidence_level": "E0",
+  "generated_from": [
+    "local Windows CPython 3.14 environment",
+    "committed repository source and deterministic fixtures"
+  ],
+  "limitations": [
+    "验证没有接入真实个人数据、训练提前预测模型、启动风险服务或发送通知。",
+    "夹具和现有资产的验证不能证明真实老人提前预测能力。"
+  ],
+  "prediction_evidence": false,
+  "report_id": "early-risk-p0-p2-verification-v1",
+  "report_version": "1.0.0",
+  "results": {
+    "contract_schema_check": "passed",
+    "deterministic_repeat": {
+      "canonical_sha256": "02f97ab1d6d2fff4beab0553a69d5ff42329a7aa0ff4a28e7a78d9f78d9ff609",
+      "hashes_identical": true,
+      "repeat": 2
+    },
+    "frontend": {
+      "npm_audit_vulnerabilities": 0,
+      "vite_build": "passed",
+      "vue_typescript_check": "passed"
+    },
+    "git_diff_check": "passed_with_lf_to_crlf_informational_warning_only",
+    "markdown": {
+      "failing_files": 0,
+      "result": "passed"
+    },
+    "pip_check": "No broken requirements found.",
+    "pytest": {
+      "combined_backend_and_early_risk": 86,
+      "early_risk_only": 27,
+      "failures": 0
+    },
+    "truth_claim_scan": {
+      "forbidden_assertions": 0,
+      "result": "passed"
+    }
+  }
+}

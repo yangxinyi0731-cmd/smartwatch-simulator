@@ -1,0 +1,62 @@
+{
+  "claims": [
+    "P0、P1、P2 的工程合同、数据合同、资产审计和确定性离线骨架满足 E0 Gate。",
+    "本 Gate 只授权表述离线研究骨架可重复运行。"
+  ],
+  "deployment_approved": false,
+  "evidence_level": "E0",
+  "generated_from": [
+    "configs/early_risk/target_contract.v1.yaml",
+    "docs/contracts/early-risk-domain.schema.json",
+    "reports/early_risk/e0/current_data_audit.json",
+    "reports/early_risk/e0/fixture_benchmark.json"
+  ],
+  "limitations": [
+    "正式产品、研究和安全/伦理负责人签署仍未完成。",
+    "没有接入真实个人数据、训练提前预测模型、运行风险 UI、发送通知或部署。",
+    "本报告不能证明真实老人提前预测能力，不能授权进入 P3 或任何报警阶段。"
+  ],
+  "prediction_evidence": false,
+  "report_id": "early-risk-p0-p2-gate-summary-v1",
+  "report_version": "1.0.0",
+  "results": {
+    "overall": {
+      "engineering_status": "PASS_E0_FOUNDATION",
+      "formal_signoff_complete": false,
+      "next_stage_authorized": false
+    },
+    "p0": {
+      "contract_canonical_sha256": "4f796983479cdedb5795189834d7f658599791a515396a33942f27dee6ab62b0",
+      "contract_completeness": 1.0,
+      "event_count": 8,
+      "forbidden_assertion_count": 0,
+      "required_metric_count": 11,
+      "status": "ENGINEERING_PASS__FORMAL_SIGNOFF_PENDING",
+      "time_anchor_count": 5
+    },
+    "p1": {
+      "negative_fixture_suite": "tests/early_risk/test_contracts.py",
+      "schema_drift": false,
+      "schema_sha256": "70114fccaf664be3c4412653dfe11ebf177e7fdfbedd0abb6905e0ee0eb38f72",
+      "status": "ENGINEERING_PASS",
+      "synchronization_error_limit_ms": 100
+    },
+    "p2": {
+      "audited_asset_count": 11,
+      "data_asset_coverage": 1.0,
+      "data_audit_sha256": "b23c3c34d35c3e11a527259b2b5b00c9108b18ce455f2685d9bfc5b5294a2873",
+      "external_notification_count": 0,
+      "fixture_canonical_sha256": "02f97ab1d6d2fff4beab0553a69d5ff42329a7aa0ff4a28e7a78d9f78d9ff609",
+      "fixture_repeat_hashes_identical": true,
+      "fixture_report_sha256": "7b7d77f4f981b2f1264246e6603a5997aef5e5c29dfa319d4417c0fa23d0f04b",
+      "participant_overlap": [],
+      "status": "ENGINEERING_PASS_E0_ONLY",
+      "temporal_leakage_finding_count": 0
+    },
+    "required_external_actions_before_p3": [
+      "产品、研究和安全/伦理负责人正式签署目标合同",
+      "伦理、知情同意、数据控制和许可决定",
+      "用户另行明确授权进入 P3"
+    ]
+  }
+}

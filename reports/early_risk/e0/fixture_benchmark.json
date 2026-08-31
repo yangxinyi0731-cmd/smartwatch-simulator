@@ -1,0 +1,453 @@
+{
+  "claims": [
+    "确定性夹具上的合同、防泄漏、事件级指标和 dry-run 状态机可重复运行。",
+    "报告只验证公式与软件行为，不提供真实老人提前预测证据。"
+  ],
+  "deployment_approved": false,
+  "evidence_level": "E0",
+  "generated_from": [
+    "configs/early_risk/baselines.v1.yaml",
+    "tests/early_risk/fixtures/deterministic_timeline.v1.json"
+  ],
+  "limitations": [
+    "全部事件、告警、分数和时间线均为人工确定性工程夹具。",
+    "夹具指标不得作为真实召回、精确率、AUPRC、校准或误报/人日对外发布。",
+    "策略只记录 dry-run 候选，不振动、不发声、不通知家属或救援方。"
+  ],
+  "prediction_evidence": false,
+  "report_id": "early-risk-fixture-benchmark-v1",
+  "report_version": "1.0.0",
+  "results": {
+    "baseline_registry": [
+      {
+        "allowed_use": "验证漏报、覆盖率和指标分母。",
+        "baseline_id": "never_alert",
+        "deployment_approved": false,
+        "evidence_level": "E0",
+        "prediction_evidence": false,
+        "prohibited_interpretation": "不能作为安全策略或低风险证明。",
+        "role": "INTEGRITY"
+      },
+      {
+        "allowed_use": "验证事件召回上界和误报负担公式。",
+        "baseline_id": "always_alert",
+        "deployment_approved": false,
+        "evidence_level": "E0",
+        "prediction_evidence": false,
+        "prohibited_interpretation": "不能作为可用报警策略。",
+        "role": "INTEGRITY"
+      },
+      {
+        "allowed_use": "在确定性夹具上验证阈值、事件合并和状态机。",
+        "baseline_id": "simple_motion_threshold",
+        "deployment_approved": false,
+        "evidence_level": "E0",
+        "prediction_evidence": false,
+        "prohibited_interpretation": "不能产生真实老人提前预测成绩。",
+        "role": "MOTION_HEURISTIC"
+      },
+      {
+        "allowed_use": "事中/事后检测比较、困难负样本发现和事件确认候选。",
+        "baseline_id": "existing_fall_detector",
+        "deployment_approved": false,
+        "evidence_level": "E0",
+        "prediction_evidence": false,
+        "prohibited_interpretation": "不能直接称为短时前兆或未来跌倒模型。",
+        "role": "DURING_OR_AFTER_EVENT"
+      },
+      {
+        "allowed_use": "验证合成规则、合同和解释分支。",
+        "baseline_id": "synthetic_routine_rules",
+        "deployment_approved": false,
+        "evidence_level": "E0",
+        "prediction_evidence": false,
+        "prohibited_interpretation": "异常分数不是医学风险或真实跌倒概率。",
+        "role": "SYNTHETIC_SOFTWARE"
+      },
+      {
+        "allowed_use": "活动上下文、特征探索和数据管线比较。",
+        "baseline_id": "activity_context",
+        "deployment_approved": false,
+        "evidence_level": "E0",
+        "prediction_evidence": false,
+        "prohibited_interpretation": "不能证明老人目标域有效或提前预测有效。",
+        "role": "ACTIVITY_CONTEXT"
+      }
+    ],
+    "config_sha256": "0dcacba5fe7a6198bd33399929ce1c4ce754bf87791b0fd643a16996bf40ff59",
+    "fixture_sha256": "f0ab418043184aba45eeaedb2a1b6271ebf0d40ebc820664b3a1c1444619fe0a",
+    "metrics": {
+      "alert_cluster_count": 3,
+      "auprc": 1.0,
+      "calibration": {
+        "brier": 0.11249999999999999,
+        "count": 4,
+        "ece": 0.275
+      },
+      "coverage_and_abstention": {
+        "abstention": 0.07499999999999996,
+        "coverage": 0.925,
+        "evaluable_ms": 159840000,
+        "observed_ms": 172800000
+      },
+      "event_count": 2,
+      "event_precision": 0.6666666666666666,
+      "event_recall_by_lead_time": [
+        {
+          "ci95_wilson": [
+            0.09452865480086614,
+            0.9054713451991339
+          ],
+          "event_count": 2,
+          "horizon_seconds": 1,
+          "recall": 0.5,
+          "timely_event_count": 1
+        },
+        {
+          "ci95_wilson": [
+            0.09452865480086614,
+            0.9054713451991339
+          ],
+          "event_count": 2,
+          "horizon_seconds": 2,
+          "recall": 0.5,
+          "timely_event_count": 1
+        },
+        {
+          "ci95_wilson": [
+            0.09452865480086614,
+            0.9054713451991339
+          ],
+          "event_count": 2,
+          "horizon_seconds": 3,
+          "recall": 0.5,
+          "timely_event_count": 1
+        },
+        {
+          "ci95_wilson": [
+            0.09452865480086614,
+            0.9054713451991339
+          ],
+          "event_count": 2,
+          "horizon_seconds": 5,
+          "recall": 0.5,
+          "timely_event_count": 1
+        },
+        {
+          "ci95_wilson": [
+            0.0,
+            0.6576280471103807
+          ],
+          "event_count": 2,
+          "horizon_seconds": 10,
+          "recall": 0.0,
+          "timely_event_count": 0
+        }
+      ],
+      "false_alerts_per_person_day": {
+        "by_participant": {
+          "fixture-p01": 1.0,
+          "fixture-p02": 0.0
+        },
+        "false_alert_count": 1,
+        "maximum": 1.0,
+        "mean": 0.5,
+        "median": 0.5,
+        "overall_per_person_day": 0.5,
+        "p95": 0.95,
+        "person_days": 2.0
+      },
+      "late_and_missed": {
+        "late_after_instability": 1,
+        "missed": 0
+      },
+      "lead_time_distribution_seconds": {
+        "maximum": 6.0,
+        "median": 2.75,
+        "minimum": -0.5,
+        "negative_count": 1,
+        "q1": 1.125,
+        "q3": 4.375,
+        "zero_count": 0
+      },
+      "matched_event_count": 2,
+      "no_skill_prevalence": 0.5
+    },
+    "policy": {
+      "decision_count": 7,
+      "decisions": [
+        {
+          "action": "NONE",
+          "evidence_count": 0,
+          "external_notification_sent": false,
+          "reason": "证据未达到 dry-run 候选条件。",
+          "state": "SILENT",
+          "timestamp_ms": 1000
+        },
+        {
+          "action": "NONE",
+          "evidence_count": 1,
+          "external_notification_sent": false,
+          "reason": "正在累积确定性工程夹具证据。",
+          "state": "ACCUMULATING",
+          "timestamp_ms": 2000
+        },
+        {
+          "action": "RECORD_DRY_RUN_CANDIDATE",
+          "evidence_count": 2,
+          "external_notification_sent": false,
+          "reason": "连续证据达到工程夹具阈值；只记录，不通知。",
+          "state": "DRY_RUN_CANDIDATE",
+          "timestamp_ms": 3000
+        },
+        {
+          "action": "NONE",
+          "evidence_count": 0,
+          "external_notification_sent": false,
+          "reason": "确定性冷却期内抑制重复候选。",
+          "state": "COOLDOWN",
+          "timestamp_ms": 4000
+        },
+        {
+          "action": "NONE",
+          "evidence_count": 0,
+          "external_notification_sent": false,
+          "reason": "确定性冷却期内抑制重复候选。",
+          "state": "COOLDOWN",
+          "timestamp_ms": 5000
+        },
+        {
+          "action": "NONE",
+          "evidence_count": 0,
+          "external_notification_sent": false,
+          "reason": "输入缺失、未知或质量不足，无法评估。",
+          "state": "UNASSESSABLE",
+          "timestamp_ms": 9000
+        },
+        {
+          "action": "SUPPRESSED",
+          "evidence_count": 0,
+          "external_notification_sent": false,
+          "reason": "工程夹具：摘表",
+          "state": "SUPPRESSED",
+          "timestamp_ms": 10000
+        }
+      ],
+      "dry_run": true,
+      "dry_run_candidate_count": 1,
+      "external_notification_count": 0
+    },
+    "suppression_impact": {
+      "after": {
+        "alert_cluster_count": 3,
+        "auprc": 1.0,
+        "calibration": {
+          "brier": 0.11249999999999999,
+          "count": 4,
+          "ece": 0.275
+        },
+        "coverage_and_abstention": {
+          "abstention": 0.07499999999999996,
+          "coverage": 0.925,
+          "evaluable_ms": 159840000,
+          "observed_ms": 172800000
+        },
+        "event_count": 2,
+        "event_precision": 0.6666666666666666,
+        "event_recall_by_lead_time": [
+          {
+            "ci95_wilson": [
+              0.09452865480086614,
+              0.9054713451991339
+            ],
+            "event_count": 2,
+            "horizon_seconds": 1,
+            "recall": 0.5,
+            "timely_event_count": 1
+          },
+          {
+            "ci95_wilson": [
+              0.09452865480086614,
+              0.9054713451991339
+            ],
+            "event_count": 2,
+            "horizon_seconds": 2,
+            "recall": 0.5,
+            "timely_event_count": 1
+          },
+          {
+            "ci95_wilson": [
+              0.09452865480086614,
+              0.9054713451991339
+            ],
+            "event_count": 2,
+            "horizon_seconds": 3,
+            "recall": 0.5,
+            "timely_event_count": 1
+          },
+          {
+            "ci95_wilson": [
+              0.09452865480086614,
+              0.9054713451991339
+            ],
+            "event_count": 2,
+            "horizon_seconds": 5,
+            "recall": 0.5,
+            "timely_event_count": 1
+          },
+          {
+            "ci95_wilson": [
+              0.0,
+              0.6576280471103807
+            ],
+            "event_count": 2,
+            "horizon_seconds": 10,
+            "recall": 0.0,
+            "timely_event_count": 0
+          }
+        ],
+        "false_alerts_per_person_day": {
+          "by_participant": {
+            "fixture-p01": 1.0,
+            "fixture-p02": 0.0
+          },
+          "false_alert_count": 1,
+          "maximum": 1.0,
+          "mean": 0.5,
+          "median": 0.5,
+          "overall_per_person_day": 0.5,
+          "p95": 0.95,
+          "person_days": 2.0
+        },
+        "late_and_missed": {
+          "late_after_instability": 1,
+          "missed": 0
+        },
+        "lead_time_distribution_seconds": {
+          "maximum": 6.0,
+          "median": 2.75,
+          "minimum": -0.5,
+          "negative_count": 1,
+          "q1": 1.125,
+          "q3": 4.375,
+          "zero_count": 0
+        },
+        "matched_event_count": 2,
+        "no_skill_prevalence": 0.5
+      },
+      "before": {
+        "alert_cluster_count": 4,
+        "auprc": 1.0,
+        "calibration": {
+          "brier": 0.11249999999999999,
+          "count": 4,
+          "ece": 0.275
+        },
+        "coverage_and_abstention": {
+          "abstention": 0.07499999999999996,
+          "coverage": 0.925,
+          "evaluable_ms": 159840000,
+          "observed_ms": 172800000
+        },
+        "event_count": 2,
+        "event_precision": 0.5,
+        "event_recall_by_lead_time": [
+          {
+            "ci95_wilson": [
+              0.09452865480086614,
+              0.9054713451991339
+            ],
+            "event_count": 2,
+            "horizon_seconds": 1,
+            "recall": 0.5,
+            "timely_event_count": 1
+          },
+          {
+            "ci95_wilson": [
+              0.09452865480086614,
+              0.9054713451991339
+            ],
+            "event_count": 2,
+            "horizon_seconds": 2,
+            "recall": 0.5,
+            "timely_event_count": 1
+          },
+          {
+            "ci95_wilson": [
+              0.09452865480086614,
+              0.9054713451991339
+            ],
+            "event_count": 2,
+            "horizon_seconds": 3,
+            "recall": 0.5,
+            "timely_event_count": 1
+          },
+          {
+            "ci95_wilson": [
+              0.09452865480086614,
+              0.9054713451991339
+            ],
+            "event_count": 2,
+            "horizon_seconds": 5,
+            "recall": 0.5,
+            "timely_event_count": 1
+          },
+          {
+            "ci95_wilson": [
+              0.0,
+              0.6576280471103807
+            ],
+            "event_count": 2,
+            "horizon_seconds": 10,
+            "recall": 0.0,
+            "timely_event_count": 0
+          }
+        ],
+        "false_alerts_per_person_day": {
+          "by_participant": {
+            "fixture-p01": 1.0,
+            "fixture-p02": 1.0
+          },
+          "false_alert_count": 2,
+          "maximum": 1.0,
+          "mean": 1.0,
+          "median": 1.0,
+          "overall_per_person_day": 1.0,
+          "p95": 1.0,
+          "person_days": 2.0
+        },
+        "late_and_missed": {
+          "late_after_instability": 1,
+          "missed": 0
+        },
+        "lead_time_distribution_seconds": {
+          "maximum": 6.0,
+          "median": 2.75,
+          "minimum": -0.5,
+          "negative_count": 1,
+          "q1": 1.125,
+          "q3": 4.375,
+          "zero_count": 0
+        },
+        "matched_event_count": 2,
+        "no_skill_prevalence": 0.5
+      },
+      "false_alert_reduction_count": 1,
+      "suppressed_candidate_count": 1
+    },
+    "temporal_leakage": {
+      "finding_count": 0,
+      "findings": [],
+      "post_event_samples_in_source_fixture_are_excluded": true,
+      "selected_timestamp_ms": [
+        10000,
+        12000,
+        14000,
+        16000,
+        18000
+      ],
+      "source_max_timestamp_ms": 18000,
+      "target_anchor_ms": 20000
+    }
+  }
+}

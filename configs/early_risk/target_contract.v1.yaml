@@ -1,0 +1,120 @@
+contract_id: early-risk-target-contract
+version: 1.0.0
+status: FROZEN_ENGINEERING_V1
+frozen_date: '2026-08-31'
+evidence_level: E0
+prediction_evidence: false
+product_definition: >-
+  通过长期学习每位老人的个人生活规律，再结合手表当前采集到的连续动作信号，
+  判断老人是否正在偏离正常状态、是否出现失稳前兆，并估计未来几秒发生危险事件的风险；
+  只有证据、提前量和误报负担通过验证后，才进入真正的提前预警。
+target_events:
+  - code: ACCIDENTAL_FALL
+    role: PRIMARY_TARGET
+    label_zh_cn: 真实意外跌倒
+    operational_definition: 非主动动作中身体失去稳定并接触地面或更低支撑面，由预注册裁决流程确认。
+    mutually_exclusive_with: [NEAR_FALL, TRIP_RECOVERY, RAPID_SIT, INTENTIONAL_LIE_DOWN, ORDINARY_TRANSITION, DEVICE_ARTIFACT]
+    impact_required: true
+  - code: NEAR_FALL
+    role: SECONDARY_TARGET
+    label_zh_cn: 近跌倒
+    operational_definition: 出现明显失稳并需要抓扶、跨步补偿或他人协助，但身体未着地。
+    mutually_exclusive_with: [ACCIDENTAL_FALL, TRIP_RECOVERY, RAPID_SIT, INTENTIONAL_LIE_DOWN, ORDINARY_TRANSITION, DEVICE_ARTIFACT]
+    impact_required: false
+  - code: INSTABILITY
+    role: SECONDARY_TARGET
+    label_zh_cn: 明显失稳
+    operational_definition: 可裁决的平衡破坏或无法维持原动作，但尚不足以构成跌倒或近跌倒。
+    mutually_exclusive_with: [ACCIDENTAL_FALL, RAPID_SIT, INTENTIONAL_LIE_DOWN, ORDINARY_TRANSITION, DEVICE_ARTIFACT]
+    impact_required: false
+  - code: TRIP_RECOVERY
+    role: HARD_NEGATIVE
+    label_zh_cn: 绊倒后自主恢复
+    operational_definition: 出现失步或绊倒代理动作，但未抓扶、未获协助并自主恢复稳定。
+    mutually_exclusive_with: [ACCIDENTAL_FALL, NEAR_FALL, DEVICE_ARTIFACT]
+    impact_required: false
+  - code: RAPID_SIT
+    role: HARD_NEGATIVE
+    label_zh_cn: 快速坐下
+    operational_definition: 参与者主动或日常情境下快速坐到支撑面，未出现失控着地。
+    mutually_exclusive_with: [ACCIDENTAL_FALL, NEAR_FALL, INSTABILITY, INTENTIONAL_LIE_DOWN, DEVICE_ARTIFACT]
+    impact_required: false
+  - code: INTENTIONAL_LIE_DOWN
+    role: HARD_NEGATIVE
+    label_zh_cn: 主动躺下
+    operational_definition: 参与者有意从站、坐或跪姿转换为躺卧，动作可控。
+    mutually_exclusive_with: [ACCIDENTAL_FALL, NEAR_FALL, INSTABILITY, RAPID_SIT, DEVICE_ARTIFACT]
+    impact_required: false
+  - code: ORDINARY_TRANSITION
+    role: HARD_NEGATIVE
+    label_zh_cn: 一般姿态转换或剧烈日常动作
+    operational_definition: 无失稳证据的起坐、转身、弯腰、上下楼、家务、运动或乘车动作。
+    mutually_exclusive_with: [ACCIDENTAL_FALL, NEAR_FALL, INSTABILITY, DEVICE_ARTIFACT]
+    impact_required: false
+  - code: DEVICE_ARTIFACT
+    role: DEVICE_ARTIFACT
+    label_zh_cn: 设备故障或伪迹
+    operational_definition: 摘表、松动、碰撞、充电、断流、时间倒退、换设备或通道异常造成的非人体事件。
+    mutually_exclusive_with: [ACCIDENTAL_FALL, NEAR_FALL, INSTABILITY, TRIP_RECOVERY, RAPID_SIT, INTENTIONAL_LIE_DOWN, ORDINARY_TRANSITION]
+    impact_required: false
+time_anchors:
+  - code: t_instability
+    definition: 首次可由裁决者确认平衡被破坏或原动作无法维持的时刻。
+    nullable: false
+    source_requirements: [双人裁决, 记录同步误差, 保存置信等级]
+  - code: t_impact
+    definition: 身体与地面或更低支撑面撞击/着地的时刻；无撞击事件可以为空。
+    nullable: true
+    source_requirements: [双人裁决, 与 t_instability 分开标注]
+  - code: t_recovery_or_assist
+    definition: 恢复稳定或获得他人协助的时刻。
+    nullable: false
+    source_requirements: [双人裁决, 记录恢复或协助类型]
+  - code: t_model_decision
+    definition: 模型完成风险决策并交给策略层的时刻。
+    nullable: false
+    source_requirements: [单调时钟, 冻结模型版本, 决策日志]
+  - code: t_alert_perceivable
+    definition: 振动、声音或视觉提示真正可被用户感知的时刻。
+    nullable: false
+    source_requirements: [端到端实测, 设备呈现日志, 不以离线窗口结束时间替代]
+immediate_horizons_seconds: [1, 2, 3, 5, 10]
+background_horizons_hours: [24, 168]
+primary_lead_time_formula: t_instability - t_alert_perceivable
+impact_lead_time_formula: t_impact - t_alert_perceivable
+synchronization_error_limit_ms: 100
+event_matching:
+  maximum_pre_event_seconds: 10
+  late_grace_seconds: 2
+  duplicate_alert_merge_seconds: 3
+  one_alert_matches_at_most_one_event: true
+  one_event_counted_at_most_once: true
+  negative_lead_time_is_late: true
+required_metric_ids:
+  - event_recall_by_lead_time
+  - event_precision
+  - auprc
+  - false_alerts_per_person_day
+  - calibration
+  - lead_time_distribution
+  - coverage_and_abstention
+  - late_and_missed
+  - suppression_impact
+  - end_to_end_latency
+  - subgroup_and_robustness
+allowed_e0_claims:
+  - 离线研究骨架可重复运行。
+  - 确定性工程夹具验证了合同、指标、防泄漏和 dry-run 状态机实现。
+  - 当前结果仅属于 E0 工程证据，不提供真实老人提前预测能力证据。
+forbidden_claims:
+  - 已经能提前预测
+  - 已实现提前预警
+  - 真实老人提前几秒召回
+  - 临床级准确率
+  - 自动救援已启用
+  - 当前三个模型构成未来跌倒概率
+external_approval_state:
+  product_owner_signed: false
+  research_owner_signed: false
+  safety_ethics_owner_signed: false
+  note: 本文件完成工程冻结和哈希；正式签署、伦理、许可及真实数据授权仍由相应负责人完成。

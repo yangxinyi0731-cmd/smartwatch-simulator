@@ -2,4 +2,5 @@ fastapi==0.141.1
 numpy==2.5.2
 onnx==1.22.0
 onnxruntime==1.29.0
+PyYAML==6.0.3
 uvicorn[standard]==0.52.4

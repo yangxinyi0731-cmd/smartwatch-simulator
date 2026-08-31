@@ -1,0 +1,28 @@
+config_id: early-risk-e0-baselines
+version: 1.0.0
+evidence_level: E0
+prediction_evidence: false
+event_matching:
+  maximum_pre_event_seconds: 10
+  late_grace_seconds: 2
+  duplicate_alert_merge_seconds: 3
+horizons_seconds: [1, 2, 3, 5, 10]
+baselines:
+  - id: never_alert
+    role: INTEGRITY
+  - id: always_alert
+    role: INTEGRITY
+  - id: simple_motion_threshold
+    role: MOTION_HEURISTIC
+  - id: existing_fall_detector
+    role: DURING_OR_AFTER_EVENT
+  - id: synthetic_routine_rules
+    role: SYNTHETIC_SOFTWARE
+  - id: activity_context
+    role: ACTIVITY_CONTEXT
+policy_fixture:
+  threshold_on: 0.8
+  threshold_off: 0.4
+  consecutive_required: 2
+  cooldown_ms: 5000
+  dry_run: true

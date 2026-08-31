@@ -1,0 +1,20 @@
+{
+  "deployment_approved": false,
+  "evidence_level": "E0",
+  "generated_from": [
+    "replace-with-committed-fixture-or-audited-asset"
+  ],
+  "claims": [
+    "离线研究骨架可重复运行。"
+  ],
+  "limitations": [
+    "工程夹具或现有资产不能证明真实老人提前预测能力。"
+  ],
+  "prediction_evidence": false,
+  "report_id": "replace-with-report-id",
+  "report_version": "1.0.0",
+  "results": {
+    "end_to_end_latency": "not_measured_e0",
+    "subgroup_and_robustness": "not_measured_e0"
+  }
+}

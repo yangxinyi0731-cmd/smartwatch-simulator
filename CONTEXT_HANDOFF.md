@@ -1,7 +1,13 @@
 # 老年人 AI 模拟智能手表平台：当前完整交接
 
-更新时间：2026-08-29
+更新时间：2026-08-31
 实际项目：`C:\Users\yangxinyi\Documents\Codex\2026-08-27\smartwatch-health-simulator`
+
+## 2026-08-31 提前风险第一大关后续状态
+
+用户已授权并完成 P0+P1+P2 第一大关。当前新增独立研究分支 `codex/early-risk-p0-p2-foundation`，在不修改产品 UI、后端服务、SQLite 结构或三个现有模型的前提下，完成产品真实性/目标合同、数据与标签合同、当前资产审计、严格事件前截断、事件级指标、误报/人日、校准、覆盖率、抑制影响和只记录不通知的 dry-run 状态机。详细接手入口为 `EARLY_RISK_P0_P2_HANDOFF.md`。
+
+该成果固定为 E0：只允许表述“离线研究骨架可重复运行”，不代表真实老人提前预测能力。P3 尚未授权；正式签署、伦理、知情同意、数据控制、许可和真实采集均未完成。
 
 ## 新任务接手顺序
 
@@ -9,14 +15,15 @@
 
 先完整阅读：
 
-1. `TABLER_MIGRATION_HANDOFF.md`；
-2. 本文件；
-3. `PRODUCT.md`；
-4. `DATA_AND_MODEL_NOTICE.md`；
-5. `TASK_STATE.md`；
-6. `DESIGN.md`；
-7. `UX-CONTRACT.md`；
-8. `THIRD_PARTY_NOTICES.md`。
+1. `EARLY_RISK_P0_P2_HANDOFF.md`；
+2. `TABLER_MIGRATION_HANDOFF.md`；
+3. 本文件；
+4. `PRODUCT.md`；
+5. `DATA_AND_MODEL_NOTICE.md`；
+6. `TASK_STATE.md`；
+7. `DESIGN.md`；
+8. `UX-CONTRACT.md`；
+9. `THIRD_PARTY_NOTICES.md`。
 
 随后只读执行：
 

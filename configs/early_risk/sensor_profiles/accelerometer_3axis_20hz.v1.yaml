@@ -1,0 +1,11 @@
+profile_id: accelerometer-3axis-20hz-v1
+profile_kind: ACCELEROMETER_3AXIS
+device_model: RESEARCH_FIXTURE_ACCELEROMETER
+nominal_sample_rate_hz: 20
+channels:
+  - {name: ax, quantity: acceleration, unit: 'm/s^2'}
+  - {name: ay, quantity: acceleration, unit: 'm/s^2'}
+  - {name: az, quantity: acceleration, unit: 'm/s^2'}
+wear_side: RIGHT
+timezone_name: Asia/Shanghai
+calibration_version: fixture-calibration-v1

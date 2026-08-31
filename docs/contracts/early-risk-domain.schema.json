@@ -1,0 +1,1081 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "contract_version": "1.0.0",
+  "evidence_level": "E0",
+  "prediction_evidence": false,
+  "schemas": {
+    "EventAnnotation": {
+      "$defs": {
+        "EventType": {
+          "enum": [
+            "ACCIDENTAL_FALL",
+            "NEAR_FALL",
+            "INSTABILITY",
+            "TRIP_RECOVERY",
+            "RAPID_SIT",
+            "INTENTIONAL_LIE_DOWN",
+            "ORDINARY_TRANSITION",
+            "DEVICE_ARTIFACT"
+          ],
+          "title": "EventType",
+          "type": "string"
+        },
+        "LabelConfidence": {
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ],
+          "title": "LabelConfidence",
+          "type": "string"
+        },
+        "LabelSourceKind": {
+          "enum": [
+            "VIDEO_DOUBLE_REVIEW",
+            "DIRECT_OBSERVATION",
+            "PARTICIPANT_REPORT",
+            "CAREGIVER_REPORT",
+            "CLINICAL_RECORD",
+            "ENGINEERING_FIXTURE"
+          ],
+          "title": "LabelSourceKind",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "adjudicator_ids": {
+          "items": {
+            "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+            "type": "string"
+          },
+          "minItems": 2,
+          "title": "Adjudicator Ids",
+          "type": "array"
+        },
+        "confidence": {
+          "$ref": "#/$defs/LabelConfidence"
+        },
+        "device_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Device Id",
+          "type": "string"
+        },
+        "event_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "$ref": "#/$defs/EventType"
+        },
+        "label_source": {
+          "$ref": "#/$defs/LabelSourceKind"
+        },
+        "notes": {
+          "minLength": 1,
+          "title": "Notes",
+          "type": "string"
+        },
+        "participant_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Participant Id",
+          "type": "string"
+        },
+        "session_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "site_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Site Id",
+          "type": "string"
+        },
+        "synchronization_error_ms": {
+          "minimum": 0,
+          "title": "Synchronization Error Ms",
+          "type": "number"
+        },
+        "t_impact_ns": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "T Impact Ns"
+        },
+        "t_instability_ns": {
+          "exclusiveMinimum": 0,
+          "title": "T Instability Ns",
+          "type": "integer"
+        },
+        "t_recovery_or_assist_ns": {
+          "exclusiveMinimum": 0,
+          "title": "T Recovery Or Assist Ns",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "event_id",
+        "participant_id",
+        "site_id",
+        "device_id",
+        "session_id",
+        "event_type",
+        "t_instability_ns",
+        "t_recovery_or_assist_ns",
+        "label_source",
+        "adjudicator_ids",
+        "confidence",
+        "synchronization_error_ms",
+        "notes"
+      ],
+      "title": "EventAnnotation",
+      "type": "object"
+    },
+    "ResearchRecordBundle": {
+      "$defs": {
+        "ChannelSpec": {
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "minLength": 1,
+              "title": "Name",
+              "type": "string"
+            },
+            "quantity": {
+              "enum": [
+                "acceleration",
+                "angular_velocity"
+              ],
+              "title": "Quantity",
+              "type": "string"
+            },
+            "unit": {
+              "enum": [
+                "m/s^2",
+                "rad/s"
+              ],
+              "title": "Unit",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "quantity",
+            "unit"
+          ],
+          "title": "ChannelSpec",
+          "type": "object"
+        },
+        "EventAnnotation": {
+          "additionalProperties": false,
+          "properties": {
+            "adjudicator_ids": {
+              "items": {
+                "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+                "type": "string"
+              },
+              "minItems": 2,
+              "title": "Adjudicator Ids",
+              "type": "array"
+            },
+            "confidence": {
+              "$ref": "#/$defs/LabelConfidence"
+            },
+            "device_id": {
+              "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+              "title": "Device Id",
+              "type": "string"
+            },
+            "event_id": {
+              "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+              "title": "Event Id",
+              "type": "string"
+            },
+            "event_type": {
+              "$ref": "#/$defs/EventType"
+            },
+            "label_source": {
+              "$ref": "#/$defs/LabelSourceKind"
+            },
+            "notes": {
+              "minLength": 1,
+              "title": "Notes",
+              "type": "string"
+            },
+            "participant_id": {
+              "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+              "title": "Participant Id",
+              "type": "string"
+            },
+            "session_id": {
+              "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+              "title": "Session Id",
+              "type": "string"
+            },
+            "site_id": {
+              "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+              "title": "Site Id",
+              "type": "string"
+            },
+            "synchronization_error_ms": {
+              "minimum": 0,
+              "title": "Synchronization Error Ms",
+              "type": "number"
+            },
+            "t_impact_ns": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "T Impact Ns"
+            },
+            "t_instability_ns": {
+              "exclusiveMinimum": 0,
+              "title": "T Instability Ns",
+              "type": "integer"
+            },
+            "t_recovery_or_assist_ns": {
+              "exclusiveMinimum": 0,
+              "title": "T Recovery Or Assist Ns",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "event_id",
+            "participant_id",
+            "site_id",
+            "device_id",
+            "session_id",
+            "event_type",
+            "t_instability_ns",
+            "t_recovery_or_assist_ns",
+            "label_source",
+            "adjudicator_ids",
+            "confidence",
+            "synchronization_error_ms",
+            "notes"
+          ],
+          "title": "EventAnnotation",
+          "type": "object"
+        },
+        "EventType": {
+          "enum": [
+            "ACCIDENTAL_FALL",
+            "NEAR_FALL",
+            "INSTABILITY",
+            "TRIP_RECOVERY",
+            "RAPID_SIT",
+            "INTENTIONAL_LIE_DOWN",
+            "ORDINARY_TRANSITION",
+            "DEVICE_ARTIFACT"
+          ],
+          "title": "EventType",
+          "type": "string"
+        },
+        "LabelConfidence": {
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ],
+          "title": "LabelConfidence",
+          "type": "string"
+        },
+        "LabelSourceKind": {
+          "enum": [
+            "VIDEO_DOUBLE_REVIEW",
+            "DIRECT_OBSERVATION",
+            "PARTICIPANT_REPORT",
+            "CAREGIVER_REPORT",
+            "CLINICAL_RECORD",
+            "ENGINEERING_FIXTURE"
+          ],
+          "title": "LabelSourceKind",
+          "type": "string"
+        },
+        "QualityAssessment": {
+          "additionalProperties": false,
+          "properties": {
+            "accepted_for_second_scale": {
+              "title": "Accepted For Second Scale",
+              "type": "boolean"
+            },
+            "clock_drift_ms": {
+              "minimum": 0,
+              "title": "Clock Drift Ms",
+              "type": "number"
+            },
+            "duplicate_timestamp_count": {
+              "minimum": 0,
+              "title": "Duplicate Timestamp Count",
+              "type": "integer"
+            },
+            "missing_sample_fraction": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Missing Sample Fraction",
+              "type": "number"
+            },
+            "out_of_order_count": {
+              "minimum": 0,
+              "title": "Out Of Order Count",
+              "type": "integer"
+            },
+            "quality_flags": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "title": "Quality Flags",
+              "type": "array"
+            },
+            "synchronization_error_ms": {
+              "minimum": 0,
+              "title": "Synchronization Error Ms",
+              "type": "number"
+            }
+          },
+          "required": [
+            "missing_sample_fraction",
+            "duplicate_timestamp_count",
+            "out_of_order_count",
+            "synchronization_error_ms",
+            "clock_drift_ms",
+            "quality_flags",
+            "accepted_for_second_scale"
+          ],
+          "title": "QualityAssessment",
+          "type": "object"
+        },
+        "SensorProfile": {
+          "additionalProperties": false,
+          "properties": {
+            "calibration_version": {
+              "minLength": 1,
+              "title": "Calibration Version",
+              "type": "string"
+            },
+            "channels": {
+              "items": {
+                "$ref": "#/$defs/ChannelSpec"
+              },
+              "minItems": 1,
+              "title": "Channels",
+              "type": "array"
+            },
+            "device_model": {
+              "minLength": 1,
+              "title": "Device Model",
+              "type": "string"
+            },
+            "nominal_sample_rate_hz": {
+              "exclusiveMinimum": 0,
+              "title": "Nominal Sample Rate Hz",
+              "type": "number"
+            },
+            "profile_id": {
+              "minLength": 1,
+              "title": "Profile Id",
+              "type": "string"
+            },
+            "profile_kind": {
+              "$ref": "#/$defs/SensorProfileKind"
+            },
+            "timezone_name": {
+              "minLength": 1,
+              "title": "Timezone Name",
+              "type": "string"
+            },
+            "wear_side": {
+              "$ref": "#/$defs/WearSide"
+            }
+          },
+          "required": [
+            "profile_id",
+            "profile_kind",
+            "device_model",
+            "nominal_sample_rate_hz",
+            "channels",
+            "wear_side",
+            "timezone_name",
+            "calibration_version"
+          ],
+          "title": "SensorProfile",
+          "type": "object"
+        },
+        "SensorProfileKind": {
+          "enum": [
+            "ACCELEROMETER_3AXIS",
+            "IMU_6AXIS"
+          ],
+          "title": "SensorProfileKind",
+          "type": "string"
+        },
+        "SensorSample": {
+          "additionalProperties": false,
+          "properties": {
+            "monotonic_timestamp_ns": {
+              "exclusiveMinimum": 0,
+              "title": "Monotonic Timestamp Ns",
+              "type": "integer"
+            },
+            "sequence": {
+              "minimum": 0,
+              "title": "Sequence",
+              "type": "integer"
+            },
+            "utc_timestamp_ns": {
+              "exclusiveMinimum": 0,
+              "title": "Utc Timestamp Ns",
+              "type": "integer"
+            },
+            "values": {
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1,
+              "title": "Values",
+              "type": "array"
+            }
+          },
+          "required": [
+            "sequence",
+            "utc_timestamp_ns",
+            "monotonic_timestamp_ns",
+            "values"
+          ],
+          "title": "SensorSample",
+          "type": "object"
+        },
+        "SensorSegment": {
+          "additionalProperties": false,
+          "properties": {
+            "device_id": {
+              "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+              "title": "Device Id",
+              "type": "string"
+            },
+            "parent_segment_id": {
+              "anyOf": [
+                {
+                  "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Parent Segment Id"
+            },
+            "participant_id": {
+              "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+              "title": "Participant Id",
+              "type": "string"
+            },
+            "profile": {
+              "$ref": "#/$defs/SensorProfile"
+            },
+            "quality": {
+              "$ref": "#/$defs/QualityAssessment"
+            },
+            "raw_immutable": {
+              "title": "Raw Immutable",
+              "type": "boolean"
+            },
+            "samples": {
+              "items": {
+                "$ref": "#/$defs/SensorSample"
+              },
+              "minItems": 2,
+              "title": "Samples",
+              "type": "array"
+            },
+            "segment_id": {
+              "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+              "title": "Segment Id",
+              "type": "string"
+            },
+            "session_id": {
+              "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+              "title": "Session Id",
+              "type": "string"
+            },
+            "site_id": {
+              "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+              "title": "Site Id",
+              "type": "string"
+            },
+            "source_relative_path": {
+              "minLength": 1,
+              "title": "Source Relative Path",
+              "type": "string"
+            },
+            "source_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "title": "Source Sha256",
+              "type": "string"
+            },
+            "started_at": {
+              "format": "date-time",
+              "title": "Started At",
+              "type": "string"
+            },
+            "storage_layer": {
+              "$ref": "#/$defs/StorageLayer"
+            },
+            "withdrawal_locator": {
+              "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+              "title": "Withdrawal Locator",
+              "type": "string"
+            }
+          },
+          "required": [
+            "segment_id",
+            "storage_layer",
+            "participant_id",
+            "site_id",
+            "device_id",
+            "session_id",
+            "profile",
+            "started_at",
+            "source_relative_path",
+            "source_sha256",
+            "raw_immutable",
+            "withdrawal_locator",
+            "quality",
+            "samples"
+          ],
+          "title": "SensorSegment",
+          "type": "object"
+        },
+        "StorageLayer": {
+          "enum": [
+            "RAW_IMMUTABLE",
+            "NORMALIZED_DERIVED"
+          ],
+          "title": "StorageLayer",
+          "type": "string"
+        },
+        "WearSide": {
+          "enum": [
+            "LEFT",
+            "RIGHT"
+          ],
+          "title": "WearSide",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "annotations": {
+          "items": {
+            "$ref": "#/$defs/EventAnnotation"
+          },
+          "title": "Annotations",
+          "type": "array"
+        },
+        "bundle_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Bundle Id",
+          "type": "string"
+        },
+        "segments": {
+          "items": {
+            "$ref": "#/$defs/SensorSegment"
+          },
+          "minItems": 1,
+          "title": "Segments",
+          "type": "array"
+        }
+      },
+      "required": [
+        "bundle_id",
+        "segments",
+        "annotations"
+      ],
+      "title": "ResearchRecordBundle",
+      "type": "object"
+    },
+    "SensorProfile": {
+      "$defs": {
+        "ChannelSpec": {
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "minLength": 1,
+              "title": "Name",
+              "type": "string"
+            },
+            "quantity": {
+              "enum": [
+                "acceleration",
+                "angular_velocity"
+              ],
+              "title": "Quantity",
+              "type": "string"
+            },
+            "unit": {
+              "enum": [
+                "m/s^2",
+                "rad/s"
+              ],
+              "title": "Unit",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "quantity",
+            "unit"
+          ],
+          "title": "ChannelSpec",
+          "type": "object"
+        },
+        "SensorProfileKind": {
+          "enum": [
+            "ACCELEROMETER_3AXIS",
+            "IMU_6AXIS"
+          ],
+          "title": "SensorProfileKind",
+          "type": "string"
+        },
+        "WearSide": {
+          "enum": [
+            "LEFT",
+            "RIGHT"
+          ],
+          "title": "WearSide",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "calibration_version": {
+          "minLength": 1,
+          "title": "Calibration Version",
+          "type": "string"
+        },
+        "channels": {
+          "items": {
+            "$ref": "#/$defs/ChannelSpec"
+          },
+          "minItems": 1,
+          "title": "Channels",
+          "type": "array"
+        },
+        "device_model": {
+          "minLength": 1,
+          "title": "Device Model",
+          "type": "string"
+        },
+        "nominal_sample_rate_hz": {
+          "exclusiveMinimum": 0,
+          "title": "Nominal Sample Rate Hz",
+          "type": "number"
+        },
+        "profile_id": {
+          "minLength": 1,
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "profile_kind": {
+          "$ref": "#/$defs/SensorProfileKind"
+        },
+        "timezone_name": {
+          "minLength": 1,
+          "title": "Timezone Name",
+          "type": "string"
+        },
+        "wear_side": {
+          "$ref": "#/$defs/WearSide"
+        }
+      },
+      "required": [
+        "profile_id",
+        "profile_kind",
+        "device_model",
+        "nominal_sample_rate_hz",
+        "channels",
+        "wear_side",
+        "timezone_name",
+        "calibration_version"
+      ],
+      "title": "SensorProfile",
+      "type": "object"
+    },
+    "SensorSegment": {
+      "$defs": {
+        "ChannelSpec": {
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "minLength": 1,
+              "title": "Name",
+              "type": "string"
+            },
+            "quantity": {
+              "enum": [
+                "acceleration",
+                "angular_velocity"
+              ],
+              "title": "Quantity",
+              "type": "string"
+            },
+            "unit": {
+              "enum": [
+                "m/s^2",
+                "rad/s"
+              ],
+              "title": "Unit",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "quantity",
+            "unit"
+          ],
+          "title": "ChannelSpec",
+          "type": "object"
+        },
+        "QualityAssessment": {
+          "additionalProperties": false,
+          "properties": {
+            "accepted_for_second_scale": {
+              "title": "Accepted For Second Scale",
+              "type": "boolean"
+            },
+            "clock_drift_ms": {
+              "minimum": 0,
+              "title": "Clock Drift Ms",
+              "type": "number"
+            },
+            "duplicate_timestamp_count": {
+              "minimum": 0,
+              "title": "Duplicate Timestamp Count",
+              "type": "integer"
+            },
+            "missing_sample_fraction": {
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Missing Sample Fraction",
+              "type": "number"
+            },
+            "out_of_order_count": {
+              "minimum": 0,
+              "title": "Out Of Order Count",
+              "type": "integer"
+            },
+            "quality_flags": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "title": "Quality Flags",
+              "type": "array"
+            },
+            "synchronization_error_ms": {
+              "minimum": 0,
+              "title": "Synchronization Error Ms",
+              "type": "number"
+            }
+          },
+          "required": [
+            "missing_sample_fraction",
+            "duplicate_timestamp_count",
+            "out_of_order_count",
+            "synchronization_error_ms",
+            "clock_drift_ms",
+            "quality_flags",
+            "accepted_for_second_scale"
+          ],
+          "title": "QualityAssessment",
+          "type": "object"
+        },
+        "SensorProfile": {
+          "additionalProperties": false,
+          "properties": {
+            "calibration_version": {
+              "minLength": 1,
+              "title": "Calibration Version",
+              "type": "string"
+            },
+            "channels": {
+              "items": {
+                "$ref": "#/$defs/ChannelSpec"
+              },
+              "minItems": 1,
+              "title": "Channels",
+              "type": "array"
+            },
+            "device_model": {
+              "minLength": 1,
+              "title": "Device Model",
+              "type": "string"
+            },
+            "nominal_sample_rate_hz": {
+              "exclusiveMinimum": 0,
+              "title": "Nominal Sample Rate Hz",
+              "type": "number"
+            },
+            "profile_id": {
+              "minLength": 1,
+              "title": "Profile Id",
+              "type": "string"
+            },
+            "profile_kind": {
+              "$ref": "#/$defs/SensorProfileKind"
+            },
+            "timezone_name": {
+              "minLength": 1,
+              "title": "Timezone Name",
+              "type": "string"
+            },
+            "wear_side": {
+              "$ref": "#/$defs/WearSide"
+            }
+          },
+          "required": [
+            "profile_id",
+            "profile_kind",
+            "device_model",
+            "nominal_sample_rate_hz",
+            "channels",
+            "wear_side",
+            "timezone_name",
+            "calibration_version"
+          ],
+          "title": "SensorProfile",
+          "type": "object"
+        },
+        "SensorProfileKind": {
+          "enum": [
+            "ACCELEROMETER_3AXIS",
+            "IMU_6AXIS"
+          ],
+          "title": "SensorProfileKind",
+          "type": "string"
+        },
+        "SensorSample": {
+          "additionalProperties": false,
+          "properties": {
+            "monotonic_timestamp_ns": {
+              "exclusiveMinimum": 0,
+              "title": "Monotonic Timestamp Ns",
+              "type": "integer"
+            },
+            "sequence": {
+              "minimum": 0,
+              "title": "Sequence",
+              "type": "integer"
+            },
+            "utc_timestamp_ns": {
+              "exclusiveMinimum": 0,
+              "title": "Utc Timestamp Ns",
+              "type": "integer"
+            },
+            "values": {
+              "items": {
+                "type": "number"
+              },
+              "minItems": 1,
+              "title": "Values",
+              "type": "array"
+            }
+          },
+          "required": [
+            "sequence",
+            "utc_timestamp_ns",
+            "monotonic_timestamp_ns",
+            "values"
+          ],
+          "title": "SensorSample",
+          "type": "object"
+        },
+        "StorageLayer": {
+          "enum": [
+            "RAW_IMMUTABLE",
+            "NORMALIZED_DERIVED"
+          ],
+          "title": "StorageLayer",
+          "type": "string"
+        },
+        "WearSide": {
+          "enum": [
+            "LEFT",
+            "RIGHT"
+          ],
+          "title": "WearSide",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "properties": {
+        "device_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Device Id",
+          "type": "string"
+        },
+        "parent_segment_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Segment Id"
+        },
+        "participant_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Participant Id",
+          "type": "string"
+        },
+        "profile": {
+          "$ref": "#/$defs/SensorProfile"
+        },
+        "quality": {
+          "$ref": "#/$defs/QualityAssessment"
+        },
+        "raw_immutable": {
+          "title": "Raw Immutable",
+          "type": "boolean"
+        },
+        "samples": {
+          "items": {
+            "$ref": "#/$defs/SensorSample"
+          },
+          "minItems": 2,
+          "title": "Samples",
+          "type": "array"
+        },
+        "segment_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Segment Id",
+          "type": "string"
+        },
+        "session_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "site_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Site Id",
+          "type": "string"
+        },
+        "source_relative_path": {
+          "minLength": 1,
+          "title": "Source Relative Path",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "storage_layer": {
+          "$ref": "#/$defs/StorageLayer"
+        },
+        "withdrawal_locator": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Withdrawal Locator",
+          "type": "string"
+        }
+      },
+      "required": [
+        "segment_id",
+        "storage_layer",
+        "participant_id",
+        "site_id",
+        "device_id",
+        "session_id",
+        "profile",
+        "started_at",
+        "source_relative_path",
+        "source_sha256",
+        "raw_immutable",
+        "withdrawal_locator",
+        "quality",
+        "samples"
+      ],
+      "title": "SensorSegment",
+      "type": "object"
+    },
+    "WithdrawalIndexEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "access_scope": {
+          "const": "DATA_CONTROLLER_ONLY",
+          "default": "DATA_CONTROLLER_ONLY",
+          "title": "Access Scope",
+          "type": "string"
+        },
+        "event_ids": {
+          "items": {
+            "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+            "type": "string"
+          },
+          "title": "Event Ids",
+          "type": "array"
+        },
+        "participant_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Participant Id",
+          "type": "string"
+        },
+        "restricted_mapping_reference": {
+          "minLength": 1,
+          "title": "Restricted Mapping Reference",
+          "type": "string"
+        },
+        "segment_ids": {
+          "items": {
+            "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+            "type": "string"
+          },
+          "title": "Segment Ids",
+          "type": "array"
+        },
+        "withdrawal_locator": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Withdrawal Locator",
+          "type": "string"
+        }
+      },
+      "required": [
+        "withdrawal_locator",
+        "participant_id",
+        "segment_ids",
+        "event_ids",
+        "restricted_mapping_reference"
+      ],
+      "title": "WithdrawalIndexEntry",
+      "type": "object"
+    }
+  },
+  "title": "提前风险研究统一数据合同"
+}

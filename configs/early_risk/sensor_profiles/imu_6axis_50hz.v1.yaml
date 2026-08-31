@@ -1,0 +1,14 @@
+profile_id: imu-6axis-50hz-v1
+profile_kind: IMU_6AXIS
+device_model: RESEARCH_FIXTURE_IMU
+nominal_sample_rate_hz: 50
+channels:
+  - {name: ax, quantity: acceleration, unit: 'm/s^2'}
+  - {name: ay, quantity: acceleration, unit: 'm/s^2'}
+  - {name: az, quantity: acceleration, unit: 'm/s^2'}
+  - {name: gx, quantity: angular_velocity, unit: 'rad/s'}
+  - {name: gy, quantity: angular_velocity, unit: 'rad/s'}
+  - {name: gz, quantity: angular_velocity, unit: 'rad/s'}
+wear_side: LEFT
+timezone_name: Asia/Shanghai
+calibration_version: fixture-calibration-v1

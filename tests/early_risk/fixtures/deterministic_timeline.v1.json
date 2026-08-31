@@ -1,0 +1,45 @@
+{
+  "fixture_id": "early-risk-deterministic-timeline-v1",
+  "version": "1.0.0",
+  "evidence_level": "E0",
+  "prediction_evidence": false,
+  "timeline_samples": [
+    {"participant_id": "fixture-p01", "timestamp_ms": 10000, "values": [0.1, 0.0, 9.8]},
+    {"participant_id": "fixture-p01", "timestamp_ms": 12000, "values": [0.2, 0.1, 9.7]},
+    {"participant_id": "fixture-p01", "timestamp_ms": 14000, "values": [0.4, 0.2, 9.6]},
+    {"participant_id": "fixture-p01", "timestamp_ms": 16000, "values": [0.5, 0.3, 9.5]},
+    {"participant_id": "fixture-p01", "timestamp_ms": 18000, "values": [0.7, 0.4, 9.4]},
+    {"participant_id": "fixture-p01", "timestamp_ms": 20000, "values": [8.0, 4.0, 2.0]},
+    {"participant_id": "fixture-p01", "timestamp_ms": 22000, "values": [12.0, 6.0, 1.0]}
+  ],
+  "events": [
+    {"event_id": "fixture-e01", "participant_id": "fixture-p01", "t_instability_ms": 20000, "t_impact_ms": 22000},
+    {"event_id": "fixture-e02", "participant_id": "fixture-p02", "t_instability_ms": 30000, "t_impact_ms": null}
+  ],
+  "alerts": [
+    {"alert_id": "fixture-a01", "participant_id": "fixture-p01", "perceivable_ms": 14000, "score": 0.9, "suppressed": false},
+    {"alert_id": "fixture-a02", "participant_id": "fixture-p01", "perceivable_ms": 15000, "score": 0.85, "suppressed": false},
+    {"alert_id": "fixture-a03", "participant_id": "fixture-p01", "perceivable_ms": 50000, "score": 0.7, "suppressed": false},
+    {"alert_id": "fixture-a04", "participant_id": "fixture-p02", "perceivable_ms": 60000, "score": 0.82, "suppressed": true, "suppression_reason": "工程夹具：设备松动"},
+    {"alert_id": "fixture-a05", "participant_id": "fixture-p02", "perceivable_ms": 30500, "score": 0.8, "suppressed": false}
+  ],
+  "observations": [
+    {"participant_id": "fixture-p01", "observed_ms": 86400000, "evaluable_ms": 82080000},
+    {"participant_id": "fixture-p02", "observed_ms": 86400000, "evaluable_ms": 77760000}
+  ],
+  "forecasts": [
+    {"forecast_id": "fixture-f01", "participant_id": "fixture-p01", "score": 0.9, "outcome": 1},
+    {"forecast_id": "fixture-f02", "participant_id": "fixture-p02", "score": 0.8, "outcome": 1},
+    {"forecast_id": "fixture-f03", "participant_id": "fixture-p01", "score": 0.6, "outcome": 0},
+    {"forecast_id": "fixture-f04", "participant_id": "fixture-p02", "score": 0.2, "outcome": 0}
+  ],
+  "policy_inputs": [
+    {"timestamp_ms": 1000, "score": 0.2, "evaluable": true},
+    {"timestamp_ms": 2000, "score": 0.85, "evaluable": true},
+    {"timestamp_ms": 3000, "score": 0.9, "evaluable": true},
+    {"timestamp_ms": 4000, "score": 0.95, "evaluable": true},
+    {"timestamp_ms": 5000, "score": 0.95, "evaluable": true},
+    {"timestamp_ms": 9000, "score": 0.9, "evaluable": false},
+    {"timestamp_ms": 10000, "score": 0.9, "evaluable": true, "suppression_reason": "工程夹具：摘表"}
+  ]
+}
