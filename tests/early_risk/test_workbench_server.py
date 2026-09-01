@@ -125,6 +125,19 @@ def test_new_data_analysis_runs_real_models_without_persisting_upload() -> None:
     assert result["analysis"]["early_risk_model"]["status"] == "COMPLETED"
     assert len(result["analysis"]["early_risk_model"]["timeline"]) > 1
     assert result["analysis"]["activity_model"]["status"] == "INSUFFICIENT_DURATION"
+    assert [item["id"] for item in result["pipeline"]] == [
+        "validate",
+        "normalize",
+        "activity",
+        "fall",
+        "risk",
+        "explain",
+    ]
+    assert all(item["detail"] for item in result["pipeline"])
+    interpretation = result["analysis"]["interpretation"]
+    assert len(interpretation["model_reasoning"]) == 3
+    assert "不会相加" in interpretation["decision_rule"]
+    assert interpretation["scope_note"]
     assert result["truth_boundary"]["self_collected_validation_complete"] is False
     assert result["truth_boundary"]["external_notification_sent"] is False
 
@@ -153,10 +166,12 @@ def test_policy_simulation_is_deterministic_and_never_notifies() -> None:
 
 
 def test_case_evidence_downsampling_is_bounded_and_keeps_last_sample() -> None:
-    indices = _downsample_indices(631)
+    indices = _downsample_indices(631, (217, 408))
 
     assert indices[0] == 0
     assert indices[-1] == 630
+    assert 217 in indices
+    assert 408 in indices
     assert len(indices) <= 241
     assert tuple(sorted(set(indices))) == indices
 
@@ -170,7 +185,35 @@ def test_routine_evidence_uses_fixed_events_instead_of_fake_waveform() -> None:
     assert evidence["profile"]["event_count"] == 551
     assert evidence["profile"]["displayed_day_count"] == 14
     assert len(evidence["days"]) == 14
+    assert [item["id"] for item in evidence["pipeline"]] == [
+        "validate",
+        "normalize",
+        "activity",
+        "fall",
+        "risk",
+        "explain",
+    ]
+    assert evidence["analysis"]["routine_model"]["status"] == "COMPLETED"
+    assert evidence["analysis"]["fall_model"]["status"] == "NOT_APPLICABLE"
+    assert evidence["analysis"]["early_risk_model"]["status"] == "NOT_APPLICABLE"
+    assert len(evidence["analysis"]["interpretation"]["model_reasoning"]) == 3
     assert "不伪造波形" in " ".join(evidence["limitations"])
+
+
+def test_public_sensor_cases_share_pipeline_and_run_only_applicable_models() -> None:
+    fall = build_case_evidence("weda-f01-u01_r01")
+    activity = build_case_evidence("capture24-walking-p123")
+    expected_steps = ["validate", "normalize", "activity", "fall", "risk", "explain"]
+
+    assert [item["id"] for item in fall["pipeline"]] == expected_steps
+    assert [item["id"] for item in activity["pipeline"]] == expected_steps
+    assert fall["analysis"]["fall_model"]["status"] == "COMPLETED"
+    assert fall["analysis"]["early_risk_model"]["status"] == "COMPLETED"
+    assert activity["analysis"]["activity_model"]["status"] == "COMPLETED"
+    assert activity["analysis"]["fall_model"]["status"] == "NOT_APPLICABLE"
+    assert activity["analysis"]["early_risk_model"]["status"] == "NOT_APPLICABLE"
+    assert activity["analysis"]["activity_model"]["probabilities"]
+    assert "未运行不等于" in activity["analysis"]["interpretation"]["decision_rule"]
 
 
 @pytest.mark.parametrize(
@@ -224,6 +267,9 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
             assert "操作模拟手表" in html
             assert "跌倒特征匹配度" in html
             assert "结果分析" in html
+            assert "共用六步判断流程" in html
+            assert "各模型如何参与判断" in html
+            assert "只有数据来源不同" in html
             assert "动作示意、实际信号与规则对照" in html
             assert "示意图不作为判断证据" in html
             assert "格式化判断依据" in html
@@ -236,7 +282,9 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
 
         with urlopen(f"{base_url}/app.js", timeout=5) as response:  # noqa: S310
             script = response.read().decode("utf-8")
-            assert "为什么显示“检测到跌倒动作”" in script
+            assert "ANALYSIS_PIPELINE_STEPS" in script
+            assert "检查输入数据" in script
+            assert "模型结果分开计算" in script
             assert "需要复核" in script
             assert "不是现实跌倒概率" in script
             assert "/api/case-evidence/" in script

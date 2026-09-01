@@ -158,8 +158,8 @@ const activityCases = [
   axes: "3 轴加速度",
   window: "20 秒窗口",
   model: "腕部活动识别",
-  metricLabel: "案例输入规格",
-  metricHelp: "显示这组案例的采样频率和连续动作窗口长度；当前没有逐样本识别结果。",
+  metricLabel: "活动模型最高输出值",
+  metricHelp: "表示四类活动结果中排名第一的模型输出值；用于类别排序，不是安全或跌倒概率。",
   score: null,
   alarms: null,
 }));
@@ -215,8 +215,10 @@ const ids = [
   "pause-button", "reset-button", "playback-status", "result-state", "selected-truth",
   "selected-case-id", "selected-case-title", "selected-case-note", "result-metric-label",
   "result-metric-value", "result-meter-fill", "result-metric-caption", "result-analysis-title",
-  "result-analysis-copy", "detection-pipeline",
-  "pipeline-input", "pipeline-window", "pipeline-model", "pipeline-review", "external-count",
+  "result-analysis-summary", "result-analysis-activity", "result-analysis-fall", "result-analysis-risk",
+  "result-analysis-evidence-list", "result-model-reasoning", "result-analysis-synthesis",
+  "result-analysis-conclusion", "result-analysis-rule", "result-analysis-scope", "detection-pipeline",
+  "case-pipeline-state", "external-count",
   "evidence", "evidence-intro", "evidence-badge", "evidence-loading", "evidence-error",
   "evidence-error-copy", "evidence-content", "motion-figure", "motion-title", "motion-caption",
   "chart-kicker", "chart-title", "chart-meta", "evidence-chart", "evidence-legend",
@@ -227,6 +229,7 @@ const ids = [
   "gyroscope-unit", "upload-error", "upload-error-copy", "upload-submit", "upload-process-title",
   "upload-pipeline", "upload-result", "upload-result-title", "upload-result-state", "upload-quality", "upload-activity",
   "upload-fall", "upload-persistence", "upload-evidence-list", "upload-conclusion", "upload-risk-meta",
+  "upload-analysis-summary", "upload-model-reasoning", "upload-analysis-rule", "upload-analysis-scope",
   "upload-risk-chart", "upload-risk-summary", "upload-signal-chart", "upload-waveform-meta", "upload-waveform-summary",
   "case-risk-panel", "case-risk-chart", "case-risk-anchor",
   "case-risk-snapshots", "case-risk-summary",
@@ -244,6 +247,65 @@ function createElement(tagName, options = {}) {
   }
   return element;
 }
+
+const ANALYSIS_PIPELINE_STEPS = [
+  { id: "validate", label: "检查输入数据", pending: "等待核对数据来源、通道和完整性。" },
+  { id: "normalize", label: "统一数据标准", pending: "等待核对采样率、单位或事件时间。" },
+  { id: "activity", label: "识别动作或规律", pending: "等待运行满足输入条件的活动或规律模型。" },
+  { id: "fall", label: "筛查跌倒动作", pending: "等待检查连续六轴失稳与撞击特征。" },
+  { id: "risk", label: "分析提前风险", pending: "等待逐秒核对 1、2、3 秒代理风险线索。" },
+  { id: "explain", label: "生成结果分析", pending: "等待汇总实测依据、模型推导和适用边界。" },
+];
+
+const PIPELINE_STATUS_COPY = {
+  PENDING: "等待",
+  RUNNING: "运行中",
+  COMPLETED: "已完成",
+  INSUFFICIENT_DURATION: "数据不足",
+  NOT_APPLICABLE: "未运行",
+  FAILED: "未完成",
+};
+
+function normalizedPipeline(pipeline = []) {
+  const byId = new Map((Array.isArray(pipeline) ? pipeline : []).map((item) => [item.id, item]));
+  return ANALYSIS_PIPELINE_STEPS.map((step) => {
+    const received = byId.get(step.id) || {};
+    return {
+      ...step,
+      detail: received.detail || step.pending,
+      status: received.status || "PENDING",
+    };
+  });
+}
+
+function renderSharedPipeline(container, pipeline = [], options = {}) {
+  const { activeIndex = -1, final = false } = options;
+  const items = normalizedPipeline(pipeline);
+  const nodes = items.map((item, index) => {
+    let status = "PENDING";
+    if (final) status = item.status;
+    else if (index < activeIndex) status = item.status === "PENDING" ? "COMPLETED" : item.status;
+    else if (index === activeIndex) status = "RUNNING";
+    const detail = !final && (activeIndex < 0 || index > activeIndex) ? item.pending : item.detail;
+    const row = createElement("li", {
+      className: `pipeline-status--${status.toLowerCase().replaceAll("_", "-")}`,
+      attrs: { "data-pipeline-step": item.id, "data-status": status },
+    });
+    const number = createElement("span", { text: String(index + 1).padStart(2, "0") });
+    const copy = createElement("div");
+    copy.append(
+      createElement("strong", { text: item.label }),
+      createElement("small", { text: detail }),
+    );
+    const badge = createElement("em", { text: PIPELINE_STATUS_COPY[status] || "等待" });
+    row.append(number, copy, badge);
+    return row;
+  });
+  container.replaceChildren(...nodes);
+}
+
+renderSharedPipeline(elements["upload-pipeline"]);
+renderSharedPipeline(elements["detection-pipeline"]);
 
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
@@ -287,15 +349,15 @@ function evidenceMethod(item) {
     return "把连续 4 秒六轴腕部窗口作为整体，与固定跌倒模型学习到的动作模式比较。";
   }
   if (item.kind === "activity") {
-    return "并列复核 20 秒三轴腕部波形与已登记活动标签；当前页不把标签冒充新模型成绩。";
+    return "把连续 20 秒三轴腕部加速度送入活动识别模型，再把最高输出类别与登记标签并列核对。";
   }
-  return "比较同一合成档案每天用餐、午睡和散步的时间、次数与持续时长。";
+  return "运行生活规律模型，逐日比较同一合成档案中用餐、午睡和散步的时间、次数与持续时长。";
 }
 
 function pendingEvidenceConclusion(item) {
   if (item.kind === "fall" || item.kind === "adl") return "开始检测后，结合保存匹配度与跌倒动作记录生成。";
-  if (item.kind === "activity") return "开始检测后，说明已登记活动类别与输入是否对应。";
-  return "开始检测后，说明这组固定种子规律输入能支持什么。";
+  if (item.kind === "activity") return "开始检测后，显示活动模型的实际输出以及它是否与登记类别一致。";
+  return "开始检测后，显示规律模型实际标记了多少项规则偏离。";
 }
 
 function completedEvidenceConclusion(item, result) {
@@ -625,6 +687,9 @@ function showEvidenceLoading(item) {
   elements["evidence-badge"].className = "evidence-badge";
   elements["evidence-badge"].textContent = "正在核对";
   elements["evidence-intro"].textContent = `正在读取 ${item.id} 对应的本机依据，不生成随机曲线。`;
+  elements["case-pipeline-state"].textContent = "正在读取案例";
+  elements["playback-status"].textContent = `正在读取 ${item.id} 的实际数据，完成后可以开始检测。`;
+  renderSharedPipeline(elements["detection-pipeline"]);
 }
 
 function showEvidenceError(item, error) {
@@ -637,6 +702,14 @@ function showEvidenceError(item, error) {
   elements["evidence-badge"].className = "evidence-badge is-error";
   elements["evidence-badge"].textContent = "依据不可用";
   elements["evidence-intro"].textContent = `${item.id} 的检测流程仍可演示，但缺失依据时不能把图表当作证据。`;
+  elements["case-pipeline-state"].textContent = "实际依据不可用";
+  elements["playback-status"].textContent = `${item.id} 的实际依据读取失败，本次不能开始检测。`;
+  const failed = normalizedPipeline().map((step, index) => ({
+    ...step,
+    status: index === 0 ? "FAILED" : "PENDING",
+    detail: index === 0 ? "没有读取到可核验的本机案例文件。" : step.pending,
+  }));
+  renderSharedPipeline(elements["detection-pipeline"], failed, { final: true });
 }
 
 function renderEvidence(item, evidence) {
@@ -650,9 +723,14 @@ function renderEvidence(item, evidence) {
   elements["motion-title"].textContent = motion.title;
   elements["motion-caption"].textContent = motion.caption;
   elements["evidence-method"].textContent = evidenceMethod(item);
-  elements["evidence-result"].textContent = state.playbackStep >= 3
+  elements["evidence-result"].textContent = state.playbackStep >= 5
     ? completedEvidenceConclusion(item, elements["result-state"].textContent)
     : pendingEvidenceConclusion(item);
+  elements["case-pipeline-state"].textContent = "数据已核对 · 等待运行";
+  if (state.playbackStep < 0) {
+    elements["playback-status"].textContent = `已选择 ${item.id}，实际数据已核对，可以开始检测。`;
+  }
+  renderSharedPipeline(elements["detection-pipeline"], evidence.pipeline);
 
   if (evidence.evidence_type === "sensor_waveform") {
     const seconds = (evidence.stream.duration_ms / 1000).toFixed(1);
@@ -725,58 +803,85 @@ function formatPercent(value) {
   return `${(Number(value) * 100).toFixed(1)}%`;
 }
 
-function pendingResultAnalysis() {
-  return {
-    title: "等待本次检测",
-    copy: "开始检测后，这里会用一段话说明系统看到了什么、为什么给出这个结果，以及这个结果不能说明什么。",
-  };
+function modelStatusLabel(status) {
+  return PIPELINE_STATUS_COPY[status] || "状态未知";
 }
 
-function completedResultAnalysis(item) {
-  const generated = state.selectedEvidence?.analysis?.interpretation;
-  if ((item.kind === "fall" || item.kind === "adl") && generated) {
-    const evidenceCopy = generated.evidence
-      .map((entry) => String(entry).trim().replace(/[。；]+$/u, ""))
-      .join("；");
-    return {
-      title: `${generated.current_activity}：系统如何得出结论`,
-      copy: `${evidenceCopy}。最终结论：${generated.conclusion}`,
-    };
-  }
-  if (item.kind === "fall" && item.alarms > 0) {
-    return {
-      title: "为什么显示“检测到跌倒动作”",
-      copy: `参与者完成的是受控模拟跌倒。系统把 ${item.window}内的 ${item.axes} 数据作为整体进行比较，跌倒特征匹配度为 ${formatPercent(item.score)}，保存回放记录了 ${item.alarms} 段跌倒动作，因此给出这一结果。当前资料没有逐轴原因说明，不能进一步断定具体哪个方向或身体部位“哪里不对”；这也不是现实跌倒概率或提前预测。`,
-    };
-  }
-  if (item.kind === "fall") {
-    return {
-      title: "为什么这次需要人工复核",
-      copy: `参与者完成的是受控模拟跌倒，但保存回放没有记录到足够明确的跌倒动作，因此这次可能被模型漏掉。跌倒特征匹配度 ${formatPercent(item.score)} 只表示整体动作相似程度，不能单独代替检测结果。`,
-    };
-  }
-  if (item.kind === "adl" && item.alarms > 0) {
-    return {
-      title: "为什么属于疑似误判",
-      copy: `参与者完成的是受控日常活动，并不是跌倒。系统认为这段整体腕部动作与受控跌倒动作较相似，匹配度为 ${formatPercent(item.score)}，并保存了 ${item.alarms} 段跌倒动作记录，因此这次应当标为疑似误判并交给人工复核，不能据此报警。`,
-    };
-  }
-  if (item.kind === "adl") {
-    return {
-      title: "为什么未给出跌倒提示",
-      copy: `参与者完成的是受控日常活动。保存回放没有把这段动作记录为跌倒动作，匹配度为 ${formatPercent(item.score)}，因此本次未给出跌倒提示；这只说明该案例的保存结果，不等于现实环境中的安全结论。`,
-    };
-  }
-  if (item.kind === "activity") {
-    return {
-      title: "这次活动案例能说明什么",
-      copy: `这是一段参与者自由生活中的腕部活动案例，输入规格为 ${item.rate}、${item.axes}、${item.window}。当前前端只确认案例已经登记，尚未接入逐样本识别结果，因此不能断定这段动作最终被识别成哪一种活动。`,
-    };
-  }
-  return {
-    title: "这次规律案例能说明什么",
-    copy: "这是程序生成的 100 天生活规律案例，用来演示用餐、午睡和散步是否偏离既定规律。它不是参与者的生活记录，也不是医学风险判断。",
-  };
+function renderModelReasoning(container, reasoning = []) {
+  const items = reasoning.length
+    ? reasoning
+    : [{
+        model: "等待模型",
+        plain_name: "检测开始后会显示模型的中文作用",
+        status: "PENDING",
+        finding: "尚未生成实际模型结果。",
+        role: "没有运行的模型不会参与结论。",
+      }];
+  container.replaceChildren(...items.map((item, index) => {
+    const row = createElement("li");
+    const heading = createElement("div");
+    heading.append(
+      createElement("span", { text: String(index + 1).padStart(2, "0") }),
+      createElement("strong", { text: item.model }),
+      createElement("em", {
+        className: `model-status model-status--${String(item.status || "PENDING").toLowerCase().replaceAll("_", "-")}`,
+        text: modelStatusLabel(item.status),
+      }),
+    );
+    row.append(
+      heading,
+      createElement("p", { className: "model-plain-name", text: item.plain_name }),
+      createElement("p", { className: "model-finding", text: item.finding }),
+      createElement("small", { text: item.role }),
+    );
+    return row;
+  }));
+}
+
+function renderReasonedAnalysis(target, interpretation) {
+  target.summary.textContent = interpretation.conclusion;
+  target.evidence.replaceChildren(
+    ...interpretation.evidence.map((entry) => createElement("li", { text: entry })),
+  );
+  renderModelReasoning(target.models, interpretation.model_reasoning);
+  target.conclusion.textContent = interpretation.conclusion;
+  target.rule.textContent = interpretation.decision_rule;
+  target.scope.textContent = interpretation.scope_note;
+}
+
+function renderPendingCaseAnalysis(mode = "pending") {
+  const running = mode === "running";
+  elements["result-analysis-title"].textContent = running ? "正在按六步流程形成结论" : "等待本次检测";
+  elements["result-analysis-summary"].textContent = running
+    ? "系统正在依次核对输入、模型结果和波形依据；完成前不提前写结论。"
+    : "开始检测后，这里会先给结论，再列出实测依据、模型推导过程和适用边界。";
+  elements["result-analysis-activity"].textContent = running ? "正在识别" : "等待运行";
+  elements["result-analysis-fall"].textContent = running ? "正在筛查" : "等待运行";
+  elements["result-analysis-risk"].textContent = running ? "正在分析" : "等待运行";
+  elements["result-analysis-evidence-list"].replaceChildren(
+    createElement("li", { text: running ? "正在读取实际输入和模型数值。" : "检测完成后显示实际波形数值和模型窗口结果。" }),
+  );
+  renderModelReasoning(elements["result-model-reasoning"]);
+  elements["result-analysis-synthesis"].textContent = running ? "正在交叉核对，尚未形成结论。" : "等待实际模型结果。";
+  elements["result-analysis-conclusion"].textContent = running ? "尚未完成。" : "等待本次检测。";
+  elements["result-analysis-rule"].textContent = "模型结果分开计算，不会相加成一个“综合风险分”。";
+  elements["result-analysis-scope"].textContent = "没有实际输入或未运行的模型，不会被写成已经排除风险。";
+}
+
+function renderCompletedCaseAnalysis(interpretation) {
+  elements["result-analysis-title"].textContent = "结论先看";
+  elements["result-analysis-activity"].textContent = interpretation.current_activity;
+  elements["result-analysis-fall"].textContent = interpretation.fall_screening;
+  elements["result-analysis-risk"].textContent = interpretation.risk_screening;
+  elements["result-analysis-synthesis"].textContent = interpretation.synthesis;
+  renderReasonedAnalysis({
+    summary: elements["result-analysis-summary"],
+    evidence: elements["result-analysis-evidence-list"],
+    models: elements["result-model-reasoning"],
+    conclusion: elements["result-analysis-conclusion"],
+    rule: elements["result-analysis-rule"],
+    scope: elements["result-analysis-scope"],
+  }, interpretation);
 }
 
 function setLoading(isLoading) {
@@ -928,16 +1033,12 @@ function selectCase(caseId, announce = true) {
   elements["result-metric-value"].textContent = "—";
   elements["result-metric-caption"].textContent = selected.metricHelp;
   elements["result-meter-fill"].style.width = "0%";
-  const pendingAnalysis = pendingResultAnalysis();
-  elements["result-analysis-title"].textContent = pendingAnalysis.title;
-  elements["result-analysis-copy"].textContent = pendingAnalysis.copy;
+  renderPendingCaseAnalysis();
 
   elements["watch-case-index"].textContent = `案例 ${String(catalogIndex).padStart(3, "0")} / 105`;
   elements["watch-case-label"].textContent = selected.source;
-  elements["pipeline-input"].textContent = `${selected.sourceLabel} · ${selected.truthLabel}`;
-  elements["pipeline-window"].textContent = `${selected.rate} · ${selected.axes} · ${selected.window}`;
-  elements["pipeline-model"].textContent = `${selected.model}等待运行`;
-  elements["pipeline-review"].textContent = "外部通知保持关闭";
+  elements["case-pipeline-state"].textContent = "正在读取案例";
+  renderSharedPipeline(elements["detection-pipeline"]);
 
   const footer = document.querySelector(".watch-screen__footer");
   if (footer) {
@@ -951,124 +1052,127 @@ function selectCase(caseId, announce = true) {
   loadCaseEvidence(selected);
 }
 
-function stepCopy(step, item) {
-  const copies = [
-    ["读取腕部数据", `正在读取 ${item.sourceLabel}`],
-    ["整理连续窗口", `${item.rate} · ${item.window}`],
-    ["模型独立判断", `正在运行 ${item.model}`],
-    ["结果复核", "核对来源、真实性和通知边界"],
-  ];
-  return copies[step] || copies[0];
+function stepCopy(step) {
+  const item = normalizedPipeline(state.selectedEvidence?.pipeline)[step] || ANALYSIS_PIPELINE_STEPS[0];
+  return [item.label, item.detail || item.pending];
 }
 
-function updatePipeline(step) {
-  const items = elements["detection-pipeline"].querySelectorAll("li");
-  items.forEach((item, index) => {
-    item.classList.toggle("is-active", index === step);
-    item.classList.toggle("is-complete", index < step || (step === 3 && index === 3));
-  });
+function updatePipeline(step, final = false) {
+  renderSharedPipeline(
+    elements["detection-pipeline"],
+    state.selectedEvidence?.pipeline,
+    { activeIndex: step, final },
+  );
 }
 
 function startPlayback() {
   if (!state.selectedCase || state.playbackTimer) return;
-  if (state.playbackStep >= 3) resetPlayback(false);
+  if (!state.selectedEvidence?.analysis || !state.selectedEvidence?.pipeline) {
+    elements["playback-status"].textContent = "正在读取并核对案例实际数据，请稍候再开始。";
+    return;
+  }
+  if (state.playbackStep >= 5) resetPlayback(false);
   elements["run-button"].disabled = true;
   elements["pause-button"].disabled = false;
   elements["run-button"].querySelector("span").textContent = "检测进行中";
   elements["watch-device"].dataset.state = "running";
   elements["result-state"].className = "result-state result-state--running";
   elements["result-state"].textContent = "检测中";
-  elements["result-analysis-title"].textContent = "正在整理判断依据";
-  elements["result-analysis-copy"].textContent = "检测完成后，这里会把案例类型、动作匹配程度和需要保留的限制合成一段通俗说明。";
+  elements["case-pipeline-state"].textContent = "六步流程运行中";
+  renderPendingCaseAnalysis("running");
   elements["evidence-result"].textContent = "正在把案例结果与已核验输入依据并列复核。";
 
   const advance = () => {
     state.playbackStep += 1;
-    if (state.playbackStep > 3) {
+    if (state.playbackStep > 5) {
       finishPlayback();
       return;
     }
-    const [label, detail] = stepCopy(state.playbackStep, state.selectedCase);
+    const [label, detail] = stepCopy(state.playbackStep);
     updatePipeline(state.playbackStep);
     elements["watch-stage-label"].textContent = label;
     elements["watch-result"].textContent = detail;
-    elements["watch-score-text"].textContent = `${Math.min(100, (state.playbackStep + 1) * 25)}%`;
-    elements["watch-score-fill"].style.width = `${Math.min(100, (state.playbackStep + 1) * 25)}%`;
-    elements["playback-status"].textContent = `步骤 ${state.playbackStep + 1} / 4：${detail}`;
+    const progress = Math.min(100, Math.round(((state.playbackStep + 1) / 6) * 100));
+    elements["watch-score-text"].textContent = `${progress}%`;
+    elements["watch-score-fill"].style.width = `${progress}%`;
+    elements["playback-status"].textContent = `步骤 ${state.playbackStep + 1} / 6：${detail}`;
   };
 
   advance();
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  state.playbackTimer = window.setInterval(advance, reducedMotion ? 900 : 650);
+  state.playbackTimer = window.setInterval(advance, reducedMotion ? 800 : 560);
 }
 
 function finishPlayback() {
   stopPlayback();
   const item = state.selectedCase;
+  const live = state.selectedEvidence.analysis;
+  const interpretation = live.interpretation;
   let result = "案例输入已就绪";
   let resultTone = "info";
   let metricValue = `${item.rate} · ${item.window}`;
-  let caption = "该类别已登记；完整逐样本回放将在后端接入阶段完成。";
+  let caption = "本次只显示实际运行且满足输入条件的模型结果。";
   let watchState = "complete";
+  let meterWidth = 100;
 
   if (item.kind === "fall" || item.kind === "adl") {
-    const live = state.selectedEvidence?.analysis;
-    if (live) {
-      const fall = live.fall_model;
-      const interpretation = live.interpretation;
-      result = fall.screening;
-      metricValue = fall.max_score === null ? "数据不足" : Number(fall.max_score).toFixed(3);
-      caption = fall.detail;
-      if (fall.candidate_windows?.length) {
-        resultTone = "candidate";
-        watchState = "candidate";
-      } else if (interpretation.review_required) {
-        resultTone = "warning";
-        watchState = "warning";
-      } else {
-        resultTone = "clear";
-      }
+    const fall = live.fall_model;
+    result = fall.screening;
+    metricValue = fall.max_score === null ? "数据不足" : Number(fall.max_score).toFixed(3);
+    caption = fall.detail;
+    meterWidth = Number.isFinite(Number(fall.max_score)) ? Number(fall.max_score) * 100 : 0;
+    if (fall.candidate_windows?.length) {
+      resultTone = "candidate";
+      watchState = "candidate";
+    } else if (interpretation.review_required) {
+      result = "需要复核";
+      resultTone = "warning";
+      watchState = "warning";
     } else {
-      metricValue = formatPercent(item.score);
-      result = item.alarms > 0 ? "保存结果需要复核" : "保存结果未发现跌倒动作";
-      resultTone = item.alarms > 0 ? "warning" : "clear";
-      watchState = item.alarms > 0 ? "warning" : "complete";
-      caption = "本机模型响应暂时不可用，因此只显示已保存摘要，不把它冒充本次计算。";
+      resultTone = "clear";
     }
   } else if (item.kind === "activity") {
-    result = "活动案例已就绪";
-    metricValue = "20 Hz × 20 秒";
-    caption = "当前页只完成前端交互预览；活动窗口的逐样本回放仍由产品接口提供。";
+    const activity = live.activity_model;
+    const topOutput = activity.probabilities?.[activity.label_code];
+    result = interpretation.review_required ? "活动结果需要复核" : "活动识别完成";
+    metricValue = Number.isFinite(Number(topOutput)) ? Number(topOutput).toFixed(3) : "—";
+    caption = `${activity.label}在四类输出中排名第一；与登记类别${activity.matches_registered_label ? "一致" : "不一致"}。`;
+    meterWidth = Number.isFinite(Number(topOutput)) ? Number(topOutput) * 100 : 0;
+    resultTone = interpretation.review_required ? "warning" : "clear";
+    watchState = interpretation.review_required ? "warning" : "complete";
   } else if (item.kind === "routine") {
-    result = "规律规则已登记";
-    metricValue = "100 天 / 551 条";
-    caption = "固定种子合成生活规律，只用于演示个人规律模块的输入与分支。";
+    const routine = live.routine_model;
+    result = "规律对照完成";
+    metricValue = `${routine.deviation_count} / ${routine.assessment_count} 项`;
+    caption = "表示偏离合成规律范围的规则项数量，不是健康或跌倒风险分。";
+    meterWidth = routine.assessment_count ? (routine.deviation_count / routine.assessment_count) * 100 : 0;
+    resultTone = "info";
   }
 
   elements["watch-device"].dataset.state = watchState;
   elements["watch-stage-label"].textContent = "检测完成";
-  elements["watch-result"].textContent = result;
-  const liveRiskReady = Boolean(state.selectedEvidence?.analysis?.early_risk_model?.timeline?.length);
+  elements["watch-result"].textContent = interpretation.current_activity;
+  const liveRiskReady = Boolean(live.early_risk_model?.timeline?.length);
   elements["watch-score-fill"].style.width = "100%";
-  elements["watch-score-text"].textContent = liveRiskReady ? "1 / 2 / 3 秒已计算" : item.score === null ? "案例就绪" : "判断完成";
+  elements["watch-score-text"].textContent = liveRiskReady ? "1 / 2 / 3 秒已计算" : "判断完成";
   elements["result-state"].className = `result-state result-state--${resultTone}`;
   elements["result-state"].textContent = result;
   elements["result-metric-value"].textContent = metricValue;
-  const liveFallScore = state.selectedEvidence?.analysis?.fall_model?.max_score;
-  elements["result-meter-fill"].style.width = Number.isFinite(Number(liveFallScore)) ? `${Math.max(3, Number(liveFallScore) * 100)}%` : "100%";
+  elements["result-meter-fill"].style.width = `${Math.max(3, Math.min(100, meterWidth))}%`;
   elements["result-metric-caption"].textContent = caption;
-  const analysis = completedResultAnalysis(item);
-  elements["result-analysis-title"].textContent = analysis.title;
-  elements["result-analysis-copy"].textContent = analysis.copy;
-  elements["evidence-result"].textContent = state.selectedEvidence?.analysis?.interpretation?.conclusion || completedEvidenceConclusion(item, result);
-  elements["pipeline-model"].textContent = liveRiskReady ? "跌倒筛查与 1 / 2 / 3 秒模型已真实运行" : `${item.model}已完成独立判断`;
-  elements["pipeline-review"].textContent = "结果已显示 · 外部通知 0 次";
-  elements["playback-status"].textContent = `${result}。六轴案例已在本次请求中真实计算，外部通知保持 0 次。`;
+  renderCompletedCaseAnalysis(interpretation);
+  elements["evidence-result"].textContent = interpretation.conclusion;
+  const skippedCount = normalizedPipeline(state.selectedEvidence.pipeline)
+    .filter((step) => ["NOT_APPLICABLE", "INSUFFICIENT_DURATION"].includes(step.status)).length;
+  elements["case-pipeline-state"].textContent = skippedCount
+    ? `六步已核对 · ${skippedCount} 项未运行`
+    : "六步全部完成";
+  elements["playback-status"].textContent = `${result}。本次只运行满足实际输入条件的模型，外部通知保持 0 次。`;
   elements["run-button"].querySelector("span").textContent = "重新检测";
   elements["run-button"].disabled = false;
   elements["pause-button"].disabled = true;
-  state.playbackStep = 3;
-  updatePipeline(3);
+  state.playbackStep = 5;
+  updatePipeline(5, true);
 }
 
 function pausePlayback() {
@@ -1079,7 +1183,7 @@ function pausePlayback() {
   elements["run-button"].querySelector("span").textContent = "继续检测";
   elements["run-button"].disabled = false;
   elements["pause-button"].disabled = true;
-  elements["playback-status"].textContent = `检测停在步骤 ${state.playbackStep + 1} / 4，可以继续或重置。`;
+  elements["playback-status"].textContent = `检测停在步骤 ${state.playbackStep + 1} / 6，可以继续或重置。`;
 }
 
 function stopPlayback() {
@@ -1098,9 +1202,8 @@ function resetPlayback(announce = true) {
   elements["watch-score-text"].textContent = "尚未运行";
   elements["result-state"].className = "result-state result-state--neutral";
   elements["result-state"].textContent = "等待运行";
-  const pendingAnalysis = pendingResultAnalysis();
-  elements["result-analysis-title"].textContent = pendingAnalysis.title;
-  elements["result-analysis-copy"].textContent = pendingAnalysis.copy;
+  renderPendingCaseAnalysis();
+  elements["case-pipeline-state"].textContent = state.selectedEvidence ? "数据已核对 · 等待运行" : "等待运行";
   if (state.selectedCase) elements["evidence-result"].textContent = pendingEvidenceConclusion(state.selectedCase);
   elements["run-button"].disabled = false;
   elements["run-button"].querySelector("span").textContent = "开始检测";
@@ -1123,9 +1226,7 @@ function formatBytes(bytes) {
 }
 
 function resetUploadPipeline() {
-  elements["upload-pipeline"].querySelectorAll("li").forEach((item) => {
-    item.classList.remove("is-active", "is-complete", "is-warning", "is-error");
-  });
+  renderSharedPipeline(elements["upload-pipeline"]);
   elements["upload-process-title"].textContent = state.uploadFile ? "文件已选择" : "等待文件";
 }
 
@@ -1188,15 +1289,7 @@ function setUploadBusy(isBusy) {
 }
 
 function renderUploadPipeline(pipeline) {
-  const byId = new Map(pipeline.map((item) => [item.id, item]));
-  elements["upload-pipeline"].querySelectorAll("li[data-upload-step]").forEach((row) => {
-    const item = byId.get(row.dataset.uploadStep);
-    row.classList.remove("is-active", "is-complete", "is-warning", "is-error");
-    if (!item) return;
-    if (item.status === "COMPLETED") row.classList.add("is-complete");
-    else if (item.status === "INSUFFICIENT_DURATION") row.classList.add("is-warning");
-    else if (item.status === "FAILED") row.classList.add("is-error");
-  });
+  renderSharedPipeline(elements["upload-pipeline"], pipeline, { final: true });
 }
 
 function renderUploadResult(payload) {
@@ -1208,15 +1301,23 @@ function renderUploadResult(payload) {
   elements["upload-activity"].textContent = analysis.activity_model.label;
   elements["upload-fall"].textContent = interpretation.fall_screening;
   elements["upload-persistence"].textContent = `未保存 · SHA-256 ${payload.file.sha256.slice(0, 12)}…`;
-  elements["upload-evidence-list"].replaceChildren(
-    ...interpretation.evidence.map((item) => createElement("li", { text: item })),
-  );
-  elements["upload-conclusion"].textContent = interpretation.conclusion;
+  renderReasonedAnalysis({
+    summary: elements["upload-analysis-summary"],
+    evidence: elements["upload-evidence-list"],
+    models: elements["upload-model-reasoning"],
+    conclusion: elements["upload-conclusion"],
+    rule: elements["upload-analysis-rule"],
+    scope: elements["upload-analysis-scope"],
+  }, interpretation);
   renderUploadSignalChart(analysis.waveform, payload.quality);
   elements["upload-result-state"].className = interpretation.review_required
     ? "result-state result-state--warning"
     : "result-state result-state--clear";
-  elements["upload-result-state"].textContent = interpretation.review_required ? "需要复核" : "更接近日常活动";
+  elements["upload-result-state"].textContent = analysis.fall_model.candidate_windows?.length
+    ? "发现跌倒候选"
+    : interpretation.review_required
+      ? "需要复核"
+      : "更接近日常活动";
   if (risk.status === "COMPLETED") {
     elements["upload-risk-meta"].textContent = `${risk.timeline.length} 个逐秒时间点 · 公开数据代理模型`;
     renderRiskChart(elements["upload-risk-chart"], risk, {
@@ -1250,8 +1351,7 @@ async function runUploadAnalysis() {
   elements["upload-error"].hidden = true;
   elements["upload-result"].hidden = true;
   resetUploadPipeline();
-  const firstStep = elements["upload-pipeline"].querySelector("li[data-upload-step='validate']");
-  firstStep?.classList.add("is-active");
+  renderSharedPipeline(elements["upload-pipeline"], [], { activeIndex: 0 });
   elements["upload-process-title"].textContent = "服务器正在依次运行模型";
   setUploadBusy(true);
   try {
@@ -1271,7 +1371,12 @@ async function runUploadAnalysis() {
     renderUploadResult(payload);
   } catch (error) {
     if (error.name === "AbortError") return;
-    elements["upload-pipeline"].querySelector("li.is-active")?.classList.add("is-error");
+    const failed = normalizedPipeline().map((step, index) => ({
+      ...step,
+      status: index === 0 ? "FAILED" : "PENDING",
+      detail: index === 0 ? "文件未通过输入检查，请根据错误说明修正。" : step.pending,
+    }));
+    renderSharedPipeline(elements["upload-pipeline"], failed, { final: true });
     showUploadError(error.message || "模型分析失败，请检查文件后重试。");
   } finally {
     setUploadBusy(false);

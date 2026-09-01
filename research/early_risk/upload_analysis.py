@@ -43,6 +43,46 @@ ACTIVITY_LABELS_ZH = {
 }
 
 
+ANALYSIS_PIPELINE_LABELS = {
+    "validate": "检查输入数据",
+    "normalize": "统一数据标准",
+    "activity": "识别动作或规律",
+    "fall": "筛查跌倒动作",
+    "risk": "分析提前风险",
+    "explain": "生成结果分析",
+}
+
+
+def build_analysis_pipeline(
+    *,
+    validation: tuple[str, str],
+    normalization: tuple[str, str],
+    activity: tuple[str, str],
+    fall: tuple[str, str],
+    risk: tuple[str, str],
+    explanation: tuple[str, str] = ("COMPLETED", "已按统一格式生成结论、依据和适用边界。"),
+) -> list[dict[str, str]]:
+    """Build the one canonical six-step pipeline used by every data source."""
+
+    states = {
+        "validate": validation,
+        "normalize": normalization,
+        "activity": activity,
+        "fall": fall,
+        "risk": risk,
+        "explain": explanation,
+    }
+    return [
+        {
+            "id": step_id,
+            "label": ANALYSIS_PIPELINE_LABELS[step_id],
+            "status": states[step_id][0],
+            "detail": states[step_id][1],
+        }
+        for step_id in ANALYSIS_PIPELINE_LABELS
+    ]
+
+
 @dataclass(frozen=True)
 class ParsedRecord:
     times_s: np.ndarray
@@ -360,11 +400,89 @@ def _evidence_and_conclusion(
     else:
         current_action = activity["label"] if activity["status"] == "COMPLETED" else "连续腕部动作"
         conclusion = "本段动作更接近日常活动；当前没有发现达到跌倒动作筛查条件的窗口。"
+
+    if risk["status"] == "COMPLETED":
+        attention_horizons = [
+            f"{horizon} 秒"
+            for horizon in HORIZONS_SECONDS
+            if risk["attention_detected"].get(str(horizon), False)
+        ]
+        risk_screening = (
+            f"{ '、'.join(attention_horizons) }代理分数达到各自复核线"
+            if attention_horizons
+            else "1、2、3 秒代理分数均未达到各自复核线"
+        )
+    else:
+        risk_screening = "数据时长不足，未运行提前风险模型"
+
+    if activity["status"] == "COMPLETED":
+        activity_score = activity["probabilities"][activity["label_code"]]
+        activity_finding = (
+            f"在四类日常动作中，{activity['label']}的模型输出值最高（{activity_score:.3f}）；"
+            "它只用于说明动作背景。"
+        )
+    else:
+        activity_finding = f"{activity['detail']} 因此本次结论不依赖活动类别。"
+
+    if fall["status"] == "COMPLETED":
+        candidate_count = len(fall["candidate_windows"])
+        fall_finding = (
+            f"共检查 {fall['window_count']} 个连续 4 秒六轴窗口，最高特征匹配度 "
+            f"{fall['max_score']:.3f}，关注阈值 {fall['threshold']:.2f}；"
+            f"{f'有 {candidate_count} 个窗口达到筛查条件' if candidate_count else '没有窗口达到筛查条件'}。"
+        )
+    else:
+        fall_finding = fall["detail"]
+
+    if risk["status"] == "COMPLETED":
+        maxima = risk["max_scores"]
+        risk_finding = (
+            f"逐秒计算公开数据代理分数，最高值依次为：1 秒 {maxima['1']:.3f}、"
+            f"2 秒 {maxima['2']:.3f}、3 秒 {maxima['3']:.3f}；{risk_screening}。"
+        )
+    else:
+        risk_finding = "连续记录不足以形成提前风险时间线，本次不提供 1、2、3 秒结果。"
+
+    if fall_found:
+        synthesis_finding = "跌倒模型达到筛查条件，且波形同时出现明显加速度与转动变化，因此列为跌倒候选。"
+    elif review:
+        synthesis_finding = "跌倒模型未形成明确候选，但波形或提前风险代理分数出现关注线索，因此保留人工复核。"
+    else:
+        synthesis_finding = "跌倒模型未达到筛查条件，波形交叉核对也没有形成足够的失稳证据，因此更接近日常活动。"
+
+    model_reasoning = [
+        {
+            "model": "活动识别模型",
+            "plain_name": "判断这段连续动作更像哪一种日常活动",
+            "status": activity["status"],
+            "finding": activity_finding,
+            "role": "提供动作背景，不单独决定是否跌倒。",
+        },
+        {
+            "model": "跌倒动作模型",
+            "plain_name": "在连续六轴窗口中筛查失稳与撞击动作",
+            "status": fall["status"],
+            "finding": fall_finding,
+            "role": "决定是否形成跌倒候选，是本次动作筛查的主要模型。",
+        },
+        {
+            "model": "提前风险模型",
+            "plain_name": "逐秒检查未来 1、2、3 秒代理风险线索",
+            "status": risk["status"],
+            "finding": risk_finding,
+            "role": "只提供复核线索，不等同于现实跌倒概率。",
+        },
+    ]
     return {
         "current_activity": current_action,
         "fall_screening": fall["screening"],
+        "risk_screening": risk_screening,
         "evidence": evidence,
+        "model_reasoning": model_reasoning,
+        "decision_rule": "三个模型的分数不会相加成一个“综合风险分”。系统先看跌倒候选，再用实际波形、动作背景和提前风险线索交叉核对。",
+        "synthesis": synthesis_finding,
         "conclusion": conclusion,
+        "scope_note": "本结果来自公开受控数据研究模型，只用于校赛演示和工程验证；不是医学诊断、现实报警或已验证的个人跌倒概率。",
         "review_required": fall_found or review,
         "measured_facts": {
             "acceleration_peak_m_s2": round(acceleration_peak, 6),
@@ -378,11 +496,14 @@ def _evidence_and_conclusion(
 
 def _waveform(values: np.ndarray, max_points: int = 360) -> dict[str, Any]:
     stride = max(1, int(np.ceil(len(values) / max_points)))
-    indices = list(range(0, len(values), stride))
-    if indices[-1] != len(values) - 1:
-        indices.append(len(values) - 1)
     acceleration = np.linalg.norm(values[:, :3], axis=1)
     rotation = np.linalg.norm(values[:, 3:], axis=1)
+    indices = sorted({
+        *range(0, len(values), stride),
+        len(values) - 1,
+        int(np.argmax(acceleration)),
+        int(np.argmax(rotation)),
+    })
     return {
         "displayed_point_count": len(indices),
         "acceleration_magnitude": [
@@ -445,14 +566,19 @@ def analyze_upload_request(payload: dict[str, Any]) -> dict[str, Any]:
             "source_format": parsed.source_format,
             "persisted": False,
         },
-        "pipeline": [
-            {"id": "validate", "label": "检查加速度和陀螺仪", "status": "COMPLETED"},
-            {"id": "normalize", "label": "统一采样率和单位", "status": "COMPLETED"},
-            {"id": "activity", "label": "运行活动识别模型", "status": analysis["activity_model"]["status"]},
-            {"id": "fall", "label": "运行跌倒候选模型", "status": analysis["fall_model"]["status"]},
-            {"id": "risk", "label": "运行 1/2/3 秒研究模型", "status": analysis["early_risk_model"]["status"]},
-            {"id": "explain", "label": "生成判断结果", "status": "COMPLETED"},
-        ],
+        "pipeline": build_analysis_pipeline(
+            validation=("COMPLETED", f"已读取 {len(parsed.values)} 个六轴采样点，加速度和陀螺仪齐全。"),
+            normalization=(
+                "COMPLETED",
+                f"已统一为 50 Hz、m/s² 和 rad/s，共 {len(normalized)} 个标准采样点。",
+            ),
+            activity=(analysis["activity_model"]["status"], analysis["activity_model"]["detail"]),
+            fall=(analysis["fall_model"]["status"], analysis["fall_model"]["detail"]),
+            risk=(
+                analysis["early_risk_model"]["status"],
+                analysis["interpretation"]["risk_screening"],
+            ),
+        ),
         "quality": quality,
         "analysis": analysis,
         "traceability": {

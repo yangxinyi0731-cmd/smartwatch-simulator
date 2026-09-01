@@ -5,12 +5,12 @@ import hashlib
 import json
 import mimetypes
 import sqlite3
+from collections import defaultdict
 from dataclasses import asdict
 from datetime import datetime
 from functools import lru_cache
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from math import ceil
 from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlparse
@@ -20,12 +20,18 @@ import yaml
 
 from backend.app.config import Settings
 from backend.app.database import Database
+from backend.app.models.activity import ActivityModelAdapter
+from backend.app.models.routine import RoutineModelAdapter
+from backend.app.training.activity import LABELS
 from research.early_risk.common import PROJECT_ROOT, sha256_file
 from research.early_risk.policy import PolicyConfig, PolicyInput, run_dry_policy
 from research.early_risk.upload_analysis import (
+    ACTIVITY_LABELS_ZH,
+    ACTIVITY_MANIFEST_PATH,
     MAX_UPLOAD_BYTES,
     analyze_normalized_imu,
     analyze_upload_request,
+    build_analysis_pipeline,
 )
 
 
@@ -49,6 +55,7 @@ DATA_AUDIT_PATH = (
     PROJECT_ROOT / "reports" / "early_risk" / "e0" / "current_data_audit.json"
 )
 ROUTINE_CASE_PATH = PROJECT_ROOT / "data" / "cases" / "synthetic_routine_100_v1.json"
+ROUTINE_MANIFEST_PATH = PROJECT_ROOT / "models" / "routine_anomaly" / "statistical_v1" / "manifest.json"
 PUBLIC_RISK_MANIFEST_PATH = (
     PROJECT_ROOT / "models" / "early_risk" / "public_weda_linear_v1" / "manifest.json"
 )
@@ -153,14 +160,267 @@ def _read_yaml(path: Path) -> dict[str, Any]:
     return payload
 
 
-def _downsample_indices(sample_count: int) -> tuple[int, ...]:
+def _downsample_indices(
+    sample_count: int,
+    required_indices: tuple[int, ...] = (),
+) -> tuple[int, ...]:
     if sample_count < 2:
         raise ValueError("传感器记录至少需要两个采样点。")
-    stride = max(1, ceil(sample_count / MAX_EVIDENCE_POINTS))
-    indices = list(range(0, sample_count, stride))
-    if indices[-1] != sample_count - 1:
-        indices.append(sample_count - 1)
-    return tuple(indices)
+    point_limit = MAX_EVIDENCE_POINTS + 1
+    if sample_count <= point_limit:
+        return tuple(range(sample_count))
+
+    required = {
+        index
+        for index in (0, sample_count - 1, *required_indices)
+        if 0 <= index < sample_count
+    }
+    remaining_count = point_limit - len(required)
+    candidates = [index for index in range(sample_count) if index not in required]
+    sampled = {
+        candidates[round(index * (len(candidates) - 1) / (remaining_count - 1))]
+        for index in range(remaining_count)
+    }
+    return tuple(sorted(required | sampled))
+
+
+def _build_activity_case_analysis(
+    values: np.ndarray,
+    *,
+    sample_rate_hz: float,
+    expected_label: str | None,
+) -> dict[str, Any]:
+    if values.shape != (400, 3) or float(sample_rate_hz) != 20.0:
+        raise ValueError("活动案例必须是 20 Hz、400×3 的连续加速度窗口。")
+    adapter = ActivityModelAdapter(
+        project_root=PROJECT_ROOT,
+        manifest_path=ACTIVITY_MANIFEST_PATH,
+    )
+    probabilities = adapter.predict_probabilities(values[None, ...])[0]
+    prediction_index = int(np.argmax(probabilities))
+    predicted_label = LABELS[prediction_index]
+    ordered = np.argsort(probabilities)[::-1]
+    second_label = LABELS[int(ordered[1])]
+    probability_map = {
+        label: round(float(value), 6)
+        for label, value in zip(LABELS, probabilities, strict=True)
+    }
+    top_value = probability_map[predicted_label]
+    second_value = probability_map[second_label]
+    matches_registered = expected_label is None or predicted_label == expected_label
+    acceleration = np.linalg.norm(values, axis=1)
+    acceleration_peak = float(np.max(acceleration))
+    acceleration_spread = float(np.std(acceleration))
+    predicted_zh = ACTIVITY_LABELS_ZH[predicted_label]
+    expected_zh = ACTIVITY_LABELS_ZH.get(expected_label or "", "未提供登记类别")
+
+    activity = {
+        "status": "COMPLETED",
+        "label": predicted_zh,
+        "label_code": predicted_label,
+        "window_count": 1,
+        "probabilities": probability_map,
+        "model_id": adapter.manifest.manifest_id,
+        "detail": "活动名称是四类模型中的最高输出候选，需要结合场景确认。",
+        "registered_label": expected_label,
+        "matches_registered_label": matches_registered,
+    }
+    fall = {
+        "status": "NOT_APPLICABLE",
+        "screening": "未运行：缺少三轴角速度",
+        "detail": "这组公开活动数据只有三轴加速度；跌倒模型需要六轴输入，因此没有生成跌倒候选。",
+        "window_count": 0,
+        "max_score": None,
+        "threshold": None,
+        "candidate_windows": [],
+        "model_id": None,
+    }
+    risk = {
+        "status": "NOT_APPLICABLE",
+        "timeline": [],
+        "thresholds": None,
+        "max_scores": None,
+        "attention_detected": None,
+        "model_id": None,
+        "meaning": "缺少六轴输入时不生成提前风险研究分数。",
+    }
+    evidence = [
+        "本机登记文件已核对，包含 20 Hz、400 个三轴加速度采样点，连续时长为 20 秒。",
+        f"实际加速度合量峰值为 {acceleration_peak:.2f} m/s²，整段标准差为 {acceleration_spread:.2f} m/s²。",
+        (
+            f"活动识别模型在四类结果中把“{predicted_zh}”排在第一位（输出值 {top_value:.3f}），"
+            f"第二位为“{ACTIVITY_LABELS_ZH[second_label]}”（{second_value:.3f}）。"
+        ),
+        "原文件没有陀螺仪通道，因此系统没有运行跌倒动作模型和提前风险模型。",
+    ]
+    if matches_registered:
+        conclusion = (
+            f"活动识别模型把本段判断为“{predicted_zh}”，与案例登记类别一致。"
+            "这可以验证活动模型的实际接线，但不能据此判断跌倒或提前风险。"
+        )
+        synthesis = "活动模型输出与登记类别相互印证；另外两个模型因输入条件不满足而未参与结论。"
+    else:
+        conclusion = (
+            f"活动识别模型把本段判断为“{predicted_zh}”，与登记类别“{expected_zh}”不一致，"
+            "本段应作为活动识别分歧案例复核。"
+        )
+        synthesis = "模型输出与登记类别不一致，因此保留分歧，不把其中任何一方改写成确定事实。"
+
+    interpretation = {
+        "current_activity": predicted_zh,
+        "fall_screening": fall["screening"],
+        "risk_screening": "未运行：该案例没有六轴传感器输入",
+        "evidence": evidence,
+        "model_reasoning": [
+            {
+                "model": "活动识别模型",
+                "plain_name": "比较连续 20 秒腕部加速度更接近哪类日常动作",
+                "status": "COMPLETED",
+                "finding": (
+                    f"最高输出类别为“{predicted_zh}”（{top_value:.3f}），"
+                    f"与登记类别{'一致' if matches_registered else '不一致'}。"
+                ),
+                "role": "本案例只有这一模型满足输入条件，因此它负责活动类别判断。",
+            },
+            {
+                "model": "跌倒动作模型",
+                "plain_name": "用六轴连续窗口筛查失稳与撞击动作",
+                "status": "NOT_APPLICABLE",
+                "finding": fall["detail"],
+                "role": "未参与本次结论，不会把缺失输入解释成“未跌倒”。",
+            },
+            {
+                "model": "提前风险模型",
+                "plain_name": "逐秒检查未来 1、2、3 秒代理风险线索",
+                "status": "NOT_APPLICABLE",
+                "finding": "缺少六轴信号，未生成任何提前风险分数或曲线。",
+                "role": "未参与本次结论。",
+            },
+        ],
+        "decision_rule": "模型只在输入条件满足时运行。未运行不等于结果为零，也不等于已经排除跌倒风险。",
+        "synthesis": synthesis,
+        "conclusion": conclusion,
+        "scope_note": "活动类别是公开自由生活数据上的研究候选，不是摄像头识别、医学诊断或安全结论。",
+        "review_required": not matches_registered,
+        "measured_facts": {
+            "acceleration_peak_m_s2": round(acceleration_peak, 6),
+            "acceleration_spread_m_s2": round(acceleration_spread, 6),
+            "top_activity_output": top_value,
+            "matches_registered_label": matches_registered,
+        },
+    }
+    return {
+        "activity_model": activity,
+        "fall_model": fall,
+        "early_risk_model": risk,
+        "interpretation": interpretation,
+    }
+
+
+def _build_routine_analysis(bundle: Any) -> dict[str, Any]:
+    if bundle.routine_profile is None or not bundle.routine_events:
+        raise ValueError("合成规律案例缺少已登记的规律档案或事件。")
+    adapter = RoutineModelAdapter(
+        project_root=PROJECT_ROOT,
+        manifest_path=ROUTINE_MANIFEST_PATH,
+    )
+    by_day: dict[Any, list[Any]] = defaultdict(list)
+    for event in bundle.routine_events:
+        by_day[event.started_at.date()].append(event)
+    assessed_days = [
+        (day, adapter.assess_day(tuple(by_day[day])))
+        for day in sorted(by_day)
+    ]
+    assessments = [assessment for _, day_items in assessed_days for assessment in day_items]
+    deviations = [item for item in assessments if item.status != "WITHIN_ROUTINE"]
+    recent_days = {day for day, _ in assessed_days[-ROUTINE_DISPLAY_DAYS:]}
+    recent_deviations = [
+        item
+        for day, day_items in assessed_days
+        if day in recent_days
+        for item in day_items
+        if item.status != "WITHIN_ROUTINE"
+    ]
+    assessment_count = len(assessments)
+    within_count = assessment_count - len(deviations)
+    routine = {
+        "status": "COMPLETED",
+        "model_id": adapter.manifest.manifest_id,
+        "history_days": bundle.routine_profile.history_days,
+        "event_count": bundle.routine_profile.event_count,
+        "assessment_count": assessment_count,
+        "within_routine_count": within_count,
+        "deviation_count": len(deviations),
+        "recent_deviation_count": len(recent_deviations),
+        "detail": "按天分别核对用餐、午睡和散步的次数、开始时间与持续时长。",
+    }
+    fall = {
+        "status": "NOT_APPLICABLE",
+        "screening": "未运行：没有腕部六轴信号",
+        "detail": "生活规律案例只有事件时间与时长，没有加速度和陀螺仪，因此不运行跌倒动作模型。",
+        "window_count": 0,
+        "max_score": None,
+        "threshold": None,
+        "candidate_windows": [],
+        "model_id": None,
+    }
+    risk = {
+        "status": "NOT_APPLICABLE",
+        "timeline": [],
+        "thresholds": None,
+        "max_scores": None,
+        "attention_detected": None,
+        "model_id": None,
+        "meaning": "没有连续六轴信号时不生成 1、2、3 秒提前风险分数。",
+    }
+    interpretation = {
+        "current_activity": "生活规律对照",
+        "fall_screening": fall["screening"],
+        "risk_screening": "未运行：没有连续六轴传感器输入",
+        "evidence": [
+            f"固定种子档案包含 {bundle.routine_profile.history_days} 天、{bundle.routine_profile.event_count} 条合成生活事件。",
+            f"规律模型逐日核对用餐、午睡和散步，共形成 {assessment_count} 项独立规则判断。",
+            f"其中 {within_count} 项位于合成规律范围内，{len(deviations)} 项被规则标记为时间、次数或时长偏离。",
+            f"页面展示的最近 {ROUTINE_DISPLAY_DAYS} 天中共有 {len(recent_deviations)} 项规则偏离。",
+        ],
+        "model_reasoning": [
+            {
+                "model": "生活规律模型",
+                "plain_name": "比较每天用餐、午睡和散步是否偏离 100 天合成规律",
+                "status": "COMPLETED",
+                "finding": f"完成 {assessment_count} 项规则判断，其中 {len(deviations)} 项偏离合成规律范围。",
+                "role": "负责本案例的规律对照；这些偏离只表示规则差异。",
+            },
+            {
+                "model": "跌倒动作模型",
+                "plain_name": "用六轴连续窗口筛查失稳与撞击动作",
+                "status": "NOT_APPLICABLE",
+                "finding": fall["detail"],
+                "role": "未参与本次结论。",
+            },
+            {
+                "model": "提前风险模型",
+                "plain_name": "逐秒检查未来 1、2、3 秒代理风险线索",
+                "status": "NOT_APPLICABLE",
+                "finding": "本案例没有连续传感器波形，因此没有生成提前风险时间线。",
+                "role": "未参与本次结论。",
+            },
+        ],
+        "decision_rule": "生活规律结果与六轴动作结果分开计算，不相加成一个风险分；没有传感器输入的模型明确显示为“未运行”。",
+        "synthesis": "本案例只由生活规律模型生成规则对照，跌倒动作和提前风险模型没有参与。",
+        "conclusion": (
+            f"系统已完成 100 天合成生活规律的规则对照，并标出 {len(deviations)} 项偏离。"
+            "这些结果证明规律模块可以运行，但不代表真实参与者的健康或跌倒风险。"
+        ),
+        "scope_note": "该案例由程序固定生成，只用于展示规律模型和结果解释，不是参与者生活记录。",
+        "review_required": False,
+    }
+    return {
+        "routine_model": routine,
+        "fall_model": fall,
+        "early_risk_model": risk,
+        "interpretation": interpretation,
+    }
 
 
 def _build_sensor_evidence(case_id: str) -> dict[str, Any]:
@@ -213,7 +473,10 @@ def _build_sensor_evidence(case_id: str) -> dict[str, Any]:
             }
         )
 
-    indices = _downsample_indices(stream.sample_count)
+    required_indices = [int(np.argmax(acceleration))]
+    if angular_velocity is not None:
+        required_indices.append(int(np.argmax(angular_velocity)))
+    indices = _downsample_indices(stream.sample_count, tuple(required_indices))
     for index in indices:
         offset_ms = int(round(index * 1000 / stream.sample_rate_hz))
         series[0]["values"].append([offset_ms, round(float(acceleration[index]), 6)])
@@ -224,6 +487,12 @@ def _build_sensor_evidence(case_id: str) -> dict[str, Any]:
 
     quality = bundle.qualities[0] if bundle.qualities else None
     analysis: dict[str, Any] | None = None
+    pipeline: list[dict[str, str]]
+    quality_detail = (
+        f"本机文件、哈希和数组形状已核对；保留 {len(quality.flags)} 项质量提示。"
+        if quality is not None and quality.flags
+        else "本机文件、哈希和数组形状已核对，未登记质量异常。"
+    )
     if values.shape[1] == 6 and float(stream.sample_rate_hz) == 50.0:
         analysis = analyze_normalized_imu(values)
         fall_events = [
@@ -231,6 +500,64 @@ def _build_sensor_evidence(case_id: str) -> dict[str, Any]:
         ]
         analysis["early_risk_model"]["proxy_anchor_offset_ms"] = (
             fall_events[0].start_offset_ms if len(fall_events) == 1 else None
+        )
+        activity_detail = (
+            f"模型输出：{analysis['activity_model']['label']}。"
+            if analysis["activity_model"]["status"] == "COMPLETED"
+            else analysis["activity_model"]["detail"]
+        )
+        fall_detail = (
+            f"{analysis['fall_model']['screening']}；最高特征匹配度 "
+            f"{analysis['fall_model']['max_score']:.3f}。"
+            if analysis["fall_model"]["status"] == "COMPLETED"
+            else analysis["fall_model"]["detail"]
+        )
+        pipeline = build_analysis_pipeline(
+            validation=("COMPLETED", quality_detail),
+            normalization=(
+                "COMPLETED",
+                f"登记输入为 50 Hz、六轴 IMU，共 {stream.sample_count} 个采样点。",
+            ),
+            activity=(analysis["activity_model"]["status"], activity_detail),
+            fall=(analysis["fall_model"]["status"], fall_detail),
+            risk=(
+                analysis["early_risk_model"]["status"],
+                analysis["interpretation"]["risk_screening"],
+            ),
+        )
+    elif values.shape[1] == 3 and float(stream.sample_rate_hz) == 20.0:
+        activity_events = [
+            event
+            for event in bundle.ground_truth_events
+            if event.event_type.value == "ACTIVITY_INTERVAL"
+        ]
+        expected_label = activity_events[0].label if len(activity_events) == 1 else None
+        analysis = _build_activity_case_analysis(
+            values,
+            sample_rate_hz=stream.sample_rate_hz,
+            expected_label=expected_label,
+        )
+        pipeline = build_analysis_pipeline(
+            validation=("COMPLETED", quality_detail),
+            normalization=(
+                "COMPLETED",
+                f"登记输入已是活动模型标准：20 Hz、三轴加速度、{stream.sample_count} 个采样点。",
+            ),
+            activity=(
+                analysis["activity_model"]["status"],
+                f"活动识别完成：{analysis['activity_model']['label']}。",
+            ),
+            fall=(analysis["fall_model"]["status"], analysis["fall_model"]["detail"]),
+            risk=(analysis["early_risk_model"]["status"], analysis["interpretation"]["risk_screening"]),
+        )
+    else:
+        pipeline = build_analysis_pipeline(
+            validation=("COMPLETED", quality_detail),
+            normalization=("FAILED", "该登记输入不符合当前任何模型的固定输入规格。"),
+            activity=("NOT_APPLICABLE", "输入规格不匹配，活动识别未运行。"),
+            fall=("NOT_APPLICABLE", "输入规格不匹配，跌倒动作筛查未运行。"),
+            risk=("NOT_APPLICABLE", "输入规格不匹配，提前风险分析未运行。"),
+            explanation=("FAILED", "没有足够的实际模型结果，不能生成结论。"),
         )
 
     return {
@@ -262,10 +589,15 @@ def _build_sensor_evidence(case_id: str) -> dict[str, Any]:
         ],
         "series": series,
         "analysis": analysis,
+        "pipeline": pipeline,
         "limitations": [
             "波形来自本机已登记文件，经内容哈希和数组形状核对后抽样显示。",
             "合量曲线由三个真实方向轴计算，用于简化读图，不表示某个方向或身体部位造成了结果。",
-            "六轴 WEDA 案例会在请求时真实运行三个研究模型；1/2/3 秒输出只对应公开受控数据代理标签，不构成现实报警。",
+            (
+                "六轴 WEDA 案例会在请求时真实运行三个研究模型；1/2/3 秒输出只对应公开受控数据代理标签，不构成现实报警。"
+                if values.shape[1] == 6
+                else "三轴 CAPTURE-24 案例只运行满足输入条件的活动识别模型；缺少陀螺仪时不生成跌倒或提前风险结果。"
+            ),
         ],
     }
 
@@ -273,6 +605,12 @@ def _build_sensor_evidence(case_id: str) -> dict[str, Any]:
 def _build_routine_evidence(case_id: str) -> dict[str, Any]:
     if case_id != "synthetic-routine-100-v1":
         raise LookupError("没有找到这组合成规律案例。")
+    settings = Settings.from_environment()
+    if not settings.database_path.is_file():
+        raise FileNotFoundError("本机案例数据库不存在。")
+    bundle = Database(settings.database_path).get_case_runtime_bundle(case_id)
+    if bundle is None:
+        raise LookupError("没有找到这组已登记规律案例。")
     payload = _read_json(ROUTINE_CASE_PATH)
     events = payload.get("events")
     if not isinstance(events, list) or not events:
@@ -296,6 +634,21 @@ def _build_routine_evidence(case_id: str) -> dict[str, Any]:
             }
         )
     displayed_days = sorted(grouped)[-ROUTINE_DISPLAY_DAYS:]
+    analysis = _build_routine_analysis(bundle)
+    routine = analysis["routine_model"]
+    pipeline = build_analysis_pipeline(
+        validation=("COMPLETED", "固定种子事件文件与本机登记档案已核对。"),
+        normalization=(
+            "COMPLETED",
+            f"已统一 {routine['history_days']} 天、{routine['event_count']} 条事件的时间与时长字段。",
+        ),
+        activity=(
+            routine["status"],
+            f"生活规律模型完成 {routine['assessment_count']} 项逐日规则判断。",
+        ),
+        fall=(analysis["fall_model"]["status"], analysis["fall_model"]["detail"]),
+        risk=(analysis["early_risk_model"]["status"], analysis["interpretation"]["risk_screening"]),
+    )
     return {
         "case_id": case_id,
         "evidence_type": "synthetic_routine_timeline",
@@ -312,6 +665,8 @@ def _build_routine_evidence(case_id: str) -> dict[str, Any]:
             {"day": day, "events": grouped[day]}
             for day in displayed_days
         ],
+        "analysis": analysis,
+        "pipeline": pipeline,
         "limitations": [
             "时间图来自固定种子生成的合成生活事件，不是参与者生活记录。",
             "生活规律案例没有腕部传感器流，因此不伪造波形，改用最近 14 天事件时间图。",

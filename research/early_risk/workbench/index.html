@@ -148,14 +148,8 @@
 
                 <div class="upload-process" aria-labelledby="upload-process-title">
                   <div class="upload-process__heading"><span>自动判断流程</span><strong id="upload-process-title">等待文件</strong></div>
-                  <ol id="upload-pipeline" aria-label="新数据检测流程">
-                    <li data-upload-step="validate"><span>01</span><div><strong>检查六轴数据</strong><small>加速度与陀螺仪</small></div><b></b></li>
-                    <li data-upload-step="normalize"><span>02</span><div><strong>统一采样与单位</strong><small>50 Hz · m/s² · rad/s</small></div><b></b></li>
-                    <li data-upload-step="activity"><span>03</span><div><strong>活动识别模型</strong><small>当前动作候选</small></div><b></b></li>
-                    <li data-upload-step="fall"><span>04</span><div><strong>跌倒动作模型</strong><small>筛查跌倒候选</small></div><b></b></li>
-                    <li data-upload-step="risk"><span>05</span><div><strong>提前风险模型</strong><small>1 / 2 / 3 秒研究分数</small></div><b></b></li>
-                    <li data-upload-step="explain"><span>06</span><div><strong>生成结果分析</strong><small>波形依据与结论</small></div><b></b></li>
-                  </ol>
+                  <p class="shared-pipeline-note">与案例库共用同一套六步判断口径；这里只把数据来源换成您选择的文件。</p>
+                  <ol id="upload-pipeline" class="shared-analysis-pipeline" aria-label="新数据检测流程"></ol>
                 </div>
               </div>
 
@@ -172,9 +166,15 @@
                 </dl>
                 <div class="upload-result__grid">
                   <article class="generated-analysis">
-                    <span>主要判断依据</span>
+                    <span>结果是怎样得出的</span>
+                    <p id="upload-analysis-summary" class="analysis-summary">等待模型完成计算。</p>
+                    <h4>关键实测依据</h4>
                     <ul id="upload-evidence-list"></ul>
-                    <div><strong>最终结论</strong><p id="upload-conclusion">—</p></div>
+                    <h4>各模型如何参与判断</h4>
+                    <ol id="upload-model-reasoning" class="model-reasoning-list"></ol>
+                    <div class="analysis-decision"><strong>最终结论</strong><p id="upload-conclusion">—</p></div>
+                    <p id="upload-analysis-rule" class="analysis-rule">三个模型分开计算，不相加成一个总分。</p>
+                    <p id="upload-analysis-scope" class="analysis-scope">本页只显示研究模型能够支持的结论。</p>
                   </article>
                   <div class="upload-visual-stack">
                     <figure class="risk-figure">
@@ -311,21 +311,38 @@
                   <p id="result-metric-caption">表示这段动作与受控跌倒动作有多相似；不是现实跌倒概率。</p>
                 </div>
 
-                <article class="result-analysis" aria-labelledby="result-analysis-title" aria-live="polite" aria-atomic="true">
+                <article class="result-analysis" aria-labelledby="result-analysis-title" aria-live="polite" aria-atomic="false">
                   <div class="result-analysis__label">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12H8l-4 4zM8 9h8M8 13h5" /></svg>
                     <span>结果分析</span>
                   </div>
                   <h3 id="result-analysis-title">等待本次检测</h3>
-                  <p id="result-analysis-copy">开始检测后，这里会用一段话说明系统看到了什么、为什么给出这个结果，以及这个结果不能说明什么。</p>
+                  <p id="result-analysis-summary" class="analysis-summary">开始检测后，这里会先给结论，再列出实测依据、模型推导过程和适用边界。</p>
+                  <dl class="result-analysis__facts">
+                    <div><dt>当前动作或规律</dt><dd id="result-analysis-activity">等待运行</dd></div>
+                    <div><dt>跌倒动作筛查</dt><dd id="result-analysis-fall">等待运行</dd></div>
+                    <div><dt>提前风险分析</dt><dd id="result-analysis-risk">等待运行</dd></div>
+                  </dl>
+                  <section class="result-analysis__section" aria-labelledby="result-evidence-heading">
+                    <h4 id="result-evidence-heading">关键实测依据</h4>
+                    <ul id="result-analysis-evidence-list"></ul>
+                  </section>
+                  <section class="result-analysis__section" aria-labelledby="result-model-heading">
+                    <h4 id="result-model-heading">各模型如何参与判断</h4>
+                    <ol id="result-model-reasoning" class="model-reasoning-list"></ol>
+                  </section>
+                  <div class="result-analysis__synthesis"><strong>交叉核对过程</strong><p id="result-analysis-synthesis">等待实际模型结果。</p></div>
+                  <div class="analysis-decision"><strong>最终结论</strong><p id="result-analysis-conclusion">等待本次检测。</p></div>
+                  <p id="result-analysis-rule" class="analysis-rule">模型结果分开计算，不会相加成一个“综合风险分”。</p>
+                  <p id="result-analysis-scope" class="analysis-scope">没有实际输入或未运行的模型，不会被写成已经排除风险。</p>
+                  <a class="analysis-evidence-link" href="#evidence">查看下方动作示意、实际波形与逐秒模型曲线</a>
                 </article>
 
-                <ol id="detection-pipeline" class="detection-pipeline" aria-label="检测流程">
-                  <li data-step="0"><span>01</span><div><strong>读取腕部数据</strong><small id="pipeline-input">等待案例</small></div><b aria-hidden="true"></b></li>
-                  <li data-step="1"><span>02</span><div><strong>整理连续窗口</strong><small id="pipeline-window">等待输入</small></div><b aria-hidden="true"></b></li>
-                  <li data-step="2"><span>03</span><div><strong>独立模型判断</strong><small id="pipeline-model">尚未运行</small></div><b aria-hidden="true"></b></li>
-                  <li data-step="3"><span>04</span><div><strong>结果复核</strong><small id="pipeline-review">外部通知保持关闭</small></div><b aria-hidden="true"></b></li>
-                </ol>
+                <div class="case-pipeline-heading">
+                  <div><strong>共用六步判断流程</strong><small>案例库与“新数据检测”使用同一判断口径，只有数据来源不同。</small></div>
+                  <span id="case-pipeline-state">等待运行</span>
+                </div>
+                <ol id="detection-pipeline" class="shared-analysis-pipeline" aria-label="案例检测流程"></ol>
 
                 <div class="analysis-foot">
                   <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6zM9 12l2 2 4-5" /></svg>保存结果可追溯</span>
