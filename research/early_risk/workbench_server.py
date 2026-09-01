@@ -7,6 +7,7 @@ import mimetypes
 import sqlite3
 from dataclasses import asdict
 from datetime import datetime
+from functools import lru_cache
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from math import ceil
@@ -21,6 +22,11 @@ from backend.app.config import Settings
 from backend.app.database import Database
 from research.early_risk.common import PROJECT_ROOT, sha256_file
 from research.early_risk.policy import PolicyConfig, PolicyInput, run_dry_policy
+from research.early_risk.upload_analysis import (
+    MAX_UPLOAD_BYTES,
+    analyze_normalized_imu,
+    analyze_upload_request,
+)
 
 
 WORKBENCH_ROOT = Path(__file__).with_name("workbench")
@@ -43,8 +49,19 @@ DATA_AUDIT_PATH = (
     PROJECT_ROOT / "reports" / "early_risk" / "e0" / "current_data_audit.json"
 )
 ROUTINE_CASE_PATH = PROJECT_ROOT / "data" / "cases" / "synthetic_routine_100_v1.json"
+PUBLIC_RISK_MANIFEST_PATH = (
+    PROJECT_ROOT / "models" / "early_risk" / "public_weda_linear_v1" / "manifest.json"
+)
+PUBLIC_RISK_REPORT_PATH = (
+    PROJECT_ROOT / "reports" / "early_risk" / "public_weda_linear_v1.json"
+)
+SELF_COLLECTED_REGISTRY_PATH = (
+    PROJECT_ROOT / "data" / "catalog" / "self_collected_pending_v1.json"
+)
+NEW_DATA_FORMAT_PATH = PROJECT_ROOT / "docs" / "early_risk" / "NEW_DATA_FORMAT.md"
 
-MAX_REQUEST_BYTES = 16 * 1024
+MAX_SIMULATE_REQUEST_BYTES = 16 * 1024
+MAX_UPLOAD_REQUEST_BYTES = int(MAX_UPLOAD_BYTES * 4 / 3) + 64 * 1024
 MAX_EVIDENCE_POINTS = 240
 ROUTINE_DISPLAY_DAYS = 14
 DOWNLOADS: dict[str, Path] = {
@@ -53,6 +70,9 @@ DOWNLOADS: dict[str, Path] = {
     "fixture-benchmark.json": FIXTURE_REPORT_PATH,
     "current-data-audit.json": DATA_AUDIT_PATH,
     "deterministic-timeline.json": FIXTURE_PATH,
+    "public-risk-manifest.json": PUBLIC_RISK_MANIFEST_PATH,
+    "public-risk-evaluation.json": PUBLIC_RISK_REPORT_PATH,
+    "new-data-format.md": NEW_DATA_FORMAT_PATH,
 }
 
 PIPELINE_STAGES: tuple[dict[str, str], ...] = (
@@ -203,6 +223,16 @@ def _build_sensor_evidence(case_id: str) -> dict[str, Any]:
             )
 
     quality = bundle.qualities[0] if bundle.qualities else None
+    analysis: dict[str, Any] | None = None
+    if values.shape[1] == 6 and float(stream.sample_rate_hz) == 50.0:
+        analysis = analyze_normalized_imu(values)
+        fall_events = [
+            event for event in bundle.ground_truth_events if event.event_type.value == "FALL_INTERVAL"
+        ]
+        analysis["early_risk_model"]["proxy_anchor_offset_ms"] = (
+            fall_events[0].start_offset_ms if len(fall_events) == 1 else None
+        )
+
     return {
         "case_id": case_id,
         "evidence_type": "sensor_waveform",
@@ -231,10 +261,11 @@ def _build_sensor_evidence(case_id: str) -> dict[str, Any]:
             for event in bundle.ground_truth_events
         ],
         "series": series,
+        "analysis": analysis,
         "limitations": [
             "波形来自本机已登记文件，经内容哈希和数组形状核对后抽样显示。",
             "合量曲线由三个真实方向轴计算，用于简化读图，不表示某个方向或身体部位造成了结果。",
-            "此依据只解释当前保存案例，不构成现实报警或未来几秒风险预测。",
+            "六轴 WEDA 案例会在请求时真实运行三个研究模型；1/2/3 秒输出只对应公开受控数据代理标签，不构成现实报警。",
         ],
     }
 
@@ -289,6 +320,7 @@ def _build_routine_evidence(case_id: str) -> dict[str, Any]:
     }
 
 
+@lru_cache(maxsize=128)
 def build_case_evidence(case_id: str) -> dict[str, Any]:
     if not case_id or len(case_id) > 128 or "/" in case_id or "\\" in case_id:
         raise LookupError("案例编号无效。")
@@ -304,6 +336,9 @@ def build_workbench_payload() -> dict[str, Any]:
     fixture_report = _read_json(FIXTURE_REPORT_PATH)
     audit = _read_json(DATA_AUDIT_PATH)
     fixture = _read_json(FIXTURE_PATH)
+    public_risk_manifest = _read_json(PUBLIC_RISK_MANIFEST_PATH)
+    public_risk_report = _read_json(PUBLIC_RISK_REPORT_PATH)
+    self_collected = _read_json(SELF_COLLECTED_REGISTRY_PATH)
 
     gate_results = gate["results"]
     audit_results = audit["results"]
@@ -312,10 +347,13 @@ def build_workbench_payload() -> dict[str, Any]:
 
     return {
         "meta": {
-            "product_name": "提前风险研究工作台",
-            "page_title": "E0 研究证据与确定性 dry-run",
+            "product_name": "模拟手表风险评估工作台",
+            "page_title": "公开数据真模型运行与新数据检测",
             "evidence_level": gate["evidence_level"],
             "prediction_evidence": gate["prediction_evidence"],
+            "public_proxy_model_ready": True,
+            "real_world_prediction_evidence": False,
+            "self_collected_validation_complete": False,
             "deployment_approved": gate["deployment_approved"],
             "engineering_status": gate_results["overall"]["engineering_status"],
             "formal_signoff_complete": gate_results["overall"]["formal_signoff_complete"],
@@ -326,10 +364,32 @@ def build_workbench_payload() -> dict[str, Any]:
             "allowed_claims": contract["allowed_e0_claims"],
             "limitations": gate["limitations"],
             "notice": (
-                "本工作台读取仓库中的 E0 合同与保存摘要；选择案例时，只读核验"
-                "本机已登记传感器文件或固定种子合成事件。它不会修改案例数据，"
-                "不会训练预测模型，也不会发送任何通知。"
+                "本工作台会对六轴公开案例和用户选择的新文件真实运行研究模型，"
+                "并逐秒显示 1、2、3 秒代理风险、波形依据和格式化结论。上传文件"
+                "只在内存中分析，不写入案例库，也不会发送任何通知。"
             ),
+        },
+        "public_risk_model": {
+            "manifest_id": public_risk_manifest["manifest_id"],
+            "model_id": public_risk_manifest["model_id"],
+            "status": "PUBLIC_PROXY_BASELINE_READY",
+            "proxy_anchor": public_risk_manifest["proxy_anchor"],
+            "participant_disjoint": public_risk_manifest["participant_disjoint"],
+            "evaluation_snapshot_at_exact_lead": public_risk_report[
+                "evaluation_snapshot_at_exact_lead"
+            ],
+            "limitations": public_risk_report["limitations"],
+            "manifest_sha256": sha256_file(PUBLIC_RISK_MANIFEST_PATH),
+            "report_sha256": sha256_file(PUBLIC_RISK_REPORT_PATH),
+        },
+        "self_collected": {
+            "status": self_collected["status"],
+            "expected_case_count": self_collected["expected_case_count"],
+            "received_case_count": self_collected["received_case_count"],
+            "accepted_case_count": self_collected["accepted_case_count"],
+            "cases": self_collected["cases"],
+            "claim_enabled": False,
+            "note": self_collected["note"],
         },
         "pipeline": list(PIPELINE_STAGES),
         "contract": {
@@ -594,11 +654,14 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
                 self._write_json(
                     HTTPStatus.OK,
                     {
-                        "service": "early-risk-e0-workbench",
+                        "service": "smartwatch-risk-research-workbench",
                         "state": "ready",
                         "bind_scope": "loopback_only",
                         "evidence_level": "E0",
                         "prediction_evidence": False,
+                        "public_proxy_model_ready": True,
+                        "self_collected_validation_complete": False,
+                        "real_world_prediction_evidence": False,
                         "deployment_approved": False,
                         "external_notifications_enabled": False,
                     },
@@ -661,7 +724,7 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
         route = urlparse(self.path).path
-        if route != "/api/simulate":
+        if route not in {"/api/simulate", "/api/analyze-upload"}:
             self._write_error(
                 HTTPStatus.NOT_FOUND,
                 code="NOT_FOUND",
@@ -673,18 +736,21 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
             self._write_error(
                 HTTPStatus.UNSUPPORTED_MEDIA_TYPE,
                 code="JSON_REQUIRED",
-                message="dry-run 参数必须使用 application/json。",
+                message="工作台请求必须使用 application/json。",
             )
             return
         try:
             content_length = int(self.headers.get("Content-Length", "0"))
         except ValueError:
             content_length = -1
-        if content_length < 0 or content_length > MAX_REQUEST_BYTES:
+        maximum = (
+            MAX_UPLOAD_REQUEST_BYTES if route == "/api/analyze-upload" else MAX_SIMULATE_REQUEST_BYTES
+        )
+        if content_length < 0 or content_length > maximum:
             self._write_error(
                 HTTPStatus.REQUEST_ENTITY_TOO_LARGE,
                 code="PAYLOAD_TOO_LARGE",
-                message="dry-run 参数超过允许大小。",
+                message="请求内容超过允许大小。",
             )
             return
         try:
@@ -692,11 +758,19 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
             payload = json.loads(body.decode("utf-8")) if body else {}
             if not isinstance(payload, dict):
                 raise ValueError("请求顶层必须是对象。")
-            result = simulate_policy(payload)
+            result = (
+                analyze_upload_request(payload)
+                if route == "/api/analyze-upload"
+                else simulate_policy(payload)
+            )
         except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
             self._write_error(
                 HTTPStatus.UNPROCESSABLE_ENTITY,
-                code="INVALID_DRY_RUN_CONFIG",
+                code=(
+                    "INVALID_SENSOR_FILE"
+                    if route == "/api/analyze-upload"
+                    else "INVALID_DRY_RUN_CONFIG"
+                ),
                 message=str(exc),
             )
             return
@@ -712,13 +786,13 @@ def create_server(host: str, port: int) -> ThreadingHTTPServer:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="启动仅限本机的 E0 提前风险研究工作台。")
+    parser = argparse.ArgumentParser(description="启动仅限本机的校赛模拟手表风险评估工作台。")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8010)
     args = parser.parse_args()
     server = create_server(args.host, args.port)
     address, port = server.server_address[:2]
-    print(f"提前风险 E0 研究工作台已启动：http://{address}:{port}/", flush=True)
+    print(f"模拟手表风险评估工作台已启动：http://{address}:{port}/", flush=True)
     try:
         server.serve_forever(poll_interval=0.25)
     except KeyboardInterrupt:

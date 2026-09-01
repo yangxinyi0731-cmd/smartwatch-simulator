@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light" />
-    <meta name="description" content="以 105 组已登记研究案例为输入的模拟智能手表前端检测台。" />
+    <meta name="description" content="可上传六轴传感器文件并真实运行活动识别、跌倒候选筛查与 1/2/3 秒研究模型的模拟手表风险评估工作台。" />
     <title>模拟手表检测台 — 模拟智能手表</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/tokens.css" />
@@ -24,7 +24,11 @@
         </a>
 
         <nav class="sidebar-nav" aria-label="检测台目录">
-          <a class="sidebar-nav__link is-current" href="#monitor" aria-label="实时检测：操作模拟手表" aria-current="page">
+          <a class="sidebar-nav__link is-current" href="#upload" aria-label="新数据检测：上传文件真实计算" aria-current="page">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M5 14v6h14v-6" /></svg>
+            <span class="sidebar-nav__copy"><strong>新数据检测</strong><small>上传文件真实计算</small></span>
+          </a>
+          <a class="sidebar-nav__link" href="#monitor" aria-label="实时检测：操作模拟手表">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h4l2-7 4 13 2-6h4M4 20h16" /></svg>
             <span class="sidebar-nav__copy"><strong>实时检测</strong><small>操作模拟手表</small></span>
           </a>
@@ -36,9 +40,9 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V9M10 18V5M16 18v-7M22 18V3" /></svg>
             <span class="sidebar-nav__copy"><strong>判断过程</strong><small>查看判断依据</small></span>
           </a>
-          <a class="sidebar-nav__link" href="#records" aria-label="模型状态：了解三个模型">
+          <a class="sidebar-nav__link" href="#records" aria-label="模型状态：了解四个模型">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5" /></svg>
-            <span class="sidebar-nav__copy"><strong>模型状态</strong><small>了解三个模型</small></span>
+            <span class="sidebar-nav__copy"><strong>模型状态</strong><small>了解四个模型</small></span>
           </a>
           <a class="sidebar-nav__link" href="#about" aria-label="说明与边界：查看能力限制">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v5M12 8h.01" /></svg>
@@ -48,9 +52,9 @@
 
         <div class="sidebar-status" aria-label="本机运行边界">
           <span class="connection-dot" aria-hidden="true"></span>
-          <div><strong>本机演示模式</strong><small>不发送外部通知</small></div>
+          <div><strong>研究模型运行中</strong><small>不保存上传文件</small></div>
         </div>
-        <p class="sidebar-version">E0 FRONTEND · 127.0.0.1</p>
+        <p class="sidebar-version">PUBLIC PROXY V1 · 127.0.0.1</p>
       </aside>
 
       <div class="app-main">
@@ -75,7 +79,7 @@
         <main id="main-content" tabindex="-1">
           <div id="page-loading" class="page-state" role="status" aria-live="polite">
             <span class="spinner" aria-hidden="true"></span>
-            <div><strong>正在启动模拟手表检测台</strong><p>读取本机合同、105 组案例摘要与 E0 安全状态。</p></div>
+            <div><strong>正在启动模拟手表风险评估台</strong><p>核验模型、105 组公开案例与自主采集空位状态。</p></div>
           </div>
 
           <section id="page-error" class="page-state page-state--error" role="alert" hidden>
@@ -89,14 +93,105 @@
           <div id="app-content" hidden>
             <section class="workspace-heading" aria-labelledby="page-title">
               <div>
-                <p class="eyebrow">评委演示模式 · 前端交互成品</p>
-                <h1 id="page-title">模拟手表检测台</h1>
-                <p>选择一组已登记案例，让模拟手表完成读取、窗口整理、模型判断和结果复核。</p>
+                <p class="eyebrow">校赛研究版 · 公开数据真模型运行</p>
+                <h1 id="page-title">模拟手表风险评估工作台</h1>
+                <p>上传一段六轴记录，或选择公开案例；系统会真实计算、逐秒显示 1/2/3 秒研究风险，并给出波形依据和结论。</p>
               </div>
               <div class="workspace-heading__status">
-                <span><b aria-hidden="true"></b>105 组案例已登记</span>
-                <span class="boundary-chip">只演示，不报警</span>
+                <span><b aria-hidden="true"></b>公开模型已接通</span>
+                <span class="boundary-chip">自主采集 0 / 约30组</span>
               </div>
+            </section>
+
+            <section id="upload" class="upload-lab anchor-section" aria-labelledby="upload-title">
+              <header class="upload-lab__heading">
+                <div>
+                  <p class="panel-kicker">新数据检测</p>
+                  <h2 id="upload-title">选择文件，运行整条判断链路</h2>
+                  <p>文件只在本机内存中分析，不加入案例库。标准 CSV 或 JSON，至少 1 秒六轴数据。</p>
+                </div>
+                <div class="collection-status" aria-label="自主采集数据状态">
+                  <span>自主采集</span><strong id="collection-count">0 / 约30组</strong><small id="collection-status-copy">等待真实文件</small>
+                </div>
+              </header>
+
+              <div class="upload-lab__body">
+                <form id="upload-form" class="upload-form" novalidate>
+                  <div id="upload-dropzone" class="upload-dropzone" data-state="empty">
+                    <input id="sensor-file" name="sensor-file" type="file" accept=".csv,.json,text/csv,application/json" />
+                    <label for="sensor-file">
+                      <span class="upload-dropzone__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0-4 4m4-4 4 4M5 14v6h14v-6" /></svg></span>
+                      <span><strong>选择传感器文件</strong><small>也可以把 CSV 或 JSON 拖到这里</small></span>
+                    </label>
+                    <div id="upload-file-row" class="upload-file-row" hidden>
+                      <span><strong id="upload-file-name">—</strong><small id="upload-file-meta">—</small></span>
+                      <button id="upload-remove" class="icon-button icon-button--small" type="submit" aria-label="移除所选文件">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17" /></svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="upload-options">
+                    <label for="acceleration-unit"><span>加速度单位</span><select id="acceleration-unit" name="acceleration-unit"><option value="m/s2">m/s²</option><option value="g">g</option></select></label>
+                    <label for="gyroscope-unit"><span>角速度单位</span><select id="gyroscope-unit" name="gyroscope-unit"><option value="rad/s">rad/s</option><option value="deg/s">deg/s</option></select></label>
+                  </div>
+
+                  <div id="upload-error" class="upload-error" role="alert" hidden><strong>文件暂时不能分析</strong><p id="upload-error-copy">请检查文件格式后重试。</p></div>
+                  <div class="upload-actions">
+                    <button id="upload-submit" class="button button--primary" type="submit" disabled>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h4l2-7 4 13 2-6h4" /></svg><span>开始分析新数据</span>
+                    </button>
+                    <a class="button button--quiet" href="/evidence/new-data-format.md" download>查看标准格式</a>
+                  </div>
+                  <p class="upload-privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2M5 10h14v11H5z" /></svg>不上传到互联网，不写入数据库，刷新页面后即清除。</p>
+                </form>
+
+                <div class="upload-process" aria-labelledby="upload-process-title">
+                  <div class="upload-process__heading"><span>自动判断流程</span><strong id="upload-process-title">等待文件</strong></div>
+                  <ol id="upload-pipeline" aria-label="新数据检测流程">
+                    <li data-upload-step="validate"><span>01</span><div><strong>检查六轴数据</strong><small>加速度与陀螺仪</small></div><b></b></li>
+                    <li data-upload-step="normalize"><span>02</span><div><strong>统一采样与单位</strong><small>50 Hz · m/s² · rad/s</small></div><b></b></li>
+                    <li data-upload-step="activity"><span>03</span><div><strong>活动识别模型</strong><small>当前动作候选</small></div><b></b></li>
+                    <li data-upload-step="fall"><span>04</span><div><strong>跌倒动作模型</strong><small>筛查跌倒候选</small></div><b></b></li>
+                    <li data-upload-step="risk"><span>05</span><div><strong>提前风险模型</strong><small>1 / 2 / 3 秒研究分数</small></div><b></b></li>
+                    <li data-upload-step="explain"><span>06</span><div><strong>生成结果分析</strong><small>波形依据与结论</small></div><b></b></li>
+                  </ol>
+                </div>
+              </div>
+
+              <section id="upload-result" class="upload-result" aria-labelledby="upload-result-title" hidden>
+                <header>
+                  <div><p class="panel-kicker">本次真实计算结果</p><h3 id="upload-result-title">新数据分析完成</h3></div>
+                  <span id="upload-result-state" class="result-state">已完成</span>
+                </header>
+                <dl class="result-facts">
+                  <div><dt>数据质量</dt><dd id="upload-quality">—</dd></div>
+                  <div><dt>当前动作</dt><dd id="upload-activity">—</dd></div>
+                  <div><dt>跌倒动作筛查</dt><dd id="upload-fall">—</dd></div>
+                  <div><dt>文件处理</dt><dd id="upload-persistence">只在内存分析</dd></div>
+                </dl>
+                <div class="upload-result__grid">
+                  <article class="generated-analysis">
+                    <span>主要判断依据</span>
+                    <ul id="upload-evidence-list"></ul>
+                    <div><strong>最终结论</strong><p id="upload-conclusion">—</p></div>
+                  </article>
+                  <div class="upload-visual-stack">
+                    <figure class="risk-figure">
+                      <figcaption><div><span>实际波形依据</span><strong>加速度与腕部转动变化</strong></div><small id="upload-waveform-meta">50 Hz 标准六轴记录</small></figcaption>
+                      <div class="risk-chart-frame"><svg id="upload-signal-chart" viewBox="0 0 760 240" role="img" aria-labelledby="upload-signal-title upload-signal-description"><title id="upload-signal-title">新数据的实际传感器波形</title><desc id="upload-signal-description">等待运行新数据分析。</desc></svg></div>
+                      <div class="risk-legend"><span><i class="risk-1"></i>加速度合量</span><span><i class="risk-2"></i>角速度合量</span></div>
+                      <p id="upload-waveform-summary">曲线只描述真实输入变化，结论还会结合模型窗口和后续动作。</p>
+                    </figure>
+                    <figure class="risk-figure">
+                      <figcaption><div><span>逐秒风险变化</span><strong>1 / 2 / 3 秒研究分数</strong></div><small id="upload-risk-meta">公开受控数据代理标签</small></figcaption>
+                      <div class="risk-chart-frame"><svg id="upload-risk-chart" viewBox="0 0 760 280" role="img" aria-labelledby="upload-risk-title upload-risk-description"><title id="upload-risk-title">新数据的逐秒风险变化</title><desc id="upload-risk-description">等待运行新数据分析。</desc></svg></div>
+                      <div class="risk-legend"><span><i class="risk-1"></i>未来 1 秒</span><span><i class="risk-2"></i>未来 2 秒</span><span><i class="risk-3"></i>未来 3 秒</span><span><i class="risk-threshold"></i>各自关注阈值</span></div>
+                      <p id="upload-risk-summary">这是与公开受控数据代理标签的匹配分数，不是现实跌倒概率。</p>
+                    </figure>
+                  </div>
+                </div>
+              </section>
             </section>
 
             <section class="simulator-layout" aria-label="模拟手表操作区">
@@ -351,6 +446,17 @@
                   <div><dt>当前结论</dt><dd id="evidence-result">开始检测后生成</dd></div>
                 </dl>
 
+                <section id="case-risk-panel" class="case-risk-panel" aria-labelledby="case-risk-title" hidden>
+                  <div class="case-risk-panel__heading">
+                    <div><span>提前风险研究模型</span><h3 id="case-risk-title">逐秒查看 1 / 2 / 3 秒变化</h3></div>
+                    <span id="case-risk-anchor" class="proxy-anchor">无代理锚点</span>
+                  </div>
+                  <div class="risk-chart-frame"><svg id="case-risk-chart" viewBox="0 0 760 280" role="img" aria-labelledby="case-risk-svg-title case-risk-description"><title id="case-risk-svg-title">公开案例逐秒风险变化</title><desc id="case-risk-description">等待选择六轴案例。</desc></svg></div>
+                  <div class="risk-legend"><span><i class="risk-1"></i>未来 1 秒</span><span><i class="risk-2"></i>未来 2 秒</span><span><i class="risk-3"></i>未来 3 秒</span><span><i class="risk-threshold"></i>各自关注阈值</span><span><i class="risk-anchor"></i>数据集代理锚点</span></div>
+                  <div id="case-risk-snapshots" class="risk-snapshots" aria-label="模型独立评估快照"></div>
+                  <p id="case-risk-summary">这些分数来自当前文件的真实计算，但只对应公开受控数据代理标签。</p>
+                </section>
+
                 <div class="evidence-note" role="note">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6zM9 12l2 2 4-5" /></svg>
                   <p id="evidence-limit">波形用于展示输入变化，不能单独证明某个方向或身体部位造成了结果。</p>
@@ -360,8 +466,8 @@
 
             <section id="records" class="model-strip anchor-section" aria-labelledby="model-strip-title">
               <header class="model-strip__heading">
-                <div><p class="panel-kicker">系统模块</p><h2 id="model-strip-title">三类现有判断与一项未来能力</h2></div>
-                <p>模型结果保持独立，不合成医学风险分数。</p>
+                <div><p class="panel-kicker">系统模块</p><h2 id="model-strip-title">四个真实运行的研究模块</h2></div>
+                <p>四项结果保持独立，不合成模糊的“综合风险分”。</p>
               </header>
               <div class="model-grid">
                 <article class="model-card is-ready">
@@ -376,9 +482,9 @@
                   <div class="model-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 8-8v8zM12 4v8h8" /></svg></div>
                   <div><span>合成规则演示</span><h3>个人规律异常</h3><p>比较用餐、午睡和散步是否偏离个人平常。</p><small>数据：1 组、100 天合成规律</small></div><strong>1</strong>
                 </article>
-                <article class="model-card is-locked">
-                  <div class="model-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2M5 10h14v11H5z" /></svg></div>
-                  <div><span>后端尚未接入</span><h3>未来几秒风险预测</h3><p>目标是根据连续动作判断接下来几秒是否可能失稳。</p><small>状态：需要 P3–P9 验证</small></div><strong>锁定</strong>
+                <article class="model-card is-proxy-ready">
+                  <div class="model-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V9M10 18V5M16 18v-7M22 18V3" /></svg></div>
+                  <div><span>公开数据基线已接入</span><h3>提前 1 / 2 / 3 秒研究模型</h3><p>只看当前时刻之前的连续六轴窗口，逐秒输出三个独立研究分数。</p><small>代理锚点：WEDA 跌倒区间开始</small></div><strong>3</strong>
                 </article>
               </div>
             </section>
@@ -386,15 +492,15 @@
             <section id="about" class="boundary-panel anchor-section" aria-labelledby="boundary-title">
               <div class="boundary-panel__summary">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 4v5c0 5-3.7 8.2-9 10-5.3-1.8-9-5-9-10V7zM12 8v5M12 17h.01" /></svg>
-                <div><p class="panel-kicker">说明与边界</p><h2 id="boundary-title">这是成熟软件外观的前端演示，不是新模型成绩</h2><p id="truth-notice">当前只读取本机 E0 工程证据；没有修改后端、模型或数据合同。</p></div>
-                <span class="boundary-chip">prediction_evidence=false</span>
+                <div><p class="panel-kicker">说明与边界</p><h2 id="boundary-title">公开数据模型已运行，自主采集验证仍为空</h2><p id="truth-notice">当前可真实计算公开案例和新文件；现实环境预测证据与正式部署仍未完成。</p></div>
+                <span class="boundary-chip">自主采集 0 / 约30组</span>
               </div>
               <details>
                 <summary>查看数据来源、生活化要求和真实性说明</summary>
                 <div class="boundary-details">
-                  <p><strong>产品方向：</strong>先认识每位参与者的平常，再结合连续动作研究风险。一天的生活路线、快速坐到沙发和摘表充电等场景仍然是未来产品逻辑说明，不是当前识别结果。</p>
-                  <p><strong>当前可展示：</strong>105 组已登记案例、保存的同源回放摘要、三模型独立状态和 E0 dry-run 安全边界。</p>
-                  <p><strong>当前不能宣称：</strong>现实环境中的提前几秒预测、正式报警、医疗诊断、家属通知或自动救援。所有前端互动都只演示，不报警。</p>
+                  <p><strong>当前已经完成：</strong>基于公开腕部传感器数据训练 1 / 2 / 3 秒代理风险基线；新文件经过六轴校验、采样和单位统一后，会真实运行活动识别、跌倒候选和提前风险模型，并生成波形依据。</p>
+                  <p><strong>当前仍然为空：</strong>自主采集登记是 0 / 约30组，没有用随机数据或公开案例冒充。收到真实文件后才做工程验证并启用最终校赛表述。</p>
+                  <p><strong>当前不能宣称：</strong>代理锚点不是现实失稳时刻；模型尚未证明真实意外跌倒预测能力，也不能用于正式报警、医疗诊断、家属通知或自动救援。</p>
                   <ul id="limitations-list"></ul>
                 </div>
               </details>

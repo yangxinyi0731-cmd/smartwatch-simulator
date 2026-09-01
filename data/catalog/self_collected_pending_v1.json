@@ -1,0 +1,13 @@
+{
+  "registry_version": "1.0.0",
+  "status": "AWAITING_REAL_FILES",
+  "expected_case_count": 30,
+  "received_case_count": 0,
+  "accepted_case_count": 0,
+  "rejected_case_count": 0,
+  "cases": [],
+  "required_channels": ["ax", "ay", "az", "gx", "gy", "gz"],
+  "canonical_sample_rate_hz": 50.0,
+  "canonical_units": ["m/s^2", "m/s^2", "m/s^2", "rad/s", "rad/s", "rad/s"],
+  "note": "这里故意保持为空。只有收到真实自主采集文件并完成质量核验后，才能新增案例。"
+}

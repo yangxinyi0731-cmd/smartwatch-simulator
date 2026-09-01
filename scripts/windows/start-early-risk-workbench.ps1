@@ -39,12 +39,64 @@ function Test-RecordedProcess {
         $process = Get-Process -Id ([int]$State.pid) -ErrorAction Stop
         $actualPath = [IO.Path]::GetFullPath($process.Path)
         $expectedPath = [IO.Path]::GetFullPath([string]$State.process_path)
-        $actualStart = $process.StartTime.ToUniversalTime().ToString('o')
-        return ($actualPath -eq $expectedPath -and $actualStart -eq [string]$State.process_start_time_utc)
+        $actualStartTicks = $process.StartTime.ToUniversalTime().Ticks
+        $expectedStartTicks = if ($null -ne $State.PSObject.Properties['process_start_time_utc_ticks']) {
+            [long]$State.process_start_time_utc_ticks
+        }
+        else {
+            ([DateTime]$State.process_start_time_utc).ToUniversalTime().Ticks
+        }
+        return ($actualPath -eq $expectedPath -and $actualStartTicks -eq $expectedStartTicks)
     }
     catch {
         return $false
     }
+}
+
+function Get-VerifiedWorkbenchListener {
+    $connections = @(Get-NetTCPConnection -LocalPort 8010 -State Listen -ErrorAction SilentlyContinue | Where-Object {
+        $_.LocalAddress -eq '127.0.0.1'
+    })
+    foreach ($connection in $connections) {
+        try {
+            $processInfo = Get-CimInstance Win32_Process -Filter "ProcessId = $($connection.OwningProcess)" -ErrorAction Stop
+            $commandLine = [string]$processInfo.CommandLine
+            $escapedPython = [Regex]::Escape($pythonPath)
+            $expectedPattern = "^`"?$escapedPython`"?\s+-m\s+research\.early_risk\.workbench_server\s+--host\s+127\.0\.0\.1\s+--port\s+8010(?:\s|$)"
+            if ($commandLine -notmatch $expectedPattern) {
+                continue
+            }
+            $health = Invoke-RestMethod -Uri 'http://127.0.0.1:8010/api/health' -TimeoutSec 3
+            if ($health.service -ne 'smartwatch-risk-research-workbench' -or $health.state -ne 'ready' -or $health.bind_scope -ne 'loopback_only' -or -not $health.public_proxy_model_ready -or $health.self_collected_validation_complete -or $health.external_notifications_enabled) {
+                continue
+            }
+            return Get-Process -Id ([int]$connection.OwningProcess) -ErrorAction Stop
+        }
+        catch {
+            continue
+        }
+    }
+    return $null
+}
+
+function Save-ListenerState {
+    param([Diagnostics.Process]$Listener)
+
+    $listenerState = [ordered]@{
+        pid = $Listener.Id
+        listener_pid = $Listener.Id
+        process_path = $Listener.Path
+        process_start_time_utc = $Listener.StartTime.ToUniversalTime().ToString('o')
+        process_start_time_utc_ticks = $Listener.StartTime.ToUniversalTime().Ticks
+        started_at_utc = [DateTime]::UtcNow.ToString('o')
+        project_root = $projectRoot
+        url = $url
+        evidence_level = 'E0'
+        public_proxy_model_ready = $true
+        self_collected_validation_complete = $false
+        external_notifications_enabled = $false
+    }
+    $listenerState | ConvertTo-Json | Set-Content -LiteralPath $statePath -Encoding UTF8
 }
 
 if (-not (Test-Path -LiteralPath $serverModulePath -PathType Leaf)) {
@@ -64,8 +116,8 @@ if (Test-Path -LiteralPath $statePath -PathType Leaf) {
         $existingState = Get-Content -LiteralPath $statePath -Raw -Encoding UTF8 | ConvertFrom-Json
         if (Test-RecordedProcess -State $existingState) {
             $health = Invoke-RestMethod -Uri 'http://127.0.0.1:8010/api/health' -TimeoutSec 3
-            if ($health.state -eq 'ready') {
-                Write-Host "E0 研究工作台已经运行：$($existingState.url)" -ForegroundColor Green
+            if ($health.service -eq 'smartwatch-risk-research-workbench' -and $health.state -eq 'ready' -and $health.bind_scope -eq 'loopback_only' -and $health.public_proxy_model_ready -and -not $health.self_collected_validation_complete -and -not $health.external_notifications_enabled) {
+                Write-Host "校赛风险研究工作台已经运行：$($existingState.url)" -ForegroundColor Green
                 if (-not $NoBrowser) {
                     Start-Process -FilePath ([string]$existingState.url)
                 }
@@ -80,10 +132,19 @@ if (Test-Path -LiteralPath $statePath -PathType Leaf) {
 }
 
 if (Test-LocalPort -Port 8010) {
+    $existingListener = Get-VerifiedWorkbenchListener
+    if ($null -ne $existingListener) {
+        Save-ListenerState -Listener $existingListener
+        Write-Host "校赛风险研究工作台已经运行：$url" -ForegroundColor Green
+        if (-not $NoBrowser) {
+            Start-Process -FilePath $url
+        }
+        exit 0
+    }
     throw '本机端口 8010 已被其他程序占用。请先关闭占用程序，再重新启动。'
 }
 
-Write-Host '正在启动仅限本机访问的 E0 提前风险研究工作台……' -ForegroundColor Cyan
+Write-Host '正在启动仅限本机访问的校赛风险研究工作台……' -ForegroundColor Cyan
 $env:PYTHONIOENCODING = 'utf-8'
 $process = Start-Process `
     -FilePath $pythonPath `
@@ -94,18 +155,6 @@ $process = Start-Process `
     -WindowStyle Hidden `
     -PassThru
 $process.Refresh()
-
-$state = [ordered]@{
-    pid = $process.Id
-    process_path = $process.Path
-    process_start_time_utc = $process.StartTime.ToUniversalTime().ToString('o')
-    started_at_utc = [DateTime]::UtcNow.ToString('o')
-    project_root = $projectRoot
-    url = $url
-    evidence_level = 'E0'
-    external_notifications_enabled = $false
-}
-$state | ConvertTo-Json | Set-Content -LiteralPath $statePath -Encoding UTF8
 
 $health = $null
 $deadline = [DateTime]::UtcNow.AddSeconds(30)
@@ -138,14 +187,23 @@ if ($null -eq $health -or $health.state -ne 'ready') {
     throw "工作台未能在 30 秒内就绪。诊断信息：`n$lastError"
 }
 
-if ($health.bind_scope -ne 'loopback_only' -or $health.evidence_level -ne 'E0' -or $health.external_notifications_enabled) {
+if ($health.bind_scope -ne 'loopback_only' -or $health.evidence_level -ne 'E0' -or -not $health.public_proxy_model_ready -or $health.self_collected_validation_complete -or $health.external_notifications_enabled) {
     Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
     Remove-Item -LiteralPath $statePath -Force -ErrorAction SilentlyContinue
     throw '工作台安全边界检查失败，已停止启动。'
 }
 
-Write-Host "E0 研究工作台已就绪：$url" -ForegroundColor Green
-Write-Host '范围：仅本机、确定性夹具、prediction_evidence=false、外部通知关闭。' -ForegroundColor Green
+$listener = Get-VerifiedWorkbenchListener
+if ($null -eq $listener) {
+    if (-not $process.HasExited) {
+        Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+    }
+    throw '工作台健康检查通过，但无法安全确认 8010 监听进程；已拒绝写入运行状态。'
+}
+Save-ListenerState -Listener $listener
+
+Write-Host "校赛风险评估工作台已就绪：$url" -ForegroundColor Green
+Write-Host '范围：公开代理模型已运行；自主采集 0/约30组；现实预测证据与外部通知关闭。' -ForegroundColor Green
 Write-Host '可双击 stop-early-risk-workbench.cmd 停止；遇到问题可双击 diagnose-early-risk-workbench.cmd。'
 if (-not $NoBrowser) {
     Start-Process -FilePath $url

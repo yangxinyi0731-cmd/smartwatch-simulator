@@ -1,0 +1,53 @@
+{
+  "manifest_id": "public-weda-early-risk-linear-1.0.0",
+  "model_id": "public-weda-early-risk-linear-v1",
+  "model_kind": "PUBLIC_PROXY_EARLY_RISK_RESEARCH",
+  "version": "1.0.0",
+  "format": "portable_json_numpy_linear",
+  "artifact_relative_path": "models/early_risk/public_weda_linear_v1/model.json",
+  "artifact_sha256": "0bd3072e1805cbd5174b9162bdf9011bae3f3be859dfb676b86d29ee8b923312",
+  "training_catalog_relative_path": "data/catalog/weda_fall_100_v1.json",
+  "training_catalog_sha256": "4e6a68fa8de730999d85f2d254af40adc6241038fc2af2a0c2ce9cfab4041f49",
+  "training_participants": [
+    "U03",
+    "U04",
+    "U07",
+    "U09",
+    "U11",
+    "U12",
+    "U13",
+    "U21",
+    "U22",
+    "U23",
+    "U24",
+    "U25",
+    "U26"
+  ],
+  "calibration_participants": [
+    "U02",
+    "U06",
+    "U10",
+    "U27"
+  ],
+  "evaluation_participants": [
+    "U01",
+    "U05",
+    "U08",
+    "U14",
+    "U28",
+    "U29",
+    "U30",
+    "U31"
+  ],
+  "participant_disjoint": true,
+  "self_collected_case_count": 0,
+  "external_validation_completed": false,
+  "deployment_approved": false,
+  "proxy_anchor": "WEDA_FALL_INTERVAL_START",
+  "limitations": [
+    "正例来自参与者在床垫上的受控模拟跌倒，不是真实意外跌倒。",
+    "时间锚点是数据集跌倒区间开始，不等同于真实失稳起点。",
+    "模型没有使用自主采集数据，也没有外部数据集或真实手表验证。",
+    "输出仅用于校赛研究演示，不能直接报警、诊断或联系救援。"
+  ]
+}

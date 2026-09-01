@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import threading
+import base64
 from contextlib import contextmanager
 from typing import Iterator
 from urllib.error import HTTPError
@@ -16,6 +17,16 @@ from research.early_risk.workbench_server import (
     create_server,
     simulate_policy,
 )
+from research.early_risk.public_risk_model import PublicEarlyRiskModel
+from research.early_risk.train_public_risk_baseline import (
+    ARTIFACT_PATH,
+    CALIBRATION_PARTICIPANTS,
+    EVALUATION_PARTICIPANTS,
+    REPORT_PATH,
+    TRAIN_PARTICIPANTS,
+    build_examples,
+)
+from research.early_risk.upload_analysis import analyze_upload_request
 
 
 @contextmanager
@@ -42,6 +53,9 @@ def test_workbench_payload_preserves_e0_truth_boundary() -> None:
 
     assert payload["meta"]["evidence_level"] == "E0"
     assert payload["meta"]["prediction_evidence"] is False
+    assert payload["meta"]["public_proxy_model_ready"] is True
+    assert payload["meta"]["real_world_prediction_evidence"] is False
+    assert payload["meta"]["self_collected_validation_complete"] is False
     assert payload["meta"]["deployment_approved"] is False
     assert payload["meta"]["next_stage_authorized"] is False
     assert len(payload["pipeline"]) == 10
@@ -53,6 +67,77 @@ def test_workbench_payload_preserves_e0_truth_boundary() -> None:
     assert all(item["state"] == "locked" for item in payload["pipeline"][3:])
     assert payload["audit"]["audited_asset_count"] == 11
     assert payload["audit"]["no_download_performed"] is True
+    assert payload["public_risk_model"]["status"] == "PUBLIC_PROXY_BASELINE_READY"
+    assert payload["public_risk_model"]["participant_disjoint"] is True
+    assert payload["self_collected"]["received_case_count"] == 0
+    assert payload["self_collected"]["cases"] == []
+
+
+def test_public_proxy_model_is_causal_monotonic_and_participant_disjoint() -> None:
+    feature_names, examples = build_examples()
+    assert feature_names
+    assert examples
+    assert all(item.anchor_sample is None or item.end_sample < item.anchor_sample for item in examples)
+
+    train = set(TRAIN_PARTICIPANTS)
+    calibration = set(CALIBRATION_PARTICIPANTS)
+    evaluation = set(EVALUATION_PARTICIPANTS)
+    assert not train & calibration
+    assert not train & evaluation
+    assert not calibration & evaluation
+
+    model = PublicEarlyRiskModel(ARTIFACT_PATH)
+    sample = next(item for item in examples if item.participant_id in evaluation)
+    probabilities = model.predict_feature_matrix(sample.features[None, :])
+    assert probabilities.shape == (1, 3)
+    assert 0 <= probabilities[0, 0] <= probabilities[0, 1] <= probabilities[0, 2] <= 1
+
+    report = json.loads(REPORT_PATH.read_text(encoding="utf-8"))
+    assert report["proxy_anchor"]["is_adjudicated_t_instability"] is False
+    assert report["leakage_controls"]["post_anchor_samples_used"] is False
+    assert report["self_collected_engineering_validation"]["received_case_count"] == 0
+    assert report["evaluation_snapshot_at_exact_lead"]["3"]["eligible_simulated_fall_count"] >= 8
+
+
+def _stationary_csv(sample_count: int = 250) -> bytes:
+    rows = ["time_s,ax,ay,az,gx,gy,gz"]
+    rows.extend(
+        f"{index / 50:.2f},0.0,0.0,9.80665,0.0,0.0,0.0"
+        for index in range(sample_count)
+    )
+    return ("\n".join(rows) + "\n").encode("utf-8")
+
+
+def test_new_data_analysis_runs_real_models_without_persisting_upload() -> None:
+    content = _stationary_csv()
+    result = analyze_upload_request(
+        {
+            "file_name": "manual-test.csv",
+            "content_base64": base64.b64encode(content).decode("ascii"),
+            "acceleration_unit": "m/s2",
+            "gyroscope_unit": "rad/s",
+        }
+    )
+
+    assert result["file"]["persisted"] is False
+    assert result["quality"]["normalized_rate_hz"] == 50.0
+    assert result["analysis"]["fall_model"]["status"] == "COMPLETED"
+    assert result["analysis"]["early_risk_model"]["status"] == "COMPLETED"
+    assert len(result["analysis"]["early_risk_model"]["timeline"]) > 1
+    assert result["analysis"]["activity_model"]["status"] == "INSUFFICIENT_DURATION"
+    assert result["truth_boundary"]["self_collected_validation_complete"] is False
+    assert result["truth_boundary"]["external_notification_sent"] is False
+
+
+def test_new_data_analysis_rejects_missing_gyroscope_columns() -> None:
+    content = b"time_s,ax,ay,az\n0,0,0,9.8\n"
+    with pytest.raises(ValueError, match="表头"):
+        analyze_upload_request(
+            {
+                "file_name": "missing-gyro.csv",
+                "content_base64": base64.b64encode(content).decode("ascii"),
+            }
+        )
 
 
 def test_policy_simulation_is_deterministic_and_never_notifies() -> None:
@@ -120,6 +205,8 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
         assert health["state"] == "ready"
         assert health["bind_scope"] == "loopback_only"
         assert health["external_notifications_enabled"] is False
+        assert health["public_proxy_model_ready"] is True
+        assert health["self_collected_validation_complete"] is False
         assert health_headers["Cache-Control"] == "no-store"
         assert health_headers["X-Frame-Options"] == "DENY"
         assert "default-src 'self'" in health_headers["Content-Security-Policy"]
@@ -129,11 +216,11 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
 
         with urlopen(f"{base_url}/", timeout=5) as response:  # noqa: S310
             html = response.read().decode("utf-8")
-            assert "先认识每位参与者的平常" in html
-            assert "一天的生活路线" in html
-            assert "快速坐到沙发" in html
-            assert "摘表充电" in html
-            assert "只演示，不报警" in html
+            assert "选择文件，运行整条判断链路" in html
+            assert "自主采集 0 / 约30组" in html
+            assert "1 / 2 / 3 秒研究分数" in html
+            assert "逐秒风险变化" in html
+            assert "加速度与腕部转动变化" in html
             assert "操作模拟手表" in html
             assert "跌倒特征匹配度" in html
             assert "结果分析" in html
@@ -142,6 +229,7 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
             assert "格式化判断依据" in html
             assert "判断连续腕部动作是否与受控跌倒动作相似" in html
             assert "参与者受控模拟跌倒" in html
+            assert "后端尚未接入" not in html
             assert "年轻参与者" not in html
             assert "真实老人" not in html
             assert response.headers["X-Content-Type-Options"] == "nosniff"
@@ -149,11 +237,13 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
         with urlopen(f"{base_url}/app.js", timeout=5) as response:  # noqa: S310
             script = response.read().decode("utf-8")
             assert "为什么显示“检测到跌倒动作”" in script
-            assert "疑似误判为跌倒" in script
+            assert "需要复核" in script
             assert "不是现实跌倒概率" in script
             assert "/api/case-evidence/" in script
             assert "renderSensorChart" in script
             assert "renderRoutineChart" in script
+            assert "renderRiskChart" in script
+            assert "/api/analyze-upload" in script
             assert "年轻参与者" not in script
             assert "真实老人" not in script
 
@@ -180,6 +270,24 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
             simulation = json.load(response)
         assert simulation["dry_run"] is True
         assert simulation["summary"]["external_notification_count"] == 0
+
+        upload_request = Request(
+            f"{base_url}/api/analyze-upload",
+            data=json.dumps(
+                {
+                    "file_name": "manual-test.csv",
+                    "content_base64": base64.b64encode(_stationary_csv()).decode("ascii"),
+                    "acceleration_unit": "m/s2",
+                    "gyroscope_unit": "rad/s",
+                }
+            ).encode("utf-8"),
+            headers={"Content-Type": "application/json", "Accept": "application/json"},
+            method="POST",
+        )
+        with urlopen(upload_request, timeout=15) as response:  # noqa: S310
+            upload = json.load(response)
+        assert upload["file"]["persisted"] is False
+        assert upload["analysis"]["early_risk_model"]["status"] == "COMPLETED"
 
         with urlopen(f"{base_url}/evidence/gate-summary.json", timeout=5) as response:  # noqa: S310
             evidence = json.load(response)

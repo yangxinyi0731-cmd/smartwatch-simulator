@@ -1,0 +1,134 @@
+{
+  "artifact": "smartwatch-school-demo-risk-research-workbench",
+  "verification_version": "1.0.0",
+  "verified_at": "2026-09-01T23:32:46.6904200+08:00",
+  "repository": {
+    "path": "C:\\Users\\yangxinyi\\Documents\\Codex\\2026-08-27\\smartwatch-health-simulator",
+    "branch": "codex/early-risk-e0-workbench",
+    "development_base_head": "b447dd0ef99490198c37813bad2f3c36d6777eff",
+    "remote_configured": false,
+    "pushed": false
+  },
+  "runtime": {
+    "url": "http://127.0.0.1:8010/",
+    "health_url": "http://127.0.0.1:8010/api/health",
+    "state": "ready",
+    "bind_scope": "loopback_only",
+    "public_proxy_model_ready": true,
+    "self_collected_validation_complete": false,
+    "real_world_prediction_evidence": false,
+    "deployment_approved": false,
+    "external_notifications_enabled": false
+  },
+  "implemented_scope": {
+    "public_proxy_early_risk_model": true,
+    "lead_seconds": [
+      1,
+      2,
+      3
+    ],
+    "causal_pre_anchor_windows": true,
+    "participant_disjoint_training_calibration_evaluation": true,
+    "new_csv_json_analysis": true,
+    "unit_conversion": true,
+    "resample_to_50_hz": true,
+    "activity_model_execution": true,
+    "fall_candidate_model_execution": true,
+    "risk_timeline_execution": true,
+    "measured_waveform_evidence": true,
+    "generated_interpretation": true,
+    "upload_persisted": false
+  },
+  "public_proxy_model": {
+    "report": "reports/early_risk/public_weda_linear_v1.json",
+    "proxy_anchor": "WEDA_FALL_INTERVAL_START",
+    "proxy_anchor_is_adjudicated_t_instability": false,
+    "post_anchor_samples_used": false,
+    "split": {
+      "training": {
+        "participants": 13,
+        "cases": 52,
+        "windows": 1840
+      },
+      "calibration": {
+        "participants": 4,
+        "cases": 19,
+        "windows": 584
+      },
+      "evaluation": {
+        "participants": 8,
+        "cases": 29,
+        "windows": 1130
+      }
+    },
+    "evaluation_snapshot_at_exact_lead": {
+      "1_second": {
+        "detected": 9,
+        "eligible": 11,
+        "recall": 0.8181818181818182
+      },
+      "2_seconds": {
+        "detected": 10,
+        "eligible": 11,
+        "recall": 0.9090909090909091
+      },
+      "3_seconds": {
+        "detected": 7,
+        "eligible": 10,
+        "recall": 0.7
+      }
+    },
+    "interpretation": "Fixed public controlled-data proxy snapshot only; not real-world fall prediction accuracy."
+  },
+  "self_collected_data": {
+    "registry": "data/catalog/self_collected_pending_v1.json",
+    "target_case_count_approximate": 30,
+    "received_case_count": 0,
+    "imported_case_count": 0,
+    "cases": [],
+    "claim_enabled": false
+  },
+  "automated_verification": {
+    "python_tests": {
+      "command": ".\\.venv\\Scripts\\python.exe -m pytest .\\backend\\tests .\\tests -q",
+      "passed": 105,
+      "failed": 0
+    },
+    "frontend_build": "passed",
+    "javascript_syntax": "passed",
+    "openapi_types_generation": "passed_no_drift",
+    "npm_audit_known_vulnerabilities": 0,
+    "pip_check": "no_broken_requirements",
+    "designmd": {
+      "errors": 0,
+      "warnings": 0,
+      "infos": 1
+    },
+    "premium_strict_audit_findings": 0,
+    "git_diff_check": "passed_with_line_ending_notices_only",
+    "windows_diagnostic": "passed",
+    "windows_repeated_start_reuse": "passed",
+    "windows_stop_restart_cycle": "passed"
+  },
+  "browser_verification": {
+    "browser": "Codex in-app Chromium",
+    "invalid_extension_blocked": true,
+    "valid_csv_duration_seconds": 38.66,
+    "valid_csv_samples": 1934,
+    "six_pipeline_steps_completed": true,
+    "signal_chart_paths": 2,
+    "risk_chart_paths": 3,
+    "public_case_playback_completed": true,
+    "public_case_fall_candidate_score": 0.999,
+    "desktop_horizontal_overflow": false,
+    "mobile_viewport": "390x844",
+    "mobile_horizontal_overflow": false,
+    "console_error_or_warning_count": 0
+  },
+  "claim_gates": {
+    "current_allowed_claim": "Public controlled-data proxy model and new-file analysis workflow are implemented and running.",
+    "self_collected_engineering_validation_claim": false,
+    "real_world_seconds_ahead_prediction_claim": false,
+    "medical_or_safety_deployment_claim": false
+  }
+}

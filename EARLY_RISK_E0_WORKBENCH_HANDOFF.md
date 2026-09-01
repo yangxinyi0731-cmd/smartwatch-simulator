@@ -1,5 +1,7 @@
 # 模拟智能手表检测台：E0 前端改版完成交接
 
+> 历史记录：此文件描述 2026-08-31 的旧版 E0 页面。当前校赛版已经加入公开代理提前风险模型与“新数据检测”，请以 `EARLY_RISK_SCHOOL_DEMO_HANDOFF.md` 为准。
+
 更新时间：2026-08-31
 
 实际仓库：`C:\Users\yangxinyi\Documents\Codex\2026-08-27\smartwatch-health-simulator`

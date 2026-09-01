@@ -33,9 +33,15 @@ from backend.app.database import Database, ImportCaseBundle
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ROUTINE_EVENTS_PATH = Path("data/cases/synthetic_routine_100_v1.json")
 ROUTINE_MANIFEST_PATH = Path("models/routine_anomaly/statistical_v1/manifest.json")
+FALL_MANIFEST_PATH = Path("models/fall_detector/tcn_final_candidate/manifest.json")
 ACTIVITY_CATALOG_PATH = Path("data/catalog/capture24_activity_training_v1.json")
 ACTIVITY_MANIFEST_PATH = Path(
     "models/activity_recognition/capture24_linear_v1/manifest.json"
+)
+CORE_PRODUCT_MANIFEST_PATHS = (
+    FALL_MANIFEST_PATH,
+    ROUTINE_MANIFEST_PATH,
+    ACTIVITY_MANIFEST_PATH,
 )
 
 
@@ -203,7 +209,10 @@ def _sync_activity_demo_cases(database: Database) -> int:
 def sync(database_path: Path) -> dict[str, object]:
     database = Database(database_path)
     database.initialize()
-    manifest_paths = tuple(sorted((PROJECT_ROOT / "models").glob("*/*/manifest.json")))
+    # The core product registry owns exactly the three ModelManifest contracts.
+    # Isolated research models may keep their own manifests under models/ without
+    # being misparsed as one of the production-facing three model kinds.
+    manifest_paths = tuple(PROJECT_ROOT / path for path in CORE_PRODUCT_MANIFEST_PATHS)
     manifests = tuple(_load_manifest(path) for path in manifest_paths)
     for manifest in manifests:
         database.register_model_manifest(manifest)

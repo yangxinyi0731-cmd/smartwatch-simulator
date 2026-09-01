@@ -200,6 +200,9 @@ const state = {
   clockTimer: null,
   evidenceController: null,
   evidenceCache: new Map(),
+  selectedEvidence: null,
+  uploadFile: null,
+  uploadController: null,
 };
 
 const ids = [
@@ -219,6 +222,14 @@ const ids = [
   "chart-kicker", "chart-title", "chart-meta", "evidence-chart", "evidence-legend",
   "chart-summary", "evidence-source", "evidence-input", "evidence-method", "evidence-result",
   "evidence-limit", "truth-notice", "limitations-list", "fixture-id",
+  "collection-count", "collection-status-copy", "upload-form", "upload-dropzone", "sensor-file",
+  "upload-file-row", "upload-file-name", "upload-file-meta", "upload-remove", "acceleration-unit",
+  "gyroscope-unit", "upload-error", "upload-error-copy", "upload-submit", "upload-process-title",
+  "upload-pipeline", "upload-result", "upload-result-title", "upload-result-state", "upload-quality", "upload-activity",
+  "upload-fall", "upload-persistence", "upload-evidence-list", "upload-conclusion", "upload-risk-meta",
+  "upload-risk-chart", "upload-risk-summary", "upload-signal-chart", "upload-waveform-meta", "upload-waveform-summary",
+  "case-risk-panel", "case-risk-chart", "case-risk-anchor",
+  "case-risk-snapshots", "case-risk-summary",
 ];
 const elements = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)]));
 
@@ -446,11 +457,171 @@ function renderRoutineChart(evidence) {
   ]);
 }
 
+function renderRiskChart(svg, risk, options = {}) {
+  const timeline = risk?.timeline || [];
+  const width = 760;
+  const height = 280;
+  const left = 54;
+  const right = 18;
+  const top = 24;
+  const bottom = 38;
+  const titleId = options.titleId || "risk-chart-title";
+  const descriptionId = options.descriptionId || "risk-chart-description";
+  const title = createSvgElement("title", { id: titleId }, options.title || "逐秒提前风险研究分数");
+  if (!timeline.length) {
+    const description = createSvgElement("desc", { id: descriptionId }, "当前记录不足一个 1 秒六轴窗口，不能绘制研究分数。");
+    svg.replaceChildren(title, description);
+    appendSvgText(svg, "需要至少 1 秒连续六轴数据", width / 2, height / 2, "risk-chart__empty", "middle");
+    return;
+  }
+  const durationMs = Math.max(...timeline.map((point) => Number(point.offset_ms)), 1);
+  const xFor = (offsetMs) => left + (Number(offsetMs) / durationMs) * (width - left - right);
+  const yFor = (value) => top + (1 - Number(value)) * (height - top - bottom);
+  const anchorMs = Number(options.anchorMs);
+  const anchorCopy = Number.isFinite(anchorMs)
+    ? `竖线标出数据集跌倒区间开始代理锚点 ${ (anchorMs / 1000).toFixed(1) } 秒。`
+    : "当前记录没有已登记代理锚点。";
+  const description = createSvgElement(
+    "desc",
+    { id: descriptionId },
+    `三条曲线分别是未来 1、2、3 秒公开代理标签研究分数。${anchorCopy}`,
+  );
+  svg.replaceChildren(title, description);
+
+  [0, 0.25, 0.5, 0.75, 1].forEach((value) => {
+    const y = yFor(value);
+    svg.append(createSvgElement("line", { x1: left, x2: width - right, y1: y, y2: y, class: "risk-chart__grid" }));
+    appendSvgText(svg, value.toFixed(2), left - 8, y + 4, "risk-chart__tick", "end");
+  });
+  [0, 0.25, 0.5, 0.75, 1].forEach((ratio) => {
+    const x = left + ratio * (width - left - right);
+    svg.append(createSvgElement("line", { x1: x, x2: x, y1: top, y2: height - bottom, class: "risk-chart__grid" }));
+    appendSvgText(svg, `${(durationMs * ratio / 1000).toFixed(ratio === 0 ? 0 : 1)}s`, x, height - 13, "risk-chart__tick", "middle");
+  });
+  appendSvgText(svg, "研究分数", left, 14, "risk-chart__label");
+
+  const definitions = [
+    { horizon: "1", key: "risk_1s", className: "risk-chart__line--1" },
+    { horizon: "2", key: "risk_2s", className: "risk-chart__line--2" },
+    { horizon: "3", key: "risk_3s", className: "risk-chart__line--3" },
+  ];
+  definitions.forEach((definition) => {
+    const threshold = Number(risk.thresholds?.[definition.horizon]);
+    if (Number.isFinite(threshold)) {
+      const thresholdY = yFor(threshold);
+      svg.append(createSvgElement("line", {
+        x1: left, x2: width - right, y1: thresholdY, y2: thresholdY,
+        class: `risk-chart__threshold risk-chart__threshold--${definition.horizon}`,
+      }));
+      appendSvgText(svg, `${definition.horizon}s 阈值 ${threshold.toFixed(2)}`, width - right - 3, thresholdY - 4, "risk-chart__threshold-label", "end");
+    }
+    const path = timeline.map((point, index) => {
+      const command = index === 0 ? "M" : "L";
+      return `${command}${xFor(point.offset_ms).toFixed(2)},${yFor(point[definition.key]).toFixed(2)}`;
+    }).join(" ");
+    svg.append(createSvgElement("path", { d: path, class: `risk-chart__line ${definition.className}` }));
+  });
+  if (Number.isFinite(anchorMs) && anchorMs >= 0 && anchorMs <= durationMs) {
+    const anchorX = xFor(anchorMs);
+    svg.append(createSvgElement("line", { x1: anchorX, x2: anchorX, y1: top, y2: height - bottom, class: "risk-chart__anchor" }));
+    appendSvgText(svg, "代理锚点", anchorX - 4, top + 12, "risk-chart__anchor-label", "end");
+  }
+}
+
+function renderUploadSignalChart(waveform, quality) {
+  const svg = elements["upload-signal-chart"];
+  const width = 760;
+  const height = 240;
+  const left = 54;
+  const right = 18;
+  const top = 22;
+  const bottom = 34;
+  const acceleration = waveform.acceleration_magnitude || [];
+  const rotation = waveform.angular_velocity_magnitude || [];
+  const durationMs = Math.max(
+    acceleration.at(-1)?.[0] || 1,
+    rotation.at(-1)?.[0] || 1,
+  );
+  const title = createSvgElement("title", { id: "upload-signal-title" }, "上传记录的真实加速度与角速度合量波形");
+  const description = createSvgElement(
+    "desc",
+    { id: "upload-signal-description" },
+    `显示重采样记录中的 ${waveform.displayed_point_count} 个实际抽样点；两条曲线分别按自己的单位缩放。`,
+  );
+  svg.replaceChildren(title, description);
+  const xFor = (offsetMs) => left + (Number(offsetMs) / durationMs) * (width - left - right);
+  [0, 0.25, 0.5, 0.75, 1].forEach((ratio) => {
+    const x = left + ratio * (width - left - right);
+    svg.append(createSvgElement("line", { x1: x, x2: x, y1: top, y2: height - bottom, class: "risk-chart__grid" }));
+    appendSvgText(svg, `${(durationMs * ratio / 1000).toFixed(ratio === 0 ? 0 : 1)}s`, x, height - 10, "risk-chart__tick", "middle");
+  });
+  const panels = [
+    { values: acceleration, label: "加速度合量 · m/s²", className: "risk-chart__line--1" },
+    { values: rotation, label: "角速度合量 · rad/s", className: "risk-chart__line--2" },
+  ];
+  const gap = 22;
+  const panelHeight = (height - top - bottom - gap) / 2;
+  const summaries = [];
+  panels.forEach((panel, index) => {
+    const panelTop = top + index * (panelHeight + gap);
+    const panelBottom = panelTop + panelHeight;
+    const maximum = Math.max(...panel.values.map((point) => Number(point[1])), 0.000001);
+    const yFor = (value) => panelBottom - Number(value) / (maximum * 1.08) * panelHeight;
+    svg.append(createSvgElement("line", { x1: left, x2: width - right, y1: panelBottom, y2: panelBottom, class: "risk-chart__grid" }));
+    appendSvgText(svg, panel.label, left, panelTop - 5, "risk-chart__label");
+    appendSvgText(svg, maximum.toFixed(index === 0 ? 1 : 2), left - 7, panelTop + 5, "risk-chart__tick", "end");
+    const path = panel.values.map((point, pointIndex) => {
+      const command = pointIndex === 0 ? "M" : "L";
+      return `${command}${xFor(point[0]).toFixed(2)},${yFor(point[1]).toFixed(2)}`;
+    }).join(" ");
+    svg.append(createSvgElement("path", { d: path, class: `risk-chart__line ${panel.className}` }));
+    const peak = panel.values.reduce((best, point) => Number(point[1]) > Number(best[1]) ? point : best, panel.values[0]);
+    summaries.push(`${panel.label.split(" · ")[0]}峰值 ${Number(peak[1]).toFixed(index === 0 ? 2 : 3)}（${(Number(peak[0]) / 1000).toFixed(1)} 秒）`);
+  });
+  elements["upload-waveform-meta"].textContent = `${quality.normalized_rate_hz} Hz · ${quality.normalized_sample_count} 点 · 显示 ${waveform.displayed_point_count} 点`;
+  elements["upload-waveform-summary"].textContent = `${summaries.join("；")}。峰值只是依据之一，系统没有凭单次峰值直接下结论。`;
+}
+
+function renderCaseRisk(evidence) {
+  const risk = evidence.analysis?.early_risk_model;
+  if (!risk || risk.status !== "COMPLETED") {
+    elements["case-risk-panel"].hidden = true;
+    return;
+  }
+  elements["case-risk-panel"].hidden = false;
+  const anchorMs = risk.proxy_anchor_offset_ms;
+  elements["case-risk-anchor"].textContent = Number.isFinite(Number(anchorMs))
+    ? `数据集代理锚点 ${(Number(anchorMs) / 1000).toFixed(1)} 秒`
+    : "日常案例 · 无跌倒代理锚点";
+  renderRiskChart(elements["case-risk-chart"], risk, {
+    title: "当前公开案例逐秒提前风险研究分数",
+    titleId: "case-risk-svg-title",
+    descriptionId: "case-risk-description",
+    anchorMs,
+  });
+  const maxima = risk.max_scores;
+  const attention = risk.attention_detected;
+  elements["case-risk-summary"].textContent = `本文件最高研究分数：1 秒 ${Number(maxima["1"]).toFixed(3)}、2 秒 ${Number(maxima["2"]).toFixed(3)}、3 秒 ${Number(maxima["3"]).toFixed(3)}；${Object.values(attention).some(Boolean) ? "至少一个时间点达到公开模型关注阈值。" : "没有时间点达到三个公开模型的各自关注阈值。"}这不是现实个人跌倒概率。`;
+  const snapshots = state.dashboard?.public_risk_model?.evaluation_snapshot_at_exact_lead || {};
+  const nodes = ["1", "2", "3"].map((horizon) => {
+    const item = snapshots[horizon];
+    const row = createElement("div");
+    row.append(
+      createElement("span", { text: `恰好提前 ${horizon} 秒` }),
+      createElement("strong", { text: item ? `${item.detected_at_or_above_threshold} / ${item.eligible_simulated_fall_count}` : "—" }),
+      createElement("small", { text: "独立参与者评估快照" }),
+    );
+    return row;
+  });
+  elements["case-risk-snapshots"].replaceChildren(...nodes);
+}
+
 function showEvidenceLoading(item) {
   elements["evidence"].dataset.state = "loading";
   elements["evidence-loading"].hidden = false;
   elements["evidence-error"].hidden = true;
   elements["evidence-content"].hidden = true;
+  elements["case-risk-panel"].hidden = true;
   elements["evidence-badge"].className = "evidence-badge";
   elements["evidence-badge"].textContent = "正在核对";
   elements["evidence-intro"].textContent = `正在读取 ${item.id} 对应的本机依据，不生成随机曲线。`;
@@ -461,6 +632,7 @@ function showEvidenceError(item, error) {
   elements["evidence-loading"].hidden = true;
   elements["evidence-content"].hidden = true;
   elements["evidence-error"].hidden = false;
+  elements["case-risk-panel"].hidden = true;
   elements["evidence-error-copy"].textContent = `${error?.message || "本机文件暂时无法读取。"} 页面不会用示意波形替代。`;
   elements["evidence-badge"].className = "evidence-badge is-error";
   elements["evidence-badge"].textContent = "依据不可用";
@@ -468,6 +640,7 @@ function showEvidenceError(item, error) {
 }
 
 function renderEvidence(item, evidence) {
+  state.selectedEvidence = evidence;
   const motion = motionPresentation(item);
   elements["evidence"].dataset.state = "ready";
   elements["evidence-loading"].hidden = true;
@@ -496,6 +669,7 @@ function renderEvidence(item, evidence) {
     elements["evidence-input"].textContent = `${evidence.stream.sample_rate_hz} Hz · ${evidence.stream.axis_count} 轴 · 记录 ${seconds} 秒；模型窗口为 ${item.window}`;
     elements["evidence-limit"].textContent = evidence.limitations.slice(1).join(" ");
     renderSensorChart(evidence);
+    renderCaseRisk(evidence);
   } else {
     elements["evidence-badge"].className = "evidence-badge is-synthetic";
     elements["evidence-badge"].textContent = "固定种子合成";
@@ -507,6 +681,7 @@ function renderEvidence(item, evidence) {
     elements["evidence-input"].textContent = `${evidence.profile.history_days} 天 · ${evidence.profile.event_count} 条用餐、午睡和散步事件`;
     elements["evidence-limit"].textContent = evidence.limitations.join(" ");
     renderRoutineChart(evidence);
+    elements["case-risk-panel"].hidden = true;
   }
 }
 
@@ -558,6 +733,16 @@ function pendingResultAnalysis() {
 }
 
 function completedResultAnalysis(item) {
+  const generated = state.selectedEvidence?.analysis?.interpretation;
+  if ((item.kind === "fall" || item.kind === "adl") && generated) {
+    const evidenceCopy = generated.evidence
+      .map((entry) => String(entry).trim().replace(/[。；]+$/u, ""))
+      .join("；");
+    return {
+      title: `${generated.current_activity}：系统如何得出结论`,
+      copy: `${evidenceCopy}。最终结论：${generated.conclusion}`,
+    };
+  }
   if (item.kind === "fall" && item.alarms > 0) {
     return {
       title: "为什么显示“检测到跌倒动作”",
@@ -650,6 +835,10 @@ function renderDashboardMeta(dashboard) {
   elements["truth-notice"].textContent = dashboard.truth.notice;
   elements["external-count"].textContent = `外部通知 ${dashboard.gate.p2.external_notification_count} 次`;
   elements["fixture-id"].textContent = `${dashboard.meta.evidence_level} · ${dashboard.fixture.id}`;
+  elements["collection-count"].textContent = `${dashboard.self_collected.received_case_count} / 约${dashboard.self_collected.expected_case_count}组`;
+  elements["collection-status-copy"].textContent = dashboard.self_collected.received_case_count
+    ? "等待完成质量复核"
+    : "等待真实文件";
   elements["limitations-list"].replaceChildren(
     ...dashboard.truth.limitations.slice(0, 6).map((item) => createElement("li", { text: item })),
   );
@@ -726,6 +915,7 @@ function selectCase(caseId, announce = true) {
   if (!selected) return;
   resetPlayback(false);
   state.selectedCase = selected;
+  state.selectedEvidence = null;
   renderCases();
 
   const catalogIndex = caseCatalog.indexOf(selected) + 1;
@@ -822,21 +1012,28 @@ function finishPlayback() {
   let watchState = "complete";
 
   if (item.kind === "fall" || item.kind === "adl") {
-    metricValue = formatPercent(item.score);
-    if (item.alarms > 0 && item.kind === "fall") {
-      result = "检测到跌倒动作";
-      resultTone = "candidate";
-      watchState = "candidate";
-      caption = `匹配度表示与受控跌倒动作的相似程度；保存回放记录了 ${item.alarms} 段跌倒动作。它不是现实跌倒概率。`;
-    } else if (item.alarms > 0) {
-      result = "疑似误判为跌倒";
-      resultTone = "warning";
-      watchState = "warning";
-      caption = `参与者做的是日常活动，但保存回放记录了 ${item.alarms} 段跌倒动作，需要人工复核。`;
+    const live = state.selectedEvidence?.analysis;
+    if (live) {
+      const fall = live.fall_model;
+      const interpretation = live.interpretation;
+      result = fall.screening;
+      metricValue = fall.max_score === null ? "数据不足" : Number(fall.max_score).toFixed(3);
+      caption = fall.detail;
+      if (fall.candidate_windows?.length) {
+        resultTone = "candidate";
+        watchState = "candidate";
+      } else if (interpretation.review_required) {
+        resultTone = "warning";
+        watchState = "warning";
+      } else {
+        resultTone = "clear";
+      }
     } else {
-      result = "未检测到跌倒动作";
-      resultTone = "clear";
-      caption = "保存回放未记录跌倒动作；这只说明本案例结果，不等同于现实安全结论。";
+      metricValue = formatPercent(item.score);
+      result = item.alarms > 0 ? "保存结果需要复核" : "保存结果未发现跌倒动作";
+      resultTone = item.alarms > 0 ? "warning" : "clear";
+      watchState = item.alarms > 0 ? "warning" : "complete";
+      caption = "本机模型响应暂时不可用，因此只显示已保存摘要，不把它冒充本次计算。";
     }
   } else if (item.kind === "activity") {
     result = "活动案例已就绪";
@@ -851,20 +1048,22 @@ function finishPlayback() {
   elements["watch-device"].dataset.state = watchState;
   elements["watch-stage-label"].textContent = "检测完成";
   elements["watch-result"].textContent = result;
-  elements["watch-score-fill"].style.width = item.score === null ? "100%" : `${Math.max(3, item.score * 100)}%`;
-  elements["watch-score-text"].textContent = item.score === null ? "案例就绪" : `匹配 ${formatPercent(item.score)}`;
+  const liveRiskReady = Boolean(state.selectedEvidence?.analysis?.early_risk_model?.timeline?.length);
+  elements["watch-score-fill"].style.width = "100%";
+  elements["watch-score-text"].textContent = liveRiskReady ? "1 / 2 / 3 秒已计算" : item.score === null ? "案例就绪" : "判断完成";
   elements["result-state"].className = `result-state result-state--${resultTone}`;
   elements["result-state"].textContent = result;
   elements["result-metric-value"].textContent = metricValue;
-  elements["result-meter-fill"].style.width = item.score === null ? "100%" : `${Math.max(3, item.score * 100)}%`;
+  const liveFallScore = state.selectedEvidence?.analysis?.fall_model?.max_score;
+  elements["result-meter-fill"].style.width = Number.isFinite(Number(liveFallScore)) ? `${Math.max(3, Number(liveFallScore) * 100)}%` : "100%";
   elements["result-metric-caption"].textContent = caption;
   const analysis = completedResultAnalysis(item);
   elements["result-analysis-title"].textContent = analysis.title;
   elements["result-analysis-copy"].textContent = analysis.copy;
-  elements["evidence-result"].textContent = completedEvidenceConclusion(item, result);
-  elements["pipeline-model"].textContent = `${item.model}已完成独立判断`;
+  elements["evidence-result"].textContent = state.selectedEvidence?.analysis?.interpretation?.conclusion || completedEvidenceConclusion(item, result);
+  elements["pipeline-model"].textContent = liveRiskReady ? "跌倒筛查与 1 / 2 / 3 秒模型已真实运行" : `${item.model}已完成独立判断`;
   elements["pipeline-review"].textContent = "结果已显示 · 外部通知 0 次";
-  elements["playback-status"].textContent = `${result}。结果来自已保存案例摘要，外部通知保持 0 次。`;
+  elements["playback-status"].textContent = `${result}。六轴案例已在本次请求中真实计算，外部通知保持 0 次。`;
   elements["run-button"].querySelector("span").textContent = "重新检测";
   elements["run-button"].disabled = false;
   elements["pause-button"].disabled = true;
@@ -915,6 +1114,196 @@ function updateClock() {
     minute: "2-digit",
     hour12: false,
   }).format(new Date());
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+function resetUploadPipeline() {
+  elements["upload-pipeline"].querySelectorAll("li").forEach((item) => {
+    item.classList.remove("is-active", "is-complete", "is-warning", "is-error");
+  });
+  elements["upload-process-title"].textContent = state.uploadFile ? "文件已选择" : "等待文件";
+}
+
+function setUploadFile(file) {
+  elements["upload-error"].hidden = true;
+  elements["upload-result"].hidden = true;
+  state.uploadFile = null;
+  elements["upload-file-row"].hidden = true;
+  elements["upload-dropzone"].dataset.state = "empty";
+  elements["upload-submit"].disabled = true;
+  if (!file) {
+    elements["sensor-file"].value = "";
+    resetUploadPipeline();
+    return;
+  }
+  const suffix = file.name.toLowerCase().split(".").pop();
+  if (!["csv", "json"].includes(suffix)) {
+    showUploadError("请选择扩展名为 .csv 或 .json 的标准六轴文件。");
+    return;
+  }
+  if (file.size <= 0 || file.size > 5 * 1024 * 1024) {
+    showUploadError("文件必须大于 0 B 且不超过 5 MB。");
+    return;
+  }
+  state.uploadFile = file;
+  elements["upload-file-name"].textContent = file.name;
+  elements["upload-file-meta"].textContent = `${formatBytes(file.size)} · 只在本机内存分析`;
+  elements["upload-file-row"].hidden = false;
+  elements["upload-dropzone"].dataset.state = "selected";
+  elements["upload-submit"].disabled = false;
+  resetUploadPipeline();
+}
+
+function showUploadError(message) {
+  elements["upload-error-copy"].textContent = message;
+  elements["upload-error"].hidden = false;
+  elements["upload-error"].setAttribute("tabindex", "-1");
+  elements["upload-error"].focus();
+  elements["upload-process-title"].textContent = "需要修正文件";
+}
+
+function bytesToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 0x8000;
+  let binary = "";
+  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length)));
+  }
+  return window.btoa(binary);
+}
+
+function setUploadBusy(isBusy) {
+  elements["upload-submit"].disabled = isBusy || !state.uploadFile;
+  elements["upload-submit"].setAttribute("aria-busy", String(isBusy));
+  elements["upload-submit"].querySelector("span").textContent = isBusy ? "正在运行全部模型" : "开始分析新数据";
+  elements["sensor-file"].disabled = isBusy;
+  elements["acceleration-unit"].disabled = isBusy;
+  elements["gyroscope-unit"].disabled = isBusy;
+  elements["upload-remove"].disabled = isBusy;
+}
+
+function renderUploadPipeline(pipeline) {
+  const byId = new Map(pipeline.map((item) => [item.id, item]));
+  elements["upload-pipeline"].querySelectorAll("li[data-upload-step]").forEach((row) => {
+    const item = byId.get(row.dataset.uploadStep);
+    row.classList.remove("is-active", "is-complete", "is-warning", "is-error");
+    if (!item) return;
+    if (item.status === "COMPLETED") row.classList.add("is-complete");
+    else if (item.status === "INSUFFICIENT_DURATION") row.classList.add("is-warning");
+    else if (item.status === "FAILED") row.classList.add("is-error");
+  });
+}
+
+function renderUploadResult(payload) {
+  const analysis = payload.analysis;
+  const interpretation = analysis.interpretation;
+  const risk = analysis.early_risk_model;
+  elements["upload-result"].hidden = false;
+  elements["upload-quality"].textContent = `${payload.quality.level} · ${payload.quality.source_rate_hz} Hz → 50 Hz · ${payload.quality.duration_s} 秒`;
+  elements["upload-activity"].textContent = analysis.activity_model.label;
+  elements["upload-fall"].textContent = interpretation.fall_screening;
+  elements["upload-persistence"].textContent = `未保存 · SHA-256 ${payload.file.sha256.slice(0, 12)}…`;
+  elements["upload-evidence-list"].replaceChildren(
+    ...interpretation.evidence.map((item) => createElement("li", { text: item })),
+  );
+  elements["upload-conclusion"].textContent = interpretation.conclusion;
+  renderUploadSignalChart(analysis.waveform, payload.quality);
+  elements["upload-result-state"].className = interpretation.review_required
+    ? "result-state result-state--warning"
+    : "result-state result-state--clear";
+  elements["upload-result-state"].textContent = interpretation.review_required ? "需要复核" : "更接近日常活动";
+  if (risk.status === "COMPLETED") {
+    elements["upload-risk-meta"].textContent = `${risk.timeline.length} 个逐秒时间点 · 公开数据代理模型`;
+    renderRiskChart(elements["upload-risk-chart"], risk, {
+      title: "上传记录逐秒提前风险研究分数",
+      titleId: "upload-risk-title",
+      descriptionId: "upload-risk-description",
+    });
+    const maxima = risk.max_scores;
+    elements["upload-risk-summary"].textContent = `最高研究分数：1 秒 ${Number(maxima["1"]).toFixed(3)}、2 秒 ${Number(maxima["2"]).toFixed(3)}、3 秒 ${Number(maxima["3"]).toFixed(3)}。这是与公开受控数据代理标签的匹配程度，不是现实跌倒概率。`;
+  } else {
+    elements["upload-risk-meta"].textContent = "数据不足";
+    renderRiskChart(elements["upload-risk-chart"], risk, {
+      title: "上传记录逐秒提前风险研究分数",
+      titleId: "upload-risk-title",
+      descriptionId: "upload-risk-description",
+    });
+    elements["upload-risk-summary"].textContent = "记录不足一个完整研究窗口，未生成风险曲线。";
+  }
+  elements["upload-process-title"].textContent = "六步分析完成";
+  elements["upload-result-title"].setAttribute("tabindex", "-1");
+  elements["upload-result-title"].focus();
+}
+
+async function runUploadAnalysis() {
+  if (!state.uploadFile) {
+    showUploadError("请先选择一个标准六轴 CSV 或 JSON 文件。");
+    return;
+  }
+  state.uploadController?.abort();
+  state.uploadController = new AbortController();
+  elements["upload-error"].hidden = true;
+  elements["upload-result"].hidden = true;
+  resetUploadPipeline();
+  const firstStep = elements["upload-pipeline"].querySelector("li[data-upload-step='validate']");
+  firstStep?.classList.add("is-active");
+  elements["upload-process-title"].textContent = "服务器正在依次运行模型";
+  setUploadBusy(true);
+  try {
+    const content = await state.uploadFile.arrayBuffer();
+    const payload = await fetchJson("/api/analyze-upload", {
+      method: "POST",
+      signal: state.uploadController.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        file_name: state.uploadFile.name,
+        content_base64: bytesToBase64(content),
+        acceleration_unit: elements["acceleration-unit"].value,
+        gyroscope_unit: elements["gyroscope-unit"].value,
+      }),
+    });
+    renderUploadPipeline(payload.pipeline);
+    renderUploadResult(payload);
+  } catch (error) {
+    if (error.name === "AbortError") return;
+    elements["upload-pipeline"].querySelector("li.is-active")?.classList.add("is-error");
+    showUploadError(error.message || "模型分析失败，请检查文件后重试。");
+  } finally {
+    setUploadBusy(false);
+  }
+}
+
+function setupUploadControls() {
+  elements["sensor-file"].addEventListener("change", (event) => setUploadFile(event.target.files?.[0] || null));
+  elements["upload-form"].addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (event.submitter?.id === "upload-remove") {
+      setUploadFile(null);
+      elements["sensor-file"].focus();
+      return;
+    }
+    runUploadAnalysis();
+  });
+  ["dragenter", "dragover"].forEach((name) => {
+    elements["upload-dropzone"].addEventListener(name, (event) => {
+      event.preventDefault();
+      if (!elements["sensor-file"].disabled) elements["upload-dropzone"].classList.add("is-dragging");
+    });
+  });
+  ["dragleave", "drop"].forEach((name) => {
+    elements["upload-dropzone"].addEventListener(name, (event) => {
+      event.preventDefault();
+      elements["upload-dropzone"].classList.remove("is-dragging");
+    });
+  });
+  elements["upload-dropzone"].addEventListener("drop", (event) => {
+    if (!elements["sensor-file"].disabled) setUploadFile(event.dataTransfer?.files?.[0] || null);
+  });
 }
 
 function setupCaseControls() {
@@ -1019,10 +1408,12 @@ window.addEventListener("beforeunload", () => {
   stopPlayback();
   state.loadController?.abort();
   state.evidenceController?.abort();
+  state.uploadController?.abort();
   if (state.clockTimer) window.clearInterval(state.clockTimer);
 });
 
 setupCaseControls();
+setupUploadControls();
 setupNavigationTracking();
 updateClock();
 state.clockTimer = window.setInterval(updateClock, 30_000);

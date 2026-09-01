@@ -3,10 +3,11 @@
   "sourceRoots": ["frontend/src", "research/early_risk/workbench"],
   "locale": "zh-CN",
   "canonicalMap": "UX-CONTRACT.md",
-  "requiredCapabilities": ["Scrollbar", "Select/Listbox"],
+  "requiredCapabilities": ["Scrollbar", "Select/Listbox", "Form"],
   "ownership": {
     "Scrollbar": "global-application-stylesheet",
-    "Select/Listbox": "native"
+    "Select/Listbox": "native",
+    "Form": "native-local-analysis-form"
   },
   "requiredCommands": ["contract-export", "generate-api", "backend-tests", "early-risk-tests", "build"],
   "commands": {

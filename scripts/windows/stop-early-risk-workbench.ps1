@@ -11,7 +11,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $projectRoot 'research\early_risk\wo
     throw "项目目录校验失败：$projectRoot"
 }
 if (-not (Test-Path -LiteralPath $statePath -PathType Leaf)) {
-    Write-Host 'E0 研究工作台当前没有由一键脚本启动的运行进程。' -ForegroundColor Yellow
+    Write-Host '校赛风险研究工作台当前没有由一键脚本记录的运行进程。' -ForegroundColor Yellow
     exit 0
 }
 
@@ -27,8 +27,14 @@ catch {
 
 $actualPath = [IO.Path]::GetFullPath($process.Path)
 $expectedPath = [IO.Path]::GetFullPath([string]$state.process_path)
-$actualStart = $process.StartTime.ToUniversalTime().ToString('o')
-if ($actualPath -ne $expectedPath -or $actualStart -ne [string]$state.process_start_time_utc) {
+$actualStartTicks = $process.StartTime.ToUniversalTime().Ticks
+$expectedStartTicks = if ($null -ne $state.PSObject.Properties['process_start_time_utc_ticks']) {
+    [long]$state.process_start_time_utc_ticks
+}
+else {
+    ([DateTime]$state.process_start_time_utc).ToUniversalTime().Ticks
+}
+if ($actualPath -ne $expectedPath -or $actualStartTicks -ne $expectedStartTicks) {
     throw '运行状态中的进程标识已被其他程序复用；为避免误停其他程序，已拒绝执行。'
 }
 
@@ -38,4 +44,4 @@ if (Get-Process -Id $process.Id -ErrorAction SilentlyContinue) {
     Stop-Process -Id $process.Id -Force -ErrorAction Stop
 }
 Remove-Item -LiteralPath $statePath -Force
-Write-Host 'E0 提前风险研究工作台已停止。合同、报告和日志均保留。' -ForegroundColor Green
+Write-Host '校赛风险研究工作台已停止。合同、报告和日志均保留。' -ForegroundColor Green

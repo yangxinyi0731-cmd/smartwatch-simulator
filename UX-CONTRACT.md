@@ -2,8 +2,8 @@
 
 ## Product context
 
-- Audience：三模型产品面向比赛评委、无代码基础项目成员和研究开发人员；独立 E0 检测台面向现场评委和项目成员，同时保留研究核对入口。
-- Primary jobs：选择案例、播放数据、理解三个模型、追溯来源、导出报告；在独立 E0 检测台中，从 105 组已登记案例里筛选并选择一组，操作模拟手表开始/暂停/重置，查看四步判断过程与已保存结果，并明确区分当前模块和锁定的未来预测能力。
+- Audience：现有三模型产品面向比赛评委、无代码基础项目成员和研究开发人员；独立校赛风险评估台面向现场评委和项目成员，同时保留研究核对入口。
+- Primary jobs：上传新的六轴记录，完成质量检查、标准化和真实模型分析，核对实际波形、逐秒 1/2/3 秒研究曲线、判断依据与结论；也可从 105 组公开案例中选择一组并操作模拟手表复核。自主采集区在真实文件到达前保持 0/约30组。
 - Target market(s)：中国大陆简体中文比赛演示。
 - Active locales：`zh-CN`。
 - Language/content register：通俗、诚实、可验证；公众层先用生活语言，E0、Gate、dry-run、AUPRC、ECE 等技术词只能放在次要说明或展开区，并必须给出简体中文含义。
@@ -43,7 +43,7 @@
 | Table Selection | 第 12 步 `DataTable` 共享组件 | 本合同 | page / all-results | component + E2E |
 | Select/Listbox | 当前版本使用浏览器原生 `select` | `premium-ui.json` + 本合同 | native | keyboard + popup |
 | Date | 第 12 步 `DateField`，优先键盘输入 | 本合同 | typed | locale + keyboard + E2E |
-| Form | 第 12 步共享 `FormField` 与 schema 适配器 | 本合同 | create / edit | validation E2E |
+| Form | 校赛工作台 `#upload-form`；产品后续共享 `FormField` | 本合同 + `docs/early_risk/NEW_DATA_FORMAT.md` | local file analysis / future create-edit | client + server validation E2E |
 | Scrollbar | 每个文档的全局样式消费 `frontend/src/tokens.css` | DESIGN.md | stable-gutter | computed style |
 | Toast | 第 12 步共享 `AppToast` provider | 本合同 | success / warning / info / error | live-region test |
 | CRUD | 首版案例为只读；未来共享 route/service 行为 | 本合同 | return / stay | full-flow E2E |
@@ -61,7 +61,7 @@
 | 系统连接状态 | `frontend/src/composables/useSystemConnection.ts` | HTTP 健康检查后建立 WebSocket；旧请求取消；断线有上限地自动重试 |
 | HTTP 类型 | `frontend/src/api/generated/` | 从 `docs/contracts/openapi.json` 自动生成，不手工修改；构建时做 TypeScript 检查 |
 | 测试报告 | `frontend/src/composables/useReports.ts` 与 `#reports` | 只读已保存报告；显示证据范围、解释、限制与 SHA-256；JSON 下载使用真实 GET 端点 |
-| E0 模拟手表检测台 | `research/early_risk/workbench_server.py` 与 `research/early_risk/workbench/` | 独立回环服务；前端提供 105 组案例搜索、筛选、分页、模拟手表控制、结果复核和格式化判断依据；只读 E0 合同/报告、已保存 WEDA 摘要、现有 SQLite 案例登记与本机传感器文件；不运行三个模型、不写 SQLite，后端强制 dry-run；不挂载到产品 UI |
+| 校赛模拟手表风险评估台 | `research/early_risk/workbench_server.py` 与 `research/early_risk/workbench/` | 独立回环服务；上传表单在内存中分析标准 CSV/JSON，运行活动、跌倒候选和公开代理提前风险模型；公开六轴案例也在请求时真实运行模型；不写 SQLite、不保存上传文件、不启用外部通知；不挂载到产品 UI |
 
 ## Component behavior
 
@@ -74,6 +74,7 @@
 | E0 Search | 输入即筛选 + 显式清除按钮 | 字段边框强调 | 3px 可见轮廓 | 匹配时同步首个可见案例 | 不适用 | 保留尺寸 | 无结果文字状态 |
 | E0 Case list | 类型总数 + 6 条/页 | 行背景与边框强调 | 行按钮可见轮廓 | `aria-pressed` 当前选择 | 翻页边界禁用 | 选择时尺寸稳定 | 保留已选案例并允许重新读取 |
 | E0 Watch controls | 开始、暂停、重置 | 色阶变化 | 3px 可见轮廓 | 当前阶段与四步流程同步 | 不可用操作禁用 | 已知四步确定进度 | 页面级连接错误提供重新连接 |
+| New-data upload | 可见文件标签、拖放区、两个单位选择器 | 边框强调 | 3px 可见轮廓 | 显示文件名和大小 | 忙碌时禁用更换与重复提交 | 稳定按钮文字“正在运行全部模型” | 相邻持久文字错误，保留文件并可重试 |
 
 ## Dataset navigation
 
@@ -95,7 +96,7 @@
 | 暂停回放 | “暂停” | 同步按钮状态 | 当前回放页 | 时间轴停止 | 显示失败原因 | 原按钮 | PRODUCT.md |
 | 重置回放 | “重置回放” | 悲观等待 | 当前案例起点 | 状态区确认 | 保留当前状态并重试 | 开始回放 | PRODUCT.md |
 | Search | 案例搜索框 | 保留列表框架 | 当前路由查询 | 结果数状态 | 搜索区重试 | 搜索框 | 本合同 |
-| Upload/background job | “运行全部案例” | 持久阶段进度 | 报告详情 | 报告已生成 | 可恢复/重试失败案例 | 报告标题 | PRODUCT.md |
+| 分析新数据 | “开始分析新数据” | 六步阶段名，不显示假百分比；按钮尺寸稳定 | 当前上传结果区 | 四项事实、双证据图、生成结论 | 保留文件和单位；相邻错误说明后重试 | 成功聚焦结果标题，失败聚焦错误区 | `docs/early_risk/WORKBENCH.md` |
 | Cancel/back | “返回案例库” | 无 | 来源页面 | 通常无 | 未保存时应用对话框 | 原触发位置 | 本合同 |
 | 刷新系统状态 | “刷新状态” | 按钮保持尺寸并显示“检查中” | 当前总览 | 状态条和连接说明更新 | 保留空状态并自动重试 | 原按钮 | `docs/ARCHITECTURE.md` |
 | 下载报告 | “下载 JSON” | 浏览器原生下载 | 当前页面 | 获得统一报告快照 | 后端错误响应保留可重试说明 | 原链接 | `docs/ARCHITECTURE.md` |
@@ -105,6 +106,7 @@
 | 暂停/继续模拟检测 | “暂停检测”/“继续检测” | 前端计时器停止或继续 | 当前检测台 | 阶段编号与状态文字保持一致 | 可重置到等待状态 | 原控制按钮 | `docs/early_risk/WORKBENCH.md` |
 | 重置模拟检测 | “重置本次检测” | 立即停止前端阶段 | 当前检测台 | 当前案例保持，结果回到等待运行 | 可重新开始；不改变保存结果 | 开始检测 | `docs/early_risk/WORKBENCH.md` |
 | 读取 E0 判断依据 | 选择案例自动触发 `GET /api/case-evidence/{case_id}` | 保留区域尺寸并显示“正在核对” | 当前检测台 | WEDA/CAPTURE-24 显示经哈希与形状核对的真实合量波形；规律案例显示固定种子事件时间图 | 404/503 时显示文字错误态；禁止示意曲线或旧案例响应覆盖新选择 | 原案例行 | `docs/early_risk/WORKBENCH.md` |
+| 移除新文件 | 文件行关闭按钮 | 立即取消当前可选状态 | 当前上传表单 | 回到空文件状态，清除旧结果 | 不适用 | 文件选择器 | `docs/early_risk/NEW_DATA_FORMAT.md` |
 
 ## Navigation and responsive behavior
 
@@ -113,7 +115,7 @@
 - Breadcrumb/tab/route state：顶层页面使用路由链接；同一案例的同级视图才使用 route-backed tabs。
 - Sidebar transformation：桌面固定侧栏；小于 760px 转为顶部品牌区和可横向滚动导航，不隐藏当前项。三模型子项在窄屏收拢到“三模型中心”顶层入口，内容区仍保留三个模型锚点。
 - Unavailable navigation：尚未实现的案例库和告警记录显示“未开放”，使用非交互元素并附原因，不使用空 `href`、`href="#"` 或无效果按钮；测试报告使用真实 `#reports` 锚点。
-- E0 页面导航：桌面侧栏只使用“实时检测、案例回放、判断过程、模型状态、说明与边界”五个真实锚点；小于 820px 转成可横向滚动的顶部导航。P3–P9 以“未来几秒风险预测 / 后端尚未接入 / 锁定”显示，不提供伪装成可点击入口的导航。
+- 校赛页面导航：桌面侧栏只使用“新数据检测、实时检测、案例回放、判断过程、模型状态、说明与边界”六个真实锚点；小于 820px 转成可横向滚动的顶部导航。公开代理模型显示“已接入”，现实预测证据与 P3–P9 仍只在边界区说明，不伪装成已完成产品能力。
 - Responsive table：优先横向滚动并保留案例 ID 与来源；详情页显示全部字段。
 - Truncation：来源、错误与真实性说明不截断；长哈希可显示短预览并提供复制。
 - Focus restoration：路由后聚焦主标题；对话框关闭回到触发器；sticky 区域不得遮挡焦点。
@@ -135,7 +137,7 @@
 - Auto-save：首版不自动保存敏感设置；本地草稿必须明确标记。
 - Offline：保留已加载案例，显示持续连接状态；后端写操作不静默排队。
 - Retry：健康检查只重试安全 GET，使用 1/2/5/10 秒有上限退避；切换页面可见性或手动刷新时取消旧请求并重新核验。其他操作提供明确重试。
-- E0 页面：重新读取会取消旧 GET；切换案例会取消旧判断依据请求，旧响应不得覆盖新选择。案例搜索、筛选、分页、选择与四步检测动画都只存在当前页面内，不进入 URL、本地存储或报告文件。当前前端不发起模型 POST；`GET /api/case-evidence/{case_id}` 只读核对本机案例登记与传感器文件，不运行模型、不写 SQLite。WEDA 结果仍取自仓库已保存摘要，CAPTURE-24 标签和合成规律不包装成新模型结果，服务端继续拒绝关闭 dry-run。
+- 校赛页面：重新读取会取消旧 GET；切换案例会取消旧判断依据请求；新上传会取消上一条上传请求，旧响应不得覆盖新状态。`POST /api/analyze-upload` 只接受 5 MB 内标准 CSV/JSON，经客户端扩展名检查和服务端表头、数值、时间、六轴、采样率、单位检查后在内存中运行模型；不写 SQLite、不进入案例登记。WEDA 六轴案例通过 `GET /api/case-evidence/{case_id}` 真实运行跌倒与提前风险模型；CAPTURE-24 和合成规律仍按其独立输入边界展示。策略模拟端继续拒绝关闭 dry-run。
 - Conflict：首版本地单进程；版本冲突时重新读取，不覆盖较新记录。
 - Session：首版无账号；未来认证另行更新合同。
 - Progress：已知总数用确定进度，未知使用阶段名称，不显示假百分比。
@@ -163,7 +165,7 @@
 - Browser matrix：Windows Chrome/Edge；1440×900、1024×768、窄窗口 390×844；200% zoom 为扩展检查。
 - Accessibility：键盘、可见焦点、语义、对比度、reduced motion、forced colors。
 - Current page states：总览必须验证检查中、后端未连接、HTTP 成功但实时通道断开、完整连接、SQLite 结构版本 5、105 案例、三个已登记研究模型、案例读取失败、回放读取失败、WEDA 六轴回放、100 天合成规律回放和 CAPTURE-24 三轴活动回放。波形只能来自已核验文件，规律时间线必须标记合成，活动数据必须标明恢复前缀子集和人群限制。
-- E0 page states：验证本机内容读取中、读取失败/重试、五类案例筛选与 `aria-pressed`、105 组总数及 `40 / 60 / 4 / 1` 分类、6 条分页、搜索/清除/无结果、选择案例后手表与判断区同步、开始/暂停/继续/重置、WEDA 保存摘要、日常活动疑似误判、CAPTURE-24 案例就绪、合成规律案例就绪、P3–P9 锁定、默认“只演示、不报警”、说明与边界渐进展开和外部通知数 0。判断依据必须覆盖加载、真实六轴、真实三轴、合成规律和读取失败状态；动作图明确标为示意且不是案例影像，波形说明原始/显示采样数、单位、标签区间和不依赖颜色的峰值摘要，规律时间图用形状与文字区分用餐/散步/午睡，格式化事实固定列出来源核对、连续输入、比较方式和当前结论。日常/走路标签不得使用危险红色；没有传感器流时不得生成假波形。左侧五项导航必须各有简体中文用途副标题且主副文字不重叠；同排的“实时检测”和“案例回放”只能有一个 `aria-current`。WEDA 分值必须显示为“跌倒特征匹配度”并解释它不是现实跌倒概率；检测完成后必须生成基于已有案例事实的独立结果分析，不得虚构逐轴或身体部位原因；三个现有模型必须各有一句中文释义，人物统一称“参与者”。1440×900 与 390×844 均不得产生页面级横向溢出，所有可见操作目标至少 44×44px。
+- 校赛 page states：验证本机内容读取中、读取失败/重试；上传空状态、合法 CSV、合法 JSON、缺少陀螺仪、错误编码、超大文件、短于 1 秒拒绝、1–4 秒部分模型降级、4–20 秒活动模型降级、20 秒以上全部模型完成、移除和重试；自主采集固定 0/约30组。成功结果必须显示数据质量、当前动作候选、跌倒筛查、未持久化、加速度/角速度实际波形、1/2/3 秒逐秒曲线、各自阈值、代理锚点说明、判断依据和最终结论。继续验证 105 组分类、搜索、分页、手表控制、真实 WEDA 模型响应、CAPTURE-24、合成规律、依据失败、六项导航唯一 `aria-current`、四个模型中文释义和外部通知 0 次。人物统一称“参与者”，不得显示“综合风险分”。1440×900 与 390×844 均不得页面级横向溢出，所有可见操作目标至少 44×44px。
 - Component-state：后续组件建立 Vitest、Playwright 与视觉状态覆盖。
 - Canonical sibling：第 1 步为新项目无 sibling；以后以守望台总览为视觉基线。
 - CRUD/failure evidence：当前无 CRUD；第 2 步开始记录 API 失败路径。
