@@ -173,4 +173,4 @@ npm --prefix frontend run generate:api
 - 一键服务把生产前端、API 与 WebSocket 放在同一个 `http://127.0.0.1:8000/` 来源下；
 - 当前无账号、权限、局域网服务或互联网发布；
 - 当前已有三个研究版模型推理和本机案例文件，但无真实设备流；WebSocket 只发送系统状态；
-- GitHub 远程仓库仍未配置，本阶段只有公开资料检索，没有发布项目。
+- 私有 GitHub 远程为 `https://github.com/yangxinyi0731-cmd/smartwatch-simulator.git`；当前开发分支跟踪同名远程分支。该远程只保存 Git 提交，不改变本机服务和数据边界。

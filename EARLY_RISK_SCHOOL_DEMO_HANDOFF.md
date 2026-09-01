@@ -212,6 +212,7 @@ time_s,ax,ay,az,gx,gy,gz
 
 - 当前分支：`codex/early-risk-e0-workbench`；
 - 本轮起点：`b447dd0ef99490198c37813bad2f3c36d6777eff`；
-- 没有配置 Git remote；
-- 没有向 GitHub 或其他平台推送；
+- 私有远程：`origin = https://github.com/yangxinyi0731-cmd/smartwatch-simulator.git`；
+- 当前分支跟踪 `origin/codex/early-risk-e0-workbench`，GitHub 默认分支也是该分支；
+- GitHub 只在提交并推送后更新，不会把未提交文件当作实时云盘内容；
 - 页面只监听 `127.0.0.1:8010`，当前不是互联网部署。

@@ -104,7 +104,7 @@ P0+P1+P2 的版本化合同、资产审计、确定性夹具、Gate 和 dry-run 
 
 ## 7. Git 与恢复
 
-本分支从 `75745e0…` 创建，与原有三模型产品提交隔离。没有 Git remote，也没有推送。需要撤销本次成品时，先确认当前分支和提交，再对本次交付提交执行标准 `git revert <commit>`；不得使用 `git reset --hard` 或改写历史。
+本分支从 `75745e0…` 创建，与原有三模型产品提交隔离。本文件形成时尚未配置 Git remote；当前状态已由校赛版交接替代，私有远程为 `https://github.com/yangxinyi0731-cmd/smartwatch-simulator.git`。需要撤销本次成品时，先确认当前分支和提交，再对本次交付提交执行标准 `git revert <commit>`；不得使用 `git reset --hard` 或改写历史。
 
 ## 8. 仍然锁定
 
