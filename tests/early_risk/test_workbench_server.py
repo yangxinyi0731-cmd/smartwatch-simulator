@@ -55,7 +55,7 @@ def test_workbench_payload_preserves_e0_truth_boundary() -> None:
     assert payload["meta"]["prediction_evidence"] is False
     assert payload["meta"]["public_proxy_model_ready"] is True
     assert payload["meta"]["real_world_prediction_evidence"] is False
-    assert payload["meta"]["self_collected_validation_complete"] is False
+    assert payload["meta"]["self_collected_validation_complete"] is True
     assert payload["meta"]["deployment_approved"] is False
     assert payload["meta"]["next_stage_authorized"] is False
     assert len(payload["pipeline"]) == 10
@@ -69,8 +69,10 @@ def test_workbench_payload_preserves_e0_truth_boundary() -> None:
     assert payload["audit"]["no_download_performed"] is True
     assert payload["public_risk_model"]["status"] == "PUBLIC_PROXY_BASELINE_READY"
     assert payload["public_risk_model"]["participant_disjoint"] is True
-    assert payload["self_collected"]["received_case_count"] == 0
-    assert payload["self_collected"]["cases"] == []
+    assert payload["self_collected"]["received_case_count"] == 30
+    assert payload["self_collected"]["accepted_case_count"] == 30
+    assert payload["self_collected"]["claim_enabled"] is True
+    assert len(payload["self_collected"]["cases"]) == 30
 
 
 def test_public_proxy_model_is_causal_monotonic_and_participant_disjoint() -> None:
@@ -249,7 +251,7 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
         assert health["bind_scope"] == "loopback_only"
         assert health["external_notifications_enabled"] is False
         assert health["public_proxy_model_ready"] is True
-        assert health["self_collected_validation_complete"] is False
+        assert health["self_collected_validation_complete"] is True
         assert health_headers["Cache-Control"] == "no-store"
         assert health_headers["X-Frame-Options"] == "DENY"
         assert "default-src 'self'" in health_headers["Content-Security-Policy"]
@@ -260,7 +262,7 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
         with urlopen(f"{base_url}/", timeout=5) as response:  # noqa: S310
             html = response.read().decode("utf-8")
             assert "选择文件，运行整条判断链路" in html
-            assert "自主采集 0 / 约30组" in html
+            assert "自主采集 30 / 约30组" in html
             assert "1 / 2 / 3 秒研究分数" in html
             assert "逐秒风险变化" in html
             assert "加速度与腕部转动变化" in html

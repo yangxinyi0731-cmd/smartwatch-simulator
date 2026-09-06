@@ -694,6 +694,7 @@ def build_workbench_payload() -> dict[str, Any]:
     public_risk_manifest = _read_json(PUBLIC_RISK_MANIFEST_PATH)
     public_risk_report = _read_json(PUBLIC_RISK_REPORT_PATH)
     self_collected = _read_json(SELF_COLLECTED_REGISTRY_PATH)
+    self_collected_validation_complete = bool(self_collected.get("claim_enabled", False))
 
     gate_results = gate["results"]
     audit_results = audit["results"]
@@ -708,7 +709,7 @@ def build_workbench_payload() -> dict[str, Any]:
             "prediction_evidence": gate["prediction_evidence"],
             "public_proxy_model_ready": True,
             "real_world_prediction_evidence": False,
-            "self_collected_validation_complete": False,
+            "self_collected_validation_complete": self_collected_validation_complete,
             "deployment_approved": gate["deployment_approved"],
             "engineering_status": gate_results["overall"]["engineering_status"],
             "formal_signoff_complete": gate_results["overall"]["formal_signoff_complete"],
@@ -743,7 +744,7 @@ def build_workbench_payload() -> dict[str, Any]:
             "received_case_count": self_collected["received_case_count"],
             "accepted_case_count": self_collected["accepted_case_count"],
             "cases": self_collected["cases"],
-            "claim_enabled": False,
+            "claim_enabled": self_collected_validation_complete,
             "note": self_collected["note"],
         },
         "pipeline": list(PIPELINE_STAGES),
@@ -1006,6 +1007,7 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
         route = urlparse(self.path).path
         try:
             if route == "/api/health":
+                self_collected = _read_json(SELF_COLLECTED_REGISTRY_PATH)
                 self._write_json(
                     HTTPStatus.OK,
                     {
@@ -1015,7 +1017,9 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
                         "evidence_level": "E0",
                         "prediction_evidence": False,
                         "public_proxy_model_ready": True,
-                        "self_collected_validation_complete": False,
+                        "self_collected_validation_complete": bool(
+                            self_collected.get("claim_enabled", False)
+                        ),
                         "real_world_prediction_evidence": False,
                         "deployment_approved": False,
                         "external_notifications_enabled": False,

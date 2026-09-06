@@ -941,9 +941,11 @@ function renderDashboardMeta(dashboard) {
   elements["external-count"].textContent = `外部通知 ${dashboard.gate.p2.external_notification_count} 次`;
   elements["fixture-id"].textContent = `${dashboard.meta.evidence_level} · ${dashboard.fixture.id}`;
   elements["collection-count"].textContent = `${dashboard.self_collected.received_case_count} / 约${dashboard.self_collected.expected_case_count}组`;
-  elements["collection-status-copy"].textContent = dashboard.self_collected.received_case_count
-    ? "等待完成质量复核"
-    : "等待真实文件";
+  elements["collection-status-copy"].textContent = dashboard.self_collected.claim_enabled
+    ? "已完成质量与工程复核"
+    : dashboard.self_collected.received_case_count
+      ? "等待完成质量复核"
+      : "等待真实文件";
   elements["limitations-list"].replaceChildren(
     ...dashboard.truth.limitations.slice(0, 6).map((item) => createElement("li", { text: item })),
   );

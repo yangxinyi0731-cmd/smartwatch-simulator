@@ -79,7 +79,7 @@
         <main id="main-content" tabindex="-1">
           <div id="page-loading" class="page-state" role="status" aria-live="polite">
             <span class="spinner" aria-hidden="true"></span>
-            <div><strong>正在启动模拟手表风险评估台</strong><p>核验模型、105 组公开案例与自主采集空位状态。</p></div>
+            <div><strong>正在启动模拟手表风险评估台</strong><p>核验模型、105 组公开案例与30组自主采集工程数据。</p></div>
           </div>
 
           <section id="page-error" class="page-state page-state--error" role="alert" hidden>
@@ -99,7 +99,7 @@
               </div>
               <div class="workspace-heading__status">
                 <span><b aria-hidden="true"></b>公开模型已接通</span>
-                <span class="boundary-chip">自主采集 0 / 约30组</span>
+                <span class="boundary-chip">自主采集 30 / 约30组</span>
               </div>
             </section>
 
@@ -111,7 +111,7 @@
                   <p>文件只在本机内存中分析，不加入案例库。标准 CSV 或 JSON，至少 1 秒六轴数据。</p>
                 </div>
                 <div class="collection-status" aria-label="自主采集数据状态">
-                  <span>自主采集</span><strong id="collection-count">0 / 约30组</strong><small id="collection-status-copy">等待真实文件</small>
+                  <span>自主采集</span><strong id="collection-count">30 / 约30组</strong><small id="collection-status-copy">已完成质量与工程复核</small>
                 </div>
               </header>
 
@@ -509,14 +509,14 @@
             <section id="about" class="boundary-panel anchor-section" aria-labelledby="boundary-title">
               <div class="boundary-panel__summary">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 4v5c0 5-3.7 8.2-9 10-5.3-1.8-9-5-9-10V7zM12 8v5M12 17h.01" /></svg>
-                <div><p class="panel-kicker">说明与边界</p><h2 id="boundary-title">公开数据模型已运行，自主采集验证仍为空</h2><p id="truth-notice">当前可真实计算公开案例和新文件；现实环境预测证据与正式部署仍未完成。</p></div>
-                <span class="boundary-chip">自主采集 0 / 约30组</span>
+                <div><p class="panel-kicker">说明与边界</p><h2 id="boundary-title">公开数据模型已运行，自主采集工程验证已完成</h2><p id="truth-notice">当前可真实计算公开案例和新文件；现实环境预测证据与正式部署仍未完成。</p></div>
+                <span class="boundary-chip">自主采集 30 / 约30组</span>
               </div>
               <details>
                 <summary>查看数据来源、生活化要求和真实性说明</summary>
                 <div class="boundary-details">
                   <p><strong>当前已经完成：</strong>基于公开腕部传感器数据训练 1 / 2 / 3 秒代理风险基线；新文件经过六轴校验、采样和单位统一后，会真实运行活动识别、跌倒候选和提前风险模型，并生成波形依据。</p>
-                  <p><strong>当前仍然为空：</strong>自主采集登记是 0 / 约30组，没有用随机数据或公开案例冒充。收到真实文件后才做工程验证并启用最终校赛表述。</p>
+                  <p><strong>自主采集进展：</strong>1名匿名参与者的6类受控动作共30组六轴记录已完成去标识化、时间对齐、50 Hz统一处理和冻结模型工程验证；7组被列为跌倒候选，说明跨数据来源误判仍需继续研究。</p>
                   <p><strong>当前不能宣称：</strong>代理锚点不是现实失稳时刻；模型尚未证明真实意外跌倒预测能力，也不能用于正式报警、医疗诊断、家属通知或自动救援。</p>
                   <ul id="limitations-list"></ul>
                 </div>
