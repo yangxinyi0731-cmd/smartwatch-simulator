@@ -67,7 +67,7 @@ function Get-VerifiedWorkbenchListener {
                 continue
             }
             $health = Invoke-RestMethod -Uri 'http://127.0.0.1:8010/api/health' -TimeoutSec 3
-            if ($health.service -ne 'smartwatch-risk-research-workbench' -or $health.state -ne 'ready' -or $health.bind_scope -ne 'loopback_only' -or -not $health.public_proxy_model_ready -or $health.self_collected_validation_complete -or $health.external_notifications_enabled) {
+            if ($health.service -ne 'smartwatch-risk-research-workbench' -or $health.state -ne 'ready' -or $health.bind_scope -ne 'loopback_only' -or -not $health.public_proxy_model_ready -or -not $health.self_collected_validation_complete -or $health.self_collected_case_count -ne 30 -or $health.external_notifications_enabled) {
                 continue
             }
             return Get-Process -Id ([int]$connection.OwningProcess) -ErrorAction Stop
@@ -93,7 +93,8 @@ function Save-ListenerState {
         url = $url
         evidence_level = 'E0'
         public_proxy_model_ready = $true
-        self_collected_validation_complete = $false
+        self_collected_validation_complete = $true
+        self_collected_case_count = 30
         external_notifications_enabled = $false
     }
     $listenerState | ConvertTo-Json | Set-Content -LiteralPath $statePath -Encoding UTF8
@@ -116,7 +117,7 @@ if (Test-Path -LiteralPath $statePath -PathType Leaf) {
         $existingState = Get-Content -LiteralPath $statePath -Raw -Encoding UTF8 | ConvertFrom-Json
         if (Test-RecordedProcess -State $existingState) {
             $health = Invoke-RestMethod -Uri 'http://127.0.0.1:8010/api/health' -TimeoutSec 3
-            if ($health.service -eq 'smartwatch-risk-research-workbench' -and $health.state -eq 'ready' -and $health.bind_scope -eq 'loopback_only' -and $health.public_proxy_model_ready -and -not $health.self_collected_validation_complete -and -not $health.external_notifications_enabled) {
+            if ($health.service -eq 'smartwatch-risk-research-workbench' -and $health.state -eq 'ready' -and $health.bind_scope -eq 'loopback_only' -and $health.public_proxy_model_ready -and $health.self_collected_validation_complete -and $health.self_collected_case_count -eq 30 -and -not $health.external_notifications_enabled) {
                 Write-Host "校赛风险研究工作台已经运行：$($existingState.url)" -ForegroundColor Green
                 if (-not $NoBrowser) {
                     Start-Process -FilePath ([string]$existingState.url)
@@ -187,7 +188,7 @@ if ($null -eq $health -or $health.state -ne 'ready') {
     throw "工作台未能在 30 秒内就绪。诊断信息：`n$lastError"
 }
 
-if ($health.bind_scope -ne 'loopback_only' -or $health.evidence_level -ne 'E0' -or -not $health.public_proxy_model_ready -or $health.self_collected_validation_complete -or $health.external_notifications_enabled) {
+if ($health.bind_scope -ne 'loopback_only' -or $health.evidence_level -ne 'E0' -or -not $health.public_proxy_model_ready -or -not $health.self_collected_validation_complete -or $health.self_collected_case_count -ne 30 -or $health.external_notifications_enabled) {
     Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
     Remove-Item -LiteralPath $statePath -Force -ErrorAction SilentlyContinue
     throw '工作台安全边界检查失败，已停止启动。'
@@ -203,7 +204,7 @@ if ($null -eq $listener) {
 Save-ListenerState -Listener $listener
 
 Write-Host "校赛风险评估工作台已就绪：$url" -ForegroundColor Green
-Write-Host '范围：公开代理模型已运行；自主采集 0/约30组；现实预测证据与外部通知关闭。' -ForegroundColor Green
+Write-Host '范围：公开代理模型已运行；30组自主采集数据已完成工程验证；现实预测证据与外部通知关闭。' -ForegroundColor Green
 Write-Host '可双击 stop-early-risk-workbench.cmd 停止；遇到问题可双击 diagnose-early-risk-workbench.cmd。'
 if (-not $NoBrowser) {
     Start-Process -FilePath $url

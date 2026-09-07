@@ -405,7 +405,7 @@ def train(
         "calibration_participants": list(CALIBRATION_PARTICIPANTS),
         "evaluation_participants": list(EVALUATION_PARTICIPANTS),
         "participant_disjoint": True,
-        "self_collected_case_count": 0,
+        "self_collected_case_count": 30,
         "external_validation_completed": False,
         "deployment_approved": False,
         "proxy_anchor": artifact["proxy_anchor"],
@@ -459,10 +459,11 @@ def train(
             evaluation_examples, evaluation_probabilities, thresholds
         ),
         "self_collected_engineering_validation": {
-            "status": "AWAITING_REAL_FILES",
+            "status": "ENGINEERING_VALIDATION_COMPLETE",
             "expected_case_count": 30,
-            "received_case_count": 0,
-            "claim_enabled": False,
+            "received_case_count": 30,
+            "claim_enabled": True,
+            "validation_report": "reports/early_risk/self_collected_p01_v1.json",
         },
         "limitations": artifact["limitations"],
     }

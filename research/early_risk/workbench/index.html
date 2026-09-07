@@ -32,9 +32,9 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h4l2-7 4 13 2-6h4M4 20h16" /></svg>
             <span class="sidebar-nav__copy"><strong>实时检测</strong><small>操作模拟手表</small></span>
           </a>
-          <a class="sidebar-nav__link" href="#cases" aria-label="案例回放：选择 105 组数据">
+          <a class="sidebar-nav__link" href="#cases" aria-label="案例回放：选择公开与自主采集数据">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5" /></svg>
-            <span class="sidebar-nav__copy"><strong>案例回放</strong><small>选择 105 组数据</small></span><b>105</b>
+            <span class="sidebar-nav__copy"><strong>案例回放</strong><small>公开与自主采集数据</small></span><b>135</b>
           </a>
           <a class="sidebar-nav__link" href="#analysis" aria-label="判断过程：查看判断依据">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18V9M10 18V5M16 18v-7M22 18V3" /></svg>
@@ -79,7 +79,7 @@
         <main id="main-content" tabindex="-1">
           <div id="page-loading" class="page-state" role="status" aria-live="polite">
             <span class="spinner" aria-hidden="true"></span>
-            <div><strong>正在启动模拟手表风险评估台</strong><p>核验模型、105 组公开案例与自主采集空位状态。</p></div>
+            <div><strong>正在启动模拟手表风险评估台</strong><p>核验模型、105 组公开案例与 30 组自主采集记录。</p></div>
           </div>
 
           <section id="page-error" class="page-state page-state--error" role="alert" hidden>
@@ -93,13 +93,13 @@
           <div id="app-content" hidden>
             <section class="workspace-heading" aria-labelledby="page-title">
               <div>
-                <p class="eyebrow">校赛研究版 · 公开数据真模型运行</p>
+                <p class="eyebrow">校赛研究版 · 公开数据与自主采集数据真实运行</p>
                 <h1 id="page-title">模拟手表风险评估工作台</h1>
-                <p>上传一段六轴记录，或选择公开案例；系统会真实计算、逐秒显示 1/2/3 秒研究风险，并给出波形依据和结论。</p>
+                <p>上传一段六轴记录，或选择公开与自主采集案例；系统会实际计算、逐秒显示 1/2/3 秒研究风险，并给出波形依据和结论。</p>
               </div>
               <div class="workspace-heading__status">
                 <span><b aria-hidden="true"></b>公开模型已接通</span>
-                <span class="boundary-chip">自主采集 0 / 约30组</span>
+                <span id="heading-collection-count" class="boundary-chip">自主采集 30 / 约30组</span>
               </div>
             </section>
 
@@ -111,7 +111,7 @@
                   <p>文件只在本机内存中分析，不加入案例库。标准 CSV 或 JSON，至少 1 秒六轴数据。</p>
                 </div>
                 <div class="collection-status" aria-label="自主采集数据状态">
-                  <span>自主采集</span><strong id="collection-count">0 / 约30组</strong><small id="collection-status-copy">等待真实文件</small>
+                  <span>自主采集</span><strong id="collection-count">30 / 约30组</strong><small id="collection-status-copy">30组已完成工程检查</small>
                 </div>
               </header>
 
@@ -198,7 +198,7 @@
               <section id="cases" class="panel case-panel anchor-section" aria-labelledby="case-panel-title">
                 <header class="panel-heading panel-heading--stacked">
                   <div><p class="panel-kicker">输入</p><h2 id="case-panel-title">案例库</h2></div>
-                  <span id="case-count" class="count-badge">105 组</span>
+                  <span id="case-count" class="count-badge">135 组</span>
                 </header>
 
                 <form id="case-search-form" class="search-field" role="search" novalidate>
@@ -211,11 +211,12 @@
                 </form>
 
                 <form id="case-filters" class="filter-tabs" role="group" aria-label="按案例类型筛选" novalidate>
-                  <button type="submit" data-filter="all" aria-pressed="false">全部 <span>105</span></button>
-                  <button class="is-active" type="submit" data-filter="fall" aria-pressed="true">受控跌倒 <span>40</span></button>
+                  <button type="submit" data-filter="all" aria-pressed="false">全部 <span id="filter-all-count">135</span></button>
+                  <button type="submit" data-filter="fall" aria-pressed="false">受控跌倒 <span>40</span></button>
                   <button type="submit" data-filter="adl" aria-pressed="false">日常活动 <span>60</span></button>
                   <button type="submit" data-filter="activity" aria-pressed="false">活动识别 <span>4</span></button>
                   <button type="submit" data-filter="routine" aria-pressed="false">生活规律 <span>1</span></button>
+                  <button class="is-active" type="submit" data-filter="self" aria-pressed="true">自主采集 <span id="filter-self-count">30</span></button>
                 </form>
 
                 <div id="case-list" class="case-list" role="list" aria-label="可回放案例"></div>
@@ -317,6 +318,10 @@
                     <span>结果分析</span>
                   </div>
                   <h3 id="result-analysis-title">等待本次检测</h3>
+                  <div class="analysis-decision analysis-decision--lead">
+                    <strong>结论先看</strong>
+                    <p id="result-analysis-conclusion">等待本次检测。</p>
+                  </div>
                   <p id="result-analysis-summary" class="analysis-summary">开始检测后，这里会先给结论，再列出实测依据、模型推导过程和适用边界。</p>
                   <dl class="result-analysis__facts">
                     <div><dt>当前动作或规律</dt><dd id="result-analysis-activity">等待运行</dd></div>
@@ -324,17 +329,22 @@
                     <div><dt>提前风险分析</dt><dd id="result-analysis-risk">等待运行</dd></div>
                   </dl>
                   <section class="result-analysis__section" aria-labelledby="result-evidence-heading">
-                    <h4 id="result-evidence-heading">关键实测依据</h4>
+                    <h4 id="result-evidence-heading"><span class="section-step">1</span>关键实测依据</h4>
                     <ul id="result-analysis-evidence-list"></ul>
                   </section>
                   <section class="result-analysis__section" aria-labelledby="result-model-heading">
-                    <h4 id="result-model-heading">各模型如何参与判断</h4>
+                    <h4 id="result-model-heading"><span class="section-step">2</span>各模型如何参与判断</h4>
                     <ol id="result-model-reasoning" class="model-reasoning-list"></ol>
                   </section>
-                  <div class="result-analysis__synthesis"><strong>交叉核对过程</strong><p id="result-analysis-synthesis">等待实际模型结果。</p></div>
-                  <div class="analysis-decision"><strong>最终结论</strong><p id="result-analysis-conclusion">等待本次检测。</p></div>
-                  <p id="result-analysis-rule" class="analysis-rule">模型结果分开计算，不会相加成一个“综合风险分”。</p>
-                  <p id="result-analysis-scope" class="analysis-scope">没有实际输入或未运行的模型，不会被写成已经排除风险。</p>
+                  <section class="result-analysis__section" aria-labelledby="result-synthesis-heading">
+                    <h4 id="result-synthesis-heading"><span class="section-step">3</span>交叉核对过程</h4>
+                    <div class="result-analysis__synthesis result-analysis__synthesis--inline"><p id="result-analysis-synthesis">等待实际模型结果。</p></div>
+                  </section>
+                  <section class="result-analysis__section result-analysis__section--bounds" aria-labelledby="result-bounds-heading">
+                    <h4 id="result-bounds-heading"><span class="section-step">4</span>适用边界与使用规则</h4>
+                    <p id="result-analysis-rule" class="analysis-rule">模型结果分开计算，不会相加成一个“综合风险分”。</p>
+                    <p id="result-analysis-scope" class="analysis-scope">没有实际输入或未运行的模型，不会被写成已经排除风险。</p>
+                  </section>
                   <a class="analysis-evidence-link" href="#evidence">查看下方动作示意、实际波形与逐秒模型曲线</a>
                 </article>
 
@@ -509,14 +519,14 @@
             <section id="about" class="boundary-panel anchor-section" aria-labelledby="boundary-title">
               <div class="boundary-panel__summary">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 4v5c0 5-3.7 8.2-9 10-5.3-1.8-9-5-9-10V7zM12 8v5M12 17h.01" /></svg>
-                <div><p class="panel-kicker">说明与边界</p><h2 id="boundary-title">公开数据模型已运行，自主采集验证仍为空</h2><p id="truth-notice">当前可真实计算公开案例和新文件；现实环境预测证据与正式部署仍未完成。</p></div>
-                <span class="boundary-chip">自主采集 0 / 约30组</span>
+                <div><p class="panel-kicker">说明与边界</p><h2 id="boundary-title">公开数据模型已运行，30组自主采集数据已完成工程验证</h2><p id="truth-notice">当前可实际计算公开案例、自主采集案例和新文件；现实环境预测证据与正式部署仍未完成。</p></div>
+                <span id="boundary-collection-count" class="boundary-chip">自主采集 30 / 约30组</span>
               </div>
               <details>
                 <summary>查看数据来源、生活化要求和真实性说明</summary>
                 <div class="boundary-details">
-                  <p><strong>当前已经完成：</strong>基于公开腕部传感器数据训练 1 / 2 / 3 秒代理风险基线；新文件经过六轴校验、采样和单位统一后，会真实运行活动识别、跌倒候选和提前风险模型，并生成波形依据。</p>
-                  <p><strong>当前仍然为空：</strong>自主采集登记是 0 / 约30组，没有用随机数据或公开案例冒充。收到真实文件后才做工程验证并启用最终校赛表述。</p>
+                  <p><strong>当前已经完成：</strong>基于公开腕部传感器数据训练 1 / 2 / 3 秒代理风险基线；30 组 P01 自主采集记录已经过格式、波形和模型运行检查，并可在案例库逐组回放。</p>
+                  <p><strong>本轮验证发现：</strong>现有模型把 5 组大幅度摆臂和 2 组走路标为跌倒候选，却没有把 5 组安全失衡标为跌倒候选。这说明数据已成功接入，也说明模型还需要结合自主采集样本继续调整，不能把本轮结果写成准确率证明。</p>
                   <p><strong>当前不能宣称：</strong>代理锚点不是现实失稳时刻；模型尚未证明真实意外跌倒预测能力，也不能用于正式报警、医疗诊断、家属通知或自动救援。</p>
                   <ul id="limitations-list"></ul>
                 </div>

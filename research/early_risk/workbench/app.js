@@ -186,7 +186,36 @@ const routineCase = {
   alarms: null,
 };
 
-const caseCatalog = [...wedaCases, ...activityCases, routineCase];
+const baseCaseCatalog = [...wedaCases, ...activityCases, routineCase];
+let caseCatalog = [...baseCaseCatalog];
+
+function buildSelfCollectedCases(dashboard) {
+  return (dashboard.self_collected?.cases || []).map((item) => {
+    const summary = item.analysis_summary || {};
+    const durationSeconds = (item.duration_ms / 1000).toFixed(1);
+    return {
+      id: item.case_id,
+      kind: "self",
+      source: "自主采集",
+      sourceLabel: `自主采集 · ${item.participant_id}`,
+      truth: item.truth_category,
+      truthLabel: `自主采集 · ${item.action_label}`,
+      title: `自主采集动作：${item.action_label}`,
+      shortTitle: `${item.action_label} · ${item.participant_id}`,
+      note: `${item.participant_id} 使用 phyphox 完成的真实采集记录；登记含义为“${item.expected_meaning}”。`,
+      label: item.action_code,
+      participant: item.participant_id,
+      rate: `${item.sample_rate_hz} Hz`,
+      axes: "6 轴 IMU",
+      window: `${durationSeconds} 秒连续记录`,
+      model: "三个研究模型共同分析",
+      metricLabel: "跌倒特征匹配度",
+      metricHelp: "表示这段自主采集动作与受控模拟跌倒窗口的相似程度；用于工程复核，不是现实跌倒概率。",
+      score: summary.fall_max_score,
+      alarms: summary.fall_candidate_window_count,
+    };
+  });
+}
 
 const state = {
   dashboard: null,
@@ -203,6 +232,7 @@ const state = {
   selectedEvidence: null,
   uploadFile: null,
   uploadController: null,
+  initialSelectionApplied: false,
 };
 
 const ids = [
@@ -224,7 +254,8 @@ const ids = [
   "chart-kicker", "chart-title", "chart-meta", "evidence-chart", "evidence-legend",
   "chart-summary", "evidence-source", "evidence-input", "evidence-method", "evidence-result",
   "evidence-limit", "truth-notice", "limitations-list", "fixture-id",
-  "collection-count", "collection-status-copy", "upload-form", "upload-dropzone", "sensor-file",
+  "collection-count", "collection-status-copy", "heading-collection-count", "boundary-collection-count",
+  "boundary-title", "filter-all-count", "filter-self-count", "upload-form", "upload-dropzone", "sensor-file",
   "upload-file-row", "upload-file-name", "upload-file-meta", "upload-remove", "acceleration-unit",
   "gyroscope-unit", "upload-error", "upload-error-copy", "upload-submit", "upload-process-title",
   "upload-pipeline", "upload-result", "upload-result-title", "upload-result-state", "upload-quality", "upload-activity",
@@ -332,6 +363,18 @@ function motionPresentation(item) {
   if (item.kind === "routine") {
     return { motion: "routine", title: "生活规律时间分布", caption: "时钟示意用餐、午睡和散步发生时间；不是参与者影像。" };
   }
+  if (item.kind === "self") {
+    const selfMotions = {
+      walking: ["walking", "正常走路"],
+      normal_sit: ["daily", "正常坐下"],
+      quick_sit: ["daily", "快速坐下"],
+      bend_pickup: ["daily", "弯腰捡东西"],
+      large_arm_swing: ["daily", "大幅度摆臂"],
+      safe_imbalance: ["fall", "安全失衡"],
+    };
+    const [motion, title] = selfMotions[item.label] || ["unknown", item.shortTitle.split(" · ")[0]];
+    return { motion, title, caption: "线条人物只说明采集时登记的动作；实际判断依据来自六轴波形和模型输出。" };
+  }
   if (item.label === "walking") {
     return { motion: "walking", title: "走路动作", caption: "线条人物只说明案例类别；实际依据来自腕部三轴信号。" };
   }
@@ -351,12 +394,16 @@ function evidenceMethod(item) {
   if (item.kind === "activity") {
     return "把连续 20 秒三轴腕部加速度送入活动识别模型，再把最高输出类别与登记标签并列核对。";
   }
+  if (item.kind === "self") {
+    return "同一段六轴记录依次运行活动识别、跌倒候选筛查和提前 1/2/3 秒研究模型，再用原始波形交叉核对。";
+  }
   return "运行生活规律模型，逐日比较同一合成档案中用餐、午睡和散步的时间、次数与持续时长。";
 }
 
 function pendingEvidenceConclusion(item) {
   if (item.kind === "fall" || item.kind === "adl") return "开始检测后，结合保存匹配度与跌倒动作记录生成。";
   if (item.kind === "activity") return "开始检测后，显示活动模型的实际输出以及它是否与登记类别一致。";
+  if (item.kind === "self") return "开始检测后，显示三个模型的实际输出、关键波形和生成结论。";
   return "开始检测后，显示规律模型实际标记了多少项规则偏离。";
 }
 
@@ -365,6 +412,7 @@ function completedEvidenceConclusion(item, result) {
     return `${result}；匹配度 ${formatPercent(item.score)}，保存记录 ${item.alarms} 段。`;
   }
   if (item.kind === "activity") return `${result}；登记类别为“${item.shortTitle.split(" · ")[0]}”。`;
+  if (item.kind === "self") return `${result}；跌倒特征匹配度 ${formatPercent(item.score)}，达到筛查条件的窗口 ${item.alarms} 个。`;
   return `${result}；输入为 100 天、551 条固定种子合成事件。`;
 }
 
@@ -839,7 +887,7 @@ function renderModelReasoning(container, reasoning = []) {
 }
 
 function renderReasonedAnalysis(target, interpretation) {
-  target.summary.textContent = interpretation.conclusion;
+  target.summary.textContent = interpretation.headline || interpretation.conclusion;
   target.evidence.replaceChildren(
     ...interpretation.evidence.map((entry) => createElement("li", { text: entry })),
   );
@@ -923,7 +971,16 @@ async function loadDashboard() {
   try {
     const dashboard = await fetchJson("/api/workbench", { signal: state.loadController.signal });
     state.dashboard = dashboard;
+    const selfCollectedCases = buildSelfCollectedCases(dashboard);
+    caseCatalog = [...selfCollectedCases, ...baseCaseCatalog];
+    if (!state.initialSelectionApplied && selfCollectedCases.length) {
+      state.filter = "self";
+      state.page = 1;
+      state.selectedCase = selfCollectedCases[0];
+      state.initialSelectionApplied = true;
+    }
     renderDashboardMeta(dashboard);
+    syncFilterButtons();
     renderCases();
     selectCase(state.selectedCase.id, false);
     showContent();
@@ -942,8 +999,15 @@ function renderDashboardMeta(dashboard) {
   elements["fixture-id"].textContent = `${dashboard.meta.evidence_level} · ${dashboard.fixture.id}`;
   elements["collection-count"].textContent = `${dashboard.self_collected.received_case_count} / 约${dashboard.self_collected.expected_case_count}组`;
   elements["collection-status-copy"].textContent = dashboard.self_collected.received_case_count
-    ? "等待完成质量复核"
+    ? "30组已完成工程检查"
     : "等待真实文件";
+  elements["heading-collection-count"].textContent = `自主采集 ${dashboard.self_collected.received_case_count} / 约${dashboard.self_collected.expected_case_count}组`;
+  elements["boundary-collection-count"].textContent = `自主采集 ${dashboard.self_collected.received_case_count} / 约${dashboard.self_collected.expected_case_count}组`;
+  elements["boundary-title"].textContent = dashboard.self_collected.claim_enabled
+    ? "公开数据模型与30组自主采集工程验证均已接入"
+    : "公开数据模型已运行，自主采集验证仍为空";
+  elements["filter-all-count"].textContent = String(caseCatalog.length);
+  elements["filter-self-count"].textContent = String(dashboard.self_collected.received_case_count);
   elements["limitations-list"].replaceChildren(
     ...dashboard.truth.limitations.slice(0, 6).map((item) => createElement("li", { text: item })),
   );
@@ -990,7 +1054,7 @@ function renderCases() {
     );
     const status = createElement("span", {
       className: `case-item__status case-item__status--${item.kind}`,
-      text: item.kind === "fall" ? "跌倒" : item.kind === "adl" ? "日常" : item.kind === "activity" ? "活动" : "规律",
+      text: item.kind === "fall" ? "跌倒" : item.kind === "adl" ? "日常" : item.kind === "activity" ? "活动" : item.kind === "self" ? "自采" : "规律",
     });
     button.append(index, copy, status);
     row.append(button);
@@ -1011,6 +1075,7 @@ function syncSelectionToVisibleCases() {
 function truthClass(item) {
   if (item.kind === "fall") return "truth-tag truth-tag--fall";
   if (item.kind === "activity") return "truth-tag truth-tag--activity";
+  if (item.kind === "self") return "truth-tag truth-tag--activity";
   if (item.kind === "routine") return "truth-tag truth-tag--routine";
   return "truth-tag";
 }
@@ -1035,7 +1100,7 @@ function selectCase(caseId, announce = true) {
   elements["result-meter-fill"].style.width = "0%";
   renderPendingCaseAnalysis();
 
-  elements["watch-case-index"].textContent = `案例 ${String(catalogIndex).padStart(3, "0")} / 105`;
+  elements["watch-case-index"].textContent = `案例 ${String(catalogIndex).padStart(3, "0")} / ${caseCatalog.length}`;
   elements["watch-case-label"].textContent = selected.source;
   elements["case-pipeline-state"].textContent = "正在读取案例";
   renderSharedPipeline(elements["detection-pipeline"]);
@@ -1411,6 +1476,14 @@ function setupUploadControls() {
   });
 }
 
+function syncFilterButtons() {
+  elements["case-filters"].querySelectorAll("button[data-filter]").forEach((item) => {
+    const active = item.dataset.filter === state.filter;
+    item.classList.toggle("is-active", active);
+    item.setAttribute("aria-pressed", String(active));
+  });
+}
+
 function setupCaseControls() {
   elements["case-filters"].addEventListener("submit", (event) => {
     event.preventDefault();
@@ -1418,11 +1491,7 @@ function setupCaseControls() {
     if (!button) return;
     state.filter = button.dataset.filter;
     state.page = 1;
-    elements["case-filters"].querySelectorAll("button[data-filter]").forEach((item) => {
-      const active = item === button;
-      item.classList.toggle("is-active", active);
-      item.setAttribute("aria-pressed", String(active));
-    });
+    syncFilterButtons();
     renderCases();
     syncSelectionToVisibleCases();
   });

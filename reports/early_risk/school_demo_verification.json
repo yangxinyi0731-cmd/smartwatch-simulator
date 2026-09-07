@@ -4,10 +4,10 @@
   "verified_at": "2026-09-01T23:32:46.6904200+08:00",
   "repository": {
     "path": "C:\\Users\\yangxinyi\\Documents\\Codex\\2026-08-27\\smartwatch-health-simulator",
-    "branch": "codex/early-risk-e0-workbench",
+    "branch": "main",
     "development_base_head": "b447dd0ef99490198c37813bad2f3c36d6777eff",
-    "remote_configured": false,
-    "pushed": false
+    "remote_configured": true,
+    "pushed": true
   },
   "runtime": {
     "url": "http://127.0.0.1:8010/",
@@ -15,7 +15,7 @@
     "state": "ready",
     "bind_scope": "loopback_only",
     "public_proxy_model_ready": true,
-    "self_collected_validation_complete": false,
+    "self_collected_validation_complete": true,
     "real_world_prediction_evidence": false,
     "deployment_approved": false,
     "external_notifications_enabled": false
@@ -83,10 +83,10 @@
   "self_collected_data": {
     "registry": "data/catalog/self_collected_pending_v1.json",
     "target_case_count_approximate": 30,
-    "received_case_count": 0,
-    "imported_case_count": 0,
-    "cases": [],
-    "claim_enabled": false
+    "received_case_count": 30,
+    "imported_case_count": 30,
+    "validation_report": "reports/early_risk/self_collected_p01_v1.json",
+    "claim_enabled": true
   },
   "automated_verification": {
     "python_tests": {
@@ -127,7 +127,7 @@
   },
   "claim_gates": {
     "current_allowed_claim": "Public controlled-data proxy model and new-file analysis workflow are implemented and running.",
-    "self_collected_engineering_validation_claim": false,
+    "self_collected_engineering_validation_claim": true,
     "real_world_seconds_ahead_prediction_claim": false,
     "medical_or_safety_deployment_claim": false
   }

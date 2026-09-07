@@ -40,14 +40,14 @@
     "U31"
   ],
   "participant_disjoint": true,
-  "self_collected_case_count": 0,
+  "self_collected_case_count": 30,
   "external_validation_completed": false,
   "deployment_approved": false,
   "proxy_anchor": "WEDA_FALL_INTERVAL_START",
   "limitations": [
     "正例来自参与者在床垫上的受控模拟跌倒，不是真实意外跌倒。",
     "时间锚点是数据集跌倒区间开始，不等同于真实失稳起点。",
-    "模型没有使用自主采集数据，也没有外部数据集或真实手表验证。",
+    "模型训练没有使用自主采集数据；30组P01数据仅用于后续工程验证，也没有外部数据集或真实手表验证。",
     "输出仅用于校赛研究演示，不能直接报警、诊断或联系救援。"
   ]
 }

@@ -65,6 +65,9 @@ PUBLIC_RISK_REPORT_PATH = (
 SELF_COLLECTED_REGISTRY_PATH = (
     PROJECT_ROOT / "data" / "catalog" / "self_collected_pending_v1.json"
 )
+SELF_COLLECTED_REPORT_PATH = (
+    PROJECT_ROOT / "reports" / "early_risk" / "self_collected_p01_v1.json"
+)
 NEW_DATA_FORMAT_PATH = PROJECT_ROOT / "docs" / "early_risk" / "NEW_DATA_FORMAT.md"
 
 MAX_SIMULATE_REQUEST_BYTES = 16 * 1024
@@ -79,6 +82,7 @@ DOWNLOADS: dict[str, Path] = {
     "deterministic-timeline.json": FIXTURE_PATH,
     "public-risk-manifest.json": PUBLIC_RISK_MANIFEST_PATH,
     "public-risk-evaluation.json": PUBLIC_RISK_REPORT_PATH,
+    "self-collected-validation.json": SELF_COLLECTED_REPORT_PATH,
     "new-data-format.md": NEW_DATA_FORMAT_PATH,
 }
 
@@ -254,22 +258,37 @@ def _build_activity_case_analysis(
         "原文件没有陀螺仪通道，因此系统没有运行跌倒动作模型和提前风险模型。",
     ]
     if matches_registered:
+        headline = f"活动识别与登记类别一致（{predicted_zh}）"
         conclusion = (
-            f"活动识别模型把本段判断为“{predicted_zh}”，与案例登记类别一致。"
-            "这可以验证活动模型的实际接线，但不能据此判断跌倒或提前风险。"
+            f"综合判断：活动识别模型把本段判断为“{predicted_zh}”，与案例登记类别一致。"
+            f"模型在四类候选中给出最高输出值 {top_value:.3f}，第二位“{ACTIVITY_LABELS_ZH[second_label]}”为 {second_value:.3f}，两者差距越大说明模型对本次判断越有把握。"
+            "这可以验证活动模型在本机的实际接线与输出是否正常，但活动类别本身不用于判断跌倒或提前风险。"
         )
-        synthesis = "活动模型输出与登记类别相互印证；另外两个模型因输入条件不满足而未参与结论。"
+        synthesis = (
+            "交叉核对按固定顺序进行：第一步，核对本机登记文件与数据规格；"
+            "第二步，运行活动识别模型并取得四类输出排序；"
+            "第三步，把最高输出类别与登记类别并列对照，两者一致，因此判断为接线验证通过。"
+            "另外两个模型因输入条件不满足而未参与结论。"
+        )
     else:
+        headline = "活动识别与登记类别不一致，作为分歧案例复核"
         conclusion = (
-            f"活动识别模型把本段判断为“{predicted_zh}”，与登记类别“{expected_zh}”不一致，"
-            "本段应作为活动识别分歧案例复核。"
+            f"综合判断：活动识别模型把本段判断为“{predicted_zh}”，与登记类别“{expected_zh}”不一致。"
+            f"模型最高输出值为 {top_value:.3f}，第二位“{ACTIVITY_LABELS_ZH[second_label]}”为 {second_value:.3f}。"
+            "系统不会把任何一方改写成另一方：登记类别来自数据集标注，模型输出来自本机实际计算，两者保留分歧才有复核价值，因此本段应作为活动识别分歧案例复核。"
         )
-        synthesis = "模型输出与登记类别不一致，因此保留分歧，不把其中任何一方改写成确定事实。"
+        synthesis = (
+            "交叉核对按固定顺序进行：第一步，核对本机登记文件与数据规格；"
+            "第二步，运行活动识别模型并取得四类输出排序；"
+            "第三步，把最高输出类别与登记类别并列对照，发现不一致。"
+            "不一致本身会被如实保留并标记为分歧案例，供后续检查数据、标签映射或模型表现。"
+        )
 
     interpretation = {
         "current_activity": predicted_zh,
         "fall_screening": fall["screening"],
         "risk_screening": "未运行：该案例没有六轴传感器输入",
+        "headline": headline,
         "evidence": evidence,
         "model_reasoning": [
             {
@@ -377,6 +396,7 @@ def _build_routine_analysis(bundle: Any) -> dict[str, Any]:
         "current_activity": "生活规律对照",
         "fall_screening": fall["screening"],
         "risk_screening": "未运行：没有连续六轴传感器输入",
+        "headline": f"100 天规律对照完成，标出 {len(deviations)} 项偏离",
         "evidence": [
             f"固定种子档案包含 {bundle.routine_profile.history_days} 天、{bundle.routine_profile.event_count} 条合成生活事件。",
             f"规律模型逐日核对用餐、午睡和散步，共形成 {assessment_count} 项独立规则判断。",
@@ -407,10 +427,18 @@ def _build_routine_analysis(bundle: Any) -> dict[str, Any]:
             },
         ],
         "decision_rule": "生活规律结果与六轴动作结果分开计算，不相加成一个风险分；没有传感器输入的模型明确显示为“未运行”。",
-        "synthesis": "本案例只由生活规律模型生成规则对照，跌倒动作和提前风险模型没有参与。",
+        "synthesis": (
+            "交叉核对按固定顺序进行：第一步，读取固定种子生成的 100 天合成生活事件档案；"
+            "第二步，规律模型逐日逐项核对用餐、午睡和散步的次数、开始时间与持续时长；"
+            "第三步，把偏离项单独标出并列出偏离类型。"
+            "本案例只由生活规律模型生成规则对照，跌倒动作和提前风险模型没有参与。"
+        ),
         "conclusion": (
-            f"系统已完成 100 天合成生活规律的规则对照，并标出 {len(deviations)} 项偏离。"
-            "这些结果证明规律模块可以运行，但不代表真实参与者的健康或跌倒风险。"
+            f"综合判断：系统已完成 100 天合成生活规律的逐日规则对照，共形成 {assessment_count} 项独立判断，"
+            f"其中 {within_count} 项位于合成规律范围内，{len(deviations)} 项被规则标记为时间、次数或时长偏离，"
+            f"页面展示的最近 {ROUTINE_DISPLAY_DAYS} 天中有 {len(recent_deviations)} 项偏离。"
+            "这些结果证明规律模块的规则与解释可以实际运行并给出可追溯输出；"
+            "由于数据是程序固定生成的合成案例，它不代表任何真实参与者的健康或跌倒风险。"
         ),
         "scope_note": "该案例由程序固定生成，只用于展示规律模型和结果解释，不是参与者生活记录。",
         "review_required": False,
@@ -420,6 +448,134 @@ def _build_routine_analysis(bundle: Any) -> dict[str, Any]:
         "fall_model": fall,
         "early_risk_model": risk,
         "interpretation": interpretation,
+    }
+
+
+def _self_collected_complete(registry: dict[str, Any]) -> bool:
+    expected = int(registry.get("expected_case_count", 0))
+    received = int(registry.get("received_case_count", 0))
+    accepted = int(registry.get("accepted_case_count", 0))
+    return bool(
+        registry.get("claim_enabled")
+        and expected > 0
+        and received == expected
+        and accepted == expected
+        and int(registry.get("rejected_case_count", 0)) == 0
+    )
+
+
+def _build_self_collected_evidence(case_id: str) -> dict[str, Any]:
+    registry = _read_json(SELF_COLLECTED_REGISTRY_PATH)
+    case = next(
+        (item for item in registry.get("cases", []) if item.get("case_id") == case_id),
+        None,
+    )
+    if case is None:
+        raise LookupError("没有找到这组自主采集案例。")
+    relative_path = Path(str(case["processed_relative_path"]))
+    if relative_path.is_absolute() or ".." in relative_path.parts:
+        raise ValueError("自主采集案例路径无效。")
+    path = (PROJECT_ROOT / relative_path).resolve()
+    if PROJECT_ROOT not in path.parents or not path.is_file():
+        raise FileNotFoundError("自主采集案例文件不存在。")
+    if sha256_file(path) != case["processed_sha256"]:
+        raise ValueError("自主采集案例文件哈希与登记记录不一致。")
+
+    values = np.load(path, allow_pickle=False)
+    expected_shape = (int(case["sample_count"]), 6)
+    if values.shape != expected_shape or values.dtype != np.float32:
+        raise ValueError("自主采集案例数组与登记规格不一致。")
+    if not np.isfinite(values).all():
+        raise ValueError("自主采集案例包含无效数值。")
+    sample_rate_hz = float(case["sample_rate_hz"])
+    if sample_rate_hz != 50.0:
+        raise ValueError("自主采集案例必须已经统一为 50 Hz。")
+
+    acceleration = np.linalg.norm(values[:, :3], axis=1)
+    rotation = np.linalg.norm(values[:, 3:], axis=1)
+    required_indices = (int(np.argmax(acceleration)), int(np.argmax(rotation)))
+    indices = _downsample_indices(len(values), required_indices)
+    series = [
+        {
+            "id": "acceleration_magnitude",
+            "label": "加速度合量",
+            "unit": "m/s²",
+            "values": [
+                [int(round(index * 1000 / sample_rate_hz)), round(float(acceleration[index]), 6)]
+                for index in indices
+            ],
+        },
+        {
+            "id": "angular_velocity_magnitude",
+            "label": "角速度合量",
+            "unit": "rad/s",
+            "values": [
+                [int(round(index * 1000 / sample_rate_hz)), round(float(rotation[index]), 6)]
+                for index in indices
+            ],
+        },
+    ]
+    analysis = analyze_normalized_imu(values)
+    quality = case.get("quality", {})
+    flags = list(quality.get("flags", []))
+    activity = analysis["activity_model"]
+    fall = analysis["fall_model"]
+    risk = analysis["early_risk_model"]
+    pipeline = build_analysis_pipeline(
+        validation=(
+            "COMPLETED",
+            "自主采集原始来源、处理文件哈希、六轴通道和动作名称已登记。",
+        ),
+        normalization=(
+            "COMPLETED",
+            f"两组传感器已按时间对齐并统一为 50 Hz，共 {len(values)} 个标准采样点。",
+        ),
+        activity=(
+            activity["status"],
+            f"活动识别完成：{activity['label']}。" if activity["status"] == "COMPLETED" else activity["detail"],
+        ),
+        fall=(
+            fall["status"],
+            (
+                f"{fall['screening']}；最高特征匹配度 {fall['max_score']:.3f}，"
+                f"共 {len(fall['candidate_windows'])} 个窗口达到筛查条件。"
+            ),
+        ),
+        risk=(risk["status"], analysis["interpretation"]["risk_screening"]),
+    )
+    duration_ms = int(case["duration_ms"])
+    return {
+        "case_id": case_id,
+        "evidence_type": "sensor_waveform",
+        "source_label": f"自主采集 · {case['participant_id']} · phyphox",
+        "truth_category": case["truth_category"],
+        "content_verified": True,
+        "stream": {
+            "sample_rate_hz": sample_rate_hz,
+            "sample_count": len(values),
+            "displayed_point_count": len(indices),
+            "duration_ms": duration_ms,
+            "channels": list(case["channels"]),
+            "axis_count": 6,
+        },
+        "quality": {"flag_count": len(flags), "flags": flags},
+        "events": [
+            {
+                "event_type": "SELF_COLLECTED_ACTION",
+                "label": case["action_label"],
+                "start_offset_ms": 0,
+                "end_offset_ms": duration_ms,
+            }
+        ],
+        "series": series,
+        "analysis": analysis,
+        "pipeline": pipeline,
+        "limitations": [
+            "波形来自参与者 P01 的实际自主采集记录，处理文件已经过内容哈希和数组形状核对。",
+            "动作名称来自采集文件名，没有视频或第二标注者进行独立复核。",
+            "手机或平板固定在小臂附近的采集只能用于校赛工程验证，不等同于真实手表验证。",
+            "安全失衡是受控动作，不登记为真实跌倒；1/2/3 秒输出仍是公开受控数据代理分数。",
+        ],
     }
 
 
@@ -681,6 +837,8 @@ def build_case_evidence(case_id: str) -> dict[str, Any]:
         raise LookupError("案例编号无效。")
     if case_id == "synthetic-routine-100-v1":
         return _build_routine_evidence(case_id)
+    if case_id.startswith("self-p01-"):
+        return _build_self_collected_evidence(case_id)
     return _build_sensor_evidence(case_id)
 
 
@@ -694,6 +852,8 @@ def build_workbench_payload() -> dict[str, Any]:
     public_risk_manifest = _read_json(PUBLIC_RISK_MANIFEST_PATH)
     public_risk_report = _read_json(PUBLIC_RISK_REPORT_PATH)
     self_collected = _read_json(SELF_COLLECTED_REGISTRY_PATH)
+    self_collected_report = _read_json(SELF_COLLECTED_REPORT_PATH)
+    self_collected_complete = _self_collected_complete(self_collected)
 
     gate_results = gate["results"]
     audit_results = audit["results"]
@@ -708,7 +868,7 @@ def build_workbench_payload() -> dict[str, Any]:
             "prediction_evidence": gate["prediction_evidence"],
             "public_proxy_model_ready": True,
             "real_world_prediction_evidence": False,
-            "self_collected_validation_complete": False,
+            "self_collected_validation_complete": self_collected_complete,
             "deployment_approved": gate["deployment_approved"],
             "engineering_status": gate_results["overall"]["engineering_status"],
             "formal_signoff_complete": gate_results["overall"]["formal_signoff_complete"],
@@ -720,8 +880,8 @@ def build_workbench_payload() -> dict[str, Any]:
             "limitations": gate["limitations"],
             "notice": (
                 "本工作台会对六轴公开案例和用户选择的新文件真实运行研究模型，"
-                "并逐秒显示 1、2、3 秒代理风险、波形依据和格式化结论。上传文件"
-                "只在内存中分析，不写入案例库，也不会发送任何通知。"
+                "并已登记 P01 的 30 组自主采集动作；页面逐秒显示 1、2、3 秒代理风险、"
+                "波形依据和格式化结论。临时上传文件只在内存中分析，也不会发送任何通知。"
             ),
         },
         "public_risk_model": {
@@ -743,8 +903,15 @@ def build_workbench_payload() -> dict[str, Any]:
             "received_case_count": self_collected["received_case_count"],
             "accepted_case_count": self_collected["accepted_case_count"],
             "cases": self_collected["cases"],
-            "claim_enabled": False,
+            "claim_enabled": bool(self_collected.get("claim_enabled")),
             "note": self_collected["note"],
+            "limitations": self_collected.get("limitations", []),
+            "validation_report": {
+                "status": self_collected_report["status"],
+                "quality": self_collected_report["quality"],
+                "model_observations": self_collected_report["model_observations"],
+                "claim": self_collected_report["claim"],
+            },
         },
         "pipeline": list(PIPELINE_STAGES),
         "contract": {
@@ -1006,6 +1173,7 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
         route = urlparse(self.path).path
         try:
             if route == "/api/health":
+                self_collected = _read_json(SELF_COLLECTED_REGISTRY_PATH)
                 self._write_json(
                     HTTPStatus.OK,
                     {
@@ -1015,7 +1183,12 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
                         "evidence_level": "E0",
                         "prediction_evidence": False,
                         "public_proxy_model_ready": True,
-                        "self_collected_validation_complete": False,
+                        "self_collected_validation_complete": _self_collected_complete(
+                            self_collected
+                        ),
+                        "self_collected_case_count": int(
+                            self_collected["accepted_case_count"]
+                        ),
                         "real_world_prediction_evidence": False,
                         "deployment_approved": False,
                         "external_notifications_enabled": False,

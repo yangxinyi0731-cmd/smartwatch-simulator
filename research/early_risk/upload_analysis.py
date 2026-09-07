@@ -32,6 +32,7 @@ ACTIVITY_MANIFEST_PATH = PROJECT_ROOT / "models" / "activity_recognition" / "cap
 RISK_MODEL_PATH = PROJECT_ROOT / "models" / "early_risk" / "public_weda_linear_v1" / "model.json"
 RISK_MANIFEST_PATH = RISK_MODEL_PATH.with_name("manifest.json")
 RISK_REPORT_PATH = PROJECT_ROOT / "reports" / "early_risk" / "public_weda_linear_v1.json"
+SELF_COLLECTED_REGISTRY_PATH = PROJECT_ROOT / "data" / "catalog" / "self_collected_pending_v1.json"
 CANONICAL_COLUMNS = ("time_s", "ax", "ay", "az", "gx", "gy", "gz")
 
 
@@ -41,6 +42,21 @@ ACTIVITY_LABELS_ZH = {
     "sleep_or_lying_candidate": "睡眠或躺卧候选",
     "other_unknown": "其他或暂时无法归类",
 }
+
+
+def self_collected_validation_complete() -> bool:
+    try:
+        registry = json.loads(SELF_COLLECTED_REGISTRY_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, TypeError):
+        return False
+    expected = int(registry.get("expected_case_count", 0))
+    return bool(
+        registry.get("claim_enabled")
+        and expected > 0
+        and int(registry.get("received_case_count", 0)) == expected
+        and int(registry.get("accepted_case_count", 0)) == expected
+        and int(registry.get("rejected_case_count", 0)) == 0
+    )
 
 
 ANALYSIS_PIPELINE_LABELS = {
@@ -372,34 +388,76 @@ def _evidence_and_conclusion(
     review = not fall_found and ((impact_present and rotation_present) or risk_attention)
 
     evidence = [
-        f"六轴数据已统一为 50 Hz、m/s² 和 rad/s，共 {len(values)} 个采样点。",
-        f"加速度合量峰值为 {acceleration_peak:.2f} m/s²；腕部角速度合量峰值为 {rotation_peak:.2f} rad/s。",
+        f"六轴数据已统一为 50 Hz、m/s² 和 rad/s，共 {len(values)} 个采样点（约 {len(values) / NORMALIZED_RATE_HZ:.1f} 秒），本步只做单位与频率对齐，不改动波形形状。",
+        f"加速度合量峰值为 {acceleration_peak:.2f} m/s²（整段中位数 {acceleration_baseline:.2f}、波动幅度 {acceleration_spread:.2f}）；角速度合量峰值为 {rotation_peak:.2f} rad/s（中位数 {rotation_baseline:.2f}、波动幅度 {rotation_spread:.2f}）。",
+        (
+            f"对照参考线：加速度峰值{'达到' if impact_present else '未达到'}明显撞击强度（18 m/s² 或基线加 4 倍波动取大者），"
+            f"角速度峰值{'达到' if rotation_present else '未达到'}明显快速转动强度（3 rad/s 或基线加 4 倍波动取大者）。"
+        ),
     ]
     if fall["status"] == "COMPLETED":
         evidence.append(
-            f"跌倒动作模型检查 {fall['window_count']} 个 4 秒窗口，最高特征匹配度为 {fall['max_score']:.3f}，关注阈值为 {fall['threshold']:.2f}。"
+            f"跌倒动作模型滑动检查 {fall['window_count']} 个连续 4 秒六轴窗口，最高特征匹配度为 {fall['max_score']:.3f}，关注阈值为 {fall['threshold']:.2f}；该分数只衡量与受控模拟跌倒模式的相似程度。"
         )
     else:
         evidence.append(fall["detail"])
     if risk["status"] == "COMPLETED":
         maxima = risk["max_scores"]
         evidence.append(
-            f"公开数据提前风险基线的最高研究分数：1 秒 {maxima['1']:.3f}、2 秒 {maxima['2']:.3f}、3 秒 {maxima['3']:.3f}。"
+            f"公开数据提前风险基线逐秒计算研究分数，最高值：1 秒 {maxima['1']:.3f}、2 秒 {maxima['2']:.3f}、3 秒 {maxima['3']:.3f}；分数越高只表示越接近数据集受控跌倒开始前的模式。"
         )
     if post_stable:
-        evidence.append("最强加速度变化后，后续约 1 秒腕部运动较快恢复稳定。")
+        evidence.append("最强加速度变化之后，后续约 1 秒腕部运动较快恢复平稳，与“撞击后静止”的受控跌倒形态一致。")
     elif acceleration_peak_index < len(values) - 5:
-        evidence.append("最强加速度变化后仍存在连续运动，没有把单个峰值单独当成最终结论。")
+        evidence.append("最强加速度变化之后仍存在持续运动，因此系统没有把单个峰值单独当成跌倒证据。")
 
     if fall_found:
         current_action = "明显失稳与撞击动作"
-        conclusion = "本段记录被筛查为跌倒候选，需要结合动作场景和人工标注进一步确认。"
+        headline = "筛查为跌倒候选，建议结合动作场景人工确认"
+        candidate_count = len(fall["candidate_windows"])
+        conclusion = (
+            f"综合判断：本段记录被筛查为跌倒候选。直接依据是跌倒动作模型在 {fall['window_count']} 个连续 4 秒窗口中测得最高特征匹配度 "
+            f"{fall['max_score']:.3f}，超过关注阈值 {fall['threshold']:.2f}，共有 {candidate_count} 个窗口达到筛查条件。"
+            f"波形交叉核对同样支持这一判断：加速度峰值 {acceleration_peak:.2f} m/s² 与角速度峰值 {rotation_peak:.2f} rad/s 在时间上同步出现明显失稳"
+            + ("，且变化之后约 1 秒运动恢复平稳，符合受控跌倒“失稳—撞击—静止”的典型形态。" if post_stable else "。")
+            + "需要强调：这是与受控模拟跌倒模式的相似度筛查结果，不是医学诊断；建议结合当时的动作场景和人工标注进一步确认。"
+        )
     elif review:
         current_action = "快速姿态变化"
-        conclusion = "本段存在值得复核的快速变化，但现有依据不足以直接判为跌倒；它也可能是快速坐下等日常动作。"
+        headline = "存在值得复核的快速变化，保留人工复核"
+        parts = ["综合判断：本段记录存在值得复核的快速变化，但现有依据不足以直接判为跌倒。"]
+        if fall["status"] == "COMPLETED":
+            parts.append(
+                f"跌倒动作模型没有窗口达到筛查条件（最高特征匹配度 {fall['max_score']:.3f}，低于关注阈值 {fall['threshold']:.2f}）。"
+            )
+        clues = []
+        if impact_present and rotation_present:
+            clues.append("波形出现明显的加速度与快速转动组合")
+        if risk_attention:
+            clues.append("提前风险代理分数在部分时间点超过复核线")
+        if clues:
+            parts.append(f"引起复核的线索是{'，以及'.join(clues)}。")
+        parts.append(
+            "这些线索不能相互印证成完整的跌倒形态，因此系统保留人工复核，而不写入确定性结论；它也可能是快速坐下、快速起身等日常动作。"
+        )
+        conclusion = "".join(parts)
     else:
         current_action = activity["label"] if activity["status"] == "COMPLETED" else "连续腕部动作"
-        conclusion = "本段动作更接近日常活动；当前没有发现达到跌倒动作筛查条件的窗口。"
+        headline = "更接近日常活动，未发现跌倒候选"
+        parts = ["综合判断：本段动作更接近日常活动。"]
+        if fall["status"] == "COMPLETED":
+            parts.append(
+                f"跌倒动作模型滑动检查了全部 {fall['window_count']} 个连续 4 秒窗口，最高特征匹配度 {fall['max_score']:.3f}，没有达到关注阈值 {fall['threshold']:.2f}。"
+            )
+        parts.append(
+            f"波形交叉核对也没有发现加速度与角速度同步失稳的组合（加速度峰值 {acceleration_peak:.2f} m/s²、角速度峰值 {rotation_peak:.2f} rad/s）。"
+        )
+        if activity["status"] == "COMPLETED":
+            parts.append(f"活动识别模型把动作背景识别为“{activity['label']}”，与上述结果一致。")
+        if risk["status"] == "COMPLETED":
+            parts.append("提前风险代理分数同样没有给出需要关注的一致线索。")
+        parts.append("因此本次没有形成跌倒候选；这属于相似度筛查的正常结果，不代表已排除所有风险。")
+        conclusion = "".join(parts)
 
     if risk["status"] == "COMPLETED":
         attention_horizons = [
@@ -444,11 +502,26 @@ def _evidence_and_conclusion(
         risk_finding = "连续记录不足以形成提前风险时间线，本次不提供 1、2、3 秒结果。"
 
     if fall_found:
-        synthesis_finding = "跌倒模型达到筛查条件，且波形同时出现明显加速度与转动变化，因此列为跌倒候选。"
+        synthesis_finding = (
+            "交叉核对按固定顺序进行：第一步，跌倒动作模型在连续窗口中达到筛查条件；"
+            "第二步，原始波形在对应时间出现加速度与角速度同步增大，与模型判断相互印证；"
+            f"第三步，提前风险代理分数作辅助复核（{'部分时间点超过复核线' if risk_attention else '未超过复核线，不改变主判断'}）。"
+            "三条线索方向一致，因此列为跌倒候选。"
+        )
     elif review:
-        synthesis_finding = "跌倒模型未形成明确候选，但波形或提前风险代理分数出现关注线索，因此保留人工复核。"
+        synthesis_finding = (
+            "交叉核对按固定顺序进行：第一步，跌倒动作模型没有形成候选；"
+            "第二步，波形或提前风险代理分数出现了部分关注线索；"
+            "第三步，两条线索无法相互印证成完整的跌倒形态。"
+            "证据不完整时系统只保留复核提示，不写确定性结论。"
+        )
     else:
-        synthesis_finding = "跌倒模型未达到筛查条件，波形交叉核对也没有形成足够的失稳证据，因此更接近日常活动。"
+        synthesis_finding = (
+            "交叉核对按固定顺序进行：第一步，跌倒动作模型没有窗口达到筛查条件；"
+            "第二步，波形交叉核对没有发现足够的失稳与撞击组合；"
+            "第三步，提前风险代理分数没有出现需要关注的一致线索。"
+            "三条线索都偏向日常活动，因此判断更接近日常活动。"
+        )
 
     model_reasoning = [
         {
@@ -477,12 +550,13 @@ def _evidence_and_conclusion(
         "current_activity": current_action,
         "fall_screening": fall["screening"],
         "risk_screening": risk_screening,
+        "headline": headline,
         "evidence": evidence,
         "model_reasoning": model_reasoning,
-        "decision_rule": "三个模型的分数不会相加成一个“综合风险分”。系统先看跌倒候选，再用实际波形、动作背景和提前风险线索交叉核对。",
+        "decision_rule": "三个模型的分数不会相加成一个“综合风险分”。系统按固定顺序交叉核对：先看跌倒候选是否成立，再用原始波形验证时间形态，最后用提前风险代理分数做辅助复核；任何一步证据不足，都会直接体现在结论措辞里。",
         "synthesis": synthesis_finding,
         "conclusion": conclusion,
-        "scope_note": "本结果来自公开受控数据研究模型，只用于校赛演示和工程验证；不是医学诊断、现实报警或已验证的个人跌倒概率。",
+        "scope_note": "本结果来自公开受控数据训练的研究模型，只用于校赛演示和工程验证；不是医学诊断、现实报警或已验证的个人跌倒概率。1、2、3 秒提前风险分数来自公开数据代理基线，不代表现实意外跌倒预测。",
         "review_required": fall_found or review,
         "measured_facts": {
             "acceleration_peak_m_s2": round(acceleration_peak, 6),
@@ -589,10 +663,13 @@ def analyze_upload_request(payload: dict[str, Any]) -> dict[str, Any]:
         },
         "truth_boundary": {
             "public_proxy_model_ready": True,
-            "self_collected_validation_complete": False,
+            "self_collected_validation_complete": self_collected_validation_complete(),
             "real_world_prediction_evidence": False,
             "deployment_approved": False,
             "external_notification_sent": False,
-            "notice": "文件仅在内存中分析，不保存；输出是校赛研究结果，不是医学诊断或现实报警。",
+            "notice": (
+                "文件仅在内存中分析，不保存；项目已完成 30 组自主采集动作的工程验证，"
+                "但本次输出仍是校赛研究结果，不是医学诊断或现实报警。"
+            ),
         },
     }

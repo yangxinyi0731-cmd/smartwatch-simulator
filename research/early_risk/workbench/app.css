@@ -41,6 +41,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+p,
+li,
+dd,
+small,
+.analysis-summary {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
 body,
 body * {
   scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
@@ -203,7 +218,7 @@ svg {
 .brand small {
   margin-top: 2px;
   color: var(--sim-sidebar-muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .sidebar-nav {
@@ -253,7 +268,7 @@ svg {
 
 .sidebar-nav__copy small {
   color: #8297a3;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 400;
 }
 
@@ -264,7 +279,7 @@ svg {
   background: rgba(255, 255, 255, 0.09);
   border-radius: 999px;
   font-family: var(--font-data);
-  font-size: 11px;
+  font-size: 13px;
   text-align: center;
 }
 
@@ -318,14 +333,14 @@ svg {
 .sidebar-status small {
   margin-top: 1px;
   color: var(--sim-sidebar-muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .sidebar-version {
   margin: 12px 4px 0;
   color: #6f858f;
   font-family: var(--font-data);
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .app-main {
@@ -378,7 +393,7 @@ svg {
   background: var(--sim-teal-soft);
   border: 1px solid #c3e5e1;
   border-radius: 7px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -481,7 +496,7 @@ svg {
 .panel-kicker {
   margin-bottom: 5px;
   color: var(--sim-teal);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -505,7 +520,7 @@ svg {
   background: var(--sim-teal-soft);
   border: 1px solid #c8e8e4;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -581,7 +596,7 @@ svg {
   background: var(--sim-teal-soft);
   border-radius: 7px;
   font-family: var(--font-data);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -671,7 +686,7 @@ svg {
   background: #fff;
   border: 1px solid var(--sim-line);
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
 }
@@ -691,7 +706,7 @@ svg {
 .filter-tabs button span {
   margin-left: 3px;
   font-family: var(--font-data);
-  font-size: 10px;
+  font-size: 13px;
   opacity: 0.78;
 }
 
@@ -734,7 +749,7 @@ svg {
 .case-item__index {
   color: #8a99a3;
   font-family: var(--font-data);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .case-item__copy {
@@ -750,7 +765,7 @@ svg {
 }
 
 .case-item__copy strong {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -758,7 +773,7 @@ svg {
   margin-top: 3px;
   color: var(--color-ink-muted);
   font-family: var(--font-data);
-  font-size: 9px;
+  font-size: 13px;
 }
 
 .case-item__status {
@@ -767,7 +782,7 @@ svg {
   color: #5b6871;
   background: #edf1f3;
   border-radius: 999px;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -779,6 +794,11 @@ svg {
 .case-item__status--activity {
   color: #245d96;
   background: var(--sim-blue-soft);
+}
+
+.case-item__status--self {
+  color: #0b6b61;
+  background: var(--sim-teal-soft);
 }
 
 .case-item__status--routine {
@@ -810,7 +830,7 @@ svg {
 .case-pagination span {
   color: var(--color-ink-muted);
   font-family: var(--font-data);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .icon-button,
@@ -906,7 +926,7 @@ svg {
   align-items: center;
   gap: 6px;
   color: #31545a;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -1014,7 +1034,7 @@ svg {
 .watch-screen__top {
   color: #b6cdcf;
   font-family: var(--font-data);
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .watch-battery {
@@ -1045,14 +1065,14 @@ svg {
 .watch-screen__identity {
   margin-top: 17px;
   color: var(--sim-watch-muted);
-  font-size: 9px;
+  font-size: 13px;
   letter-spacing: 0.04em;
 }
 
 .watch-screen__identity strong {
   color: #d4e7e9;
   font-family: var(--font-data);
-  font-size: 9px;
+  font-size: 13px;
 }
 
 .watch-sensor {
@@ -1093,7 +1113,7 @@ svg {
 .watch-stage-label {
   margin-bottom: 4px;
   color: var(--sim-watch-muted);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   text-align: center;
 }
@@ -1135,7 +1155,7 @@ svg {
   margin-top: 5px;
   color: var(--sim-watch-muted);
   font-family: var(--font-data);
-  font-size: 9px;
+  font-size: 13px;
   text-align: right;
 }
 
@@ -1145,7 +1165,7 @@ svg {
   color: #89a6aa;
   border-top: 1px solid #1d3940;
   font-family: var(--font-data);
-  font-size: 8px;
+  font-size: 10.5px;
 }
 
 .watch-screen__footer span:first-child {
@@ -1209,7 +1229,7 @@ svg {
   min-height: 44px;
   margin: 10px 18px 17px;
   color: var(--color-ink-muted);
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.45;
   text-align: center;
 }
@@ -1227,7 +1247,7 @@ svg {
   min-height: 28px;
   padding: 3px 8px;
   border-radius: 7px;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -1293,7 +1313,7 @@ svg {
   overflow: hidden;
   color: var(--color-ink-muted);
   font-family: var(--font-data);
-  font-size: 9px;
+  font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1306,7 +1326,7 @@ svg {
 .selected-case p {
   margin-bottom: 0;
   color: var(--color-ink-muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .result-meter {
@@ -1325,7 +1345,7 @@ svg {
 
 .result-meter__copy span {
   color: var(--color-ink-muted);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -1355,7 +1375,7 @@ svg {
   min-height: 34px;
   margin: 9px 0 0;
   color: var(--color-ink-muted);
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.55;
 }
 
@@ -1373,7 +1393,7 @@ svg {
   align-items: center;
   gap: 6px;
   color: var(--sim-teal);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.04em;
 }
@@ -1385,13 +1405,13 @@ svg {
 
 .result-analysis h3 {
   margin: 7px 0 4px;
-  font-size: 13px;
+  font-size: 16px;
 }
 
 .result-analysis p {
   margin-bottom: 0;
   color: #41565e;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.65;
 }
 
@@ -1399,7 +1419,7 @@ svg {
 .generated-analysis .analysis-summary {
   margin: 6px 0 0;
   color: #263f48;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1.65;
 }
@@ -1423,8 +1443,8 @@ svg {
 }
 
 .result-analysis__facts dt {
-  color: #62767d;
-  font-size: 8px;
+  color: #55686f;
+  font-size: 11px;
   font-weight: 800;
 }
 
@@ -1432,9 +1452,9 @@ svg {
   margin: 4px 0 0;
   overflow-wrap: anywhere;
   color: #173e43;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 750;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 .result-analysis__section {
@@ -1445,18 +1465,37 @@ svg {
 
 .result-analysis__section h4,
 .generated-analysis h4 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   margin: 0;
   color: #203842;
-  font-size: 10px;
+  font-size: 13.5px;
+  font-weight: 800;
+}
+
+.result-analysis__section h4 .section-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: #fff;
+  background: var(--sim-teal);
+  border-radius: 999px;
+  font-family: var(--font-data);
+  font-size: 11.5px;
+  font-weight: 800;
 }
 
 .result-analysis__section > ul,
 .generated-analysis > ul {
   margin: 8px 0 0;
-  padding-left: 18px;
-  color: #40545e;
-  font-size: 10px;
-  line-height: 1.6;
+  padding-left: 20px;
+  color: #3a4f58;
+  font-size: 13.5px;
+  line-height: 1.7;
 }
 
 .result-analysis__section > ul li + li,
@@ -1489,13 +1528,13 @@ svg {
 .model-reasoning-list > li > div > span {
   color: var(--sim-teal);
   font-family: var(--font-data);
-  font-size: 8px;
+  font-size: 10.5px;
   font-weight: 800;
 }
 
 .model-reasoning-list strong {
   color: #1f3941;
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .model-status {
@@ -1503,7 +1542,7 @@ svg {
   color: #5e7078;
   background: #edf1f3;
   border-radius: 999px;
-  font-size: 8px;
+  font-size: 10.5px;
   font-style: normal;
   font-weight: 800;
   white-space: nowrap;
@@ -1539,19 +1578,19 @@ svg {
 .model-reasoning-list .model-plain-name {
   margin-top: 5px;
   color: #587078;
-  font-size: 9px;
+  font-size: 13px;
 }
 
 .model-reasoning-list .model-finding {
   margin-top: 3px;
   color: #2f4850;
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .model-reasoning-list small {
   margin-top: 4px;
   color: #6b7d84;
-  font-size: 8px;
+  font-size: 10.5px;
 }
 
 .result-analysis__synthesis,
@@ -1571,7 +1610,7 @@ svg {
 .result-analysis__synthesis strong,
 .analysis-decision strong {
   color: #203842;
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .result-analysis__synthesis p,
@@ -1580,19 +1619,70 @@ svg {
   color: #29464d;
 }
 
+.analysis-decision--lead {
+  margin-top: 8px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid #bfe0db;
+  border-left: 4px solid var(--sim-teal);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(23, 62, 67, 0.06);
+}
+
+.analysis-decision--lead strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #0b6f68;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.analysis-decision--lead p {
+  margin-top: 6px;
+  color: #143c42;
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.75;
+}
+
+.result-analysis__synthesis--inline {
+  margin-top: 8px;
+  padding: 11px 13px;
+}
+
+.result-analysis__section--bounds {
+  margin-top: 13px;
+  padding: 11px 13px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px dashed #b8d6d1;
+  border-radius: 8px;
+}
+
+.result-analysis__section--bounds .analysis-rule,
+.result-analysis__section--bounds .analysis-scope {
+  margin: 0 !important;
+  color: #4d6169 !important;
+}
+
+.result-analysis__section--bounds .analysis-scope {
+  margin-top: 7px !important;
+}
+
 .analysis-rule,
 .analysis-scope {
   margin: 9px 0 0 !important;
   padding-left: 0;
   color: #566b73 !important;
-  font-size: 9px !important;
+  font-size: 13px !important;
 }
 
 .analysis-evidence-link {
   display: inline-flex;
   margin-top: 10px;
   color: #0b6f68;
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 800;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
@@ -1601,7 +1691,7 @@ svg {
 .shared-pipeline-note {
   margin: -2px 0 10px;
   color: var(--color-ink-muted);
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.55;
 }
 
@@ -1623,14 +1713,14 @@ svg {
 
 .case-pipeline-heading strong {
   color: #203842;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .case-pipeline-heading small {
   max-width: 390px;
   margin-top: 3px;
   color: var(--color-ink-muted);
-  font-size: 9px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
@@ -1640,7 +1730,7 @@ svg {
   color: var(--sim-teal);
   background: var(--sim-teal-soft);
   border-radius: 999px;
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -1676,7 +1766,7 @@ svg {
   border: 1px solid var(--sim-line-strong);
   border-radius: 50%;
   font-family: var(--font-data);
-  font-size: 9px;
+  font-size: 13px;
 }
 
 .shared-analysis-pipeline li div {
@@ -1690,13 +1780,13 @@ svg {
 
 .shared-analysis-pipeline li strong {
   color: #203842;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .shared-analysis-pipeline li small {
   margin-top: 3px;
   color: var(--color-ink-muted);
-  font-size: 9px;
+  font-size: 13px;
   line-height: 1.45;
 }
 
@@ -1706,7 +1796,7 @@ svg {
   color: #6d7c84;
   background: #f1f4f6;
   border-radius: 999px;
-  font-size: 8px;
+  font-size: 10.5px;
   font-style: normal;
   font-weight: 800;
   white-space: nowrap;
@@ -1781,7 +1871,7 @@ svg {
   padding-top: 12px;
   color: var(--color-ink-muted);
   border-top: 1px solid var(--sim-line);
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .analysis-foot span {
@@ -1824,7 +1914,7 @@ svg {
   max-width: 780px;
   margin-bottom: 0;
   color: var(--color-ink-muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .evidence-badge {
@@ -1837,7 +1927,7 @@ svg {
   background: #edf1f3;
   border: 1px solid #dbe3e7;
   border-radius: 7px;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -1877,7 +1967,7 @@ svg {
 .evidence-feedback p {
   margin: 4px 0 0;
   color: var(--color-ink-muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .evidence-feedback--error {
@@ -1926,7 +2016,7 @@ svg {
 .motion-figure figcaption span,
 .signal-figure figcaption span {
   color: var(--sim-teal);
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1942,7 +2032,7 @@ svg {
 .signal-figure figcaption small {
   margin-top: 5px;
   color: var(--color-ink-muted);
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
@@ -2010,7 +2100,7 @@ svg {
   gap: 6px;
   margin: 5px 0 0;
   color: #6e7d85;
-  font-size: 9px;
+  font-size: 13px;
 }
 
 .motion-disclaimer svg {
@@ -2046,7 +2136,7 @@ svg {
   width: 100%;
   height: auto;
   min-height: 240px;
-  font-family: var(--font-data);
+  font-family: var(--font-body);
 }
 
 .evidence-chart__grid,
@@ -2109,19 +2199,19 @@ svg {
 .evidence-chart__label,
 .evidence-chart__tick,
 .evidence-chart__annotation {
-  fill: #667780;
-  font-size: 10px;
+  fill: #41565f;
+  font-size: 13px;
 }
 
 .evidence-chart__label {
-  fill: #344b54;
-  font-size: 11px;
-  font-weight: 700;
+  fill: #2c434c;
+  font-size: 13.5px;
+  font-weight: 600;
 }
 
 .evidence-chart__annotation {
   fill: #8c3339;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .evidence-chart__annotation--activity {
@@ -2150,8 +2240,8 @@ svg {
   flex-wrap: wrap;
   gap: 8px 16px;
   margin-top: 10px;
-  color: #52656d;
-  font-size: 10px;
+  color: #43565f;
+  font-size: 12.5px;
 }
 
 .evidence-legend span {
@@ -2213,7 +2303,7 @@ svg {
 .chart-summary {
   margin: 9px 0 0;
   color: var(--color-ink-muted);
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.55;
 }
 
@@ -2238,7 +2328,7 @@ svg {
 
 .evidence-facts dt {
   color: var(--color-ink-muted);
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.05em;
 }
@@ -2246,7 +2336,7 @@ svg {
 .evidence-facts dd {
   margin: 6px 0 0;
   color: #334951;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1.5;
 }
@@ -2272,7 +2362,7 @@ svg {
 
 .evidence-note p {
   margin: 0;
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.55;
 }
 
@@ -2289,7 +2379,7 @@ svg {
 .model-strip__heading > p {
   margin-bottom: 0;
   color: var(--color-ink-muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .model-grid {
@@ -2340,7 +2430,7 @@ svg {
 
 .model-card span {
   color: var(--sim-teal);
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -2352,14 +2442,14 @@ svg {
 .model-card p {
   margin-top: 5px;
   color: #40545e;
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
 .model-card small {
   margin-top: 5px;
   color: var(--color-ink-muted);
-  font-size: 9px;
+  font-size: 13px;
   line-height: 1.4;
 }
 
@@ -2385,7 +2475,7 @@ svg {
 }
 
 .model-card.is-locked > strong {
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .boundary-panel {
@@ -2411,7 +2501,7 @@ svg {
 .boundary-panel__summary p:not(.panel-kicker) {
   margin: 5px 0 0;
   color: var(--color-ink-muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .boundary-panel details {
@@ -2422,7 +2512,7 @@ svg {
 .boundary-panel summary {
   min-height: 46px;
   padding: 13px 2px 0;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -2431,7 +2521,7 @@ svg {
   color: var(--color-ink-muted);
   background: #f8fafb;
   border-radius: 9px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .boundary-details p:last-of-type {
@@ -2453,7 +2543,7 @@ svg {
   gap: 16px;
   padding: 19px 2px 2px;
   color: #798892;
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .app-footer span:last-child {
@@ -2880,7 +2970,7 @@ select {
 .collection-status span,
 .collection-status small {
   color: var(--color-ink-muted);
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .collection-status strong {
@@ -2973,7 +3063,7 @@ select {
 .upload-file-row small {
   margin-top: 4px;
   color: var(--color-ink-muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .upload-dropzone[data-state="selected"] > label {
@@ -3000,7 +3090,7 @@ select {
   display: grid;
   gap: 5px;
   color: #425761;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 750;
 }
 
@@ -3026,7 +3116,7 @@ select {
 .upload-error strong,
 .upload-error p {
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .upload-error p {
@@ -3057,7 +3147,7 @@ select {
   gap: 6px;
   margin: 11px 0 0;
   color: var(--color-ink-muted);
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .upload-privacy svg {
@@ -3076,7 +3166,7 @@ select {
 
 .upload-process__heading span {
   color: var(--color-ink-muted);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -3084,7 +3174,7 @@ select {
 
 .upload-process__heading strong {
   color: var(--sim-teal);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .upload-result {
@@ -3116,7 +3206,7 @@ select {
 
 .result-facts dt {
   color: var(--color-ink-muted);
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -3124,7 +3214,7 @@ select {
   margin: 4px 0 0;
   overflow-wrap: anywhere;
   color: #203842;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 750;
 }
 
@@ -3155,7 +3245,7 @@ select {
 .risk-figure figcaption span,
 .case-risk-panel__heading span {
   color: var(--sim-teal);
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 850;
   letter-spacing: 0.08em;
 }
@@ -3164,7 +3254,7 @@ select {
   margin: 9px 0 12px;
   padding-left: 18px;
   color: #40545e;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .generated-analysis li + li {
@@ -3181,7 +3271,7 @@ select {
 .generated-analysis > div strong,
 .generated-analysis > div p {
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .generated-analysis > div p {
@@ -3208,7 +3298,7 @@ select {
 .risk-figure figcaption small {
   max-width: 180px;
   color: var(--color-ink-muted);
-  font-size: 9px;
+  font-size: 13px;
   text-align: right;
 }
 
@@ -3234,16 +3324,16 @@ select {
 .risk-chart__threshold-label,
 .risk-chart__anchor-label,
 .risk-chart__empty {
-  fill: #75858e;
+  fill: #4b5b64;
   stroke: none;
-  font-family: var(--font-data);
-  font-size: 10px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
 }
 
 .risk-chart__label {
-  fill: #425760;
+  fill: #35494f;
   font-family: var(--font-body);
-  font-weight: 750;
+  font-weight: 600;
 }
 
 .risk-chart__line {
@@ -3274,8 +3364,8 @@ select {
 }
 
 .risk-chart__threshold-label {
-  fill: #5e7079;
-  font-size: 8px;
+  fill: #51636c;
+  font-size: 12px;
 }
 
 .risk-chart__anchor {
@@ -3286,7 +3376,7 @@ select {
 
 .risk-chart__anchor-label {
   fill: var(--sim-red);
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .risk-legend {
@@ -3294,8 +3384,8 @@ select {
   flex-wrap: wrap;
   gap: 6px 13px;
   margin-top: 6px;
-  color: #51656f;
-  font-size: 9px;
+  color: #43565f;
+  font-size: 12.5px;
 }
 
 .risk-legend span {
@@ -3321,7 +3411,7 @@ select {
 .case-risk-panel > p {
   margin: 7px 0 0;
   color: var(--color-ink-muted);
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .case-risk-panel {
@@ -3369,7 +3459,7 @@ select {
 .risk-snapshots span,
 .risk-snapshots small {
   color: var(--color-ink-muted);
-  font-size: 8px;
+  font-size: 10.5px;
 }
 
 .risk-snapshots strong {

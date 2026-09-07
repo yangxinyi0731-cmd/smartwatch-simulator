@@ -32,6 +32,20 @@ body {
   font-family: var(--font-body);
 }
 
+p,
+li,
+dd,
+small {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
 #app {
   width: 100%;
 }
@@ -169,7 +183,7 @@ a {
 .app-brand small {
   margin-top: 0.12rem;
   color: var(--color-ink-muted);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
 }
 
 .app-nav {
@@ -196,7 +210,7 @@ a {
   padding: 0.55rem 0.65rem;
   border-radius: var(--radius-md);
   color: #4b5665;
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   font-weight: 500;
   text-decoration: none;
   transition: color 160ms ease, background-color 160ms ease;
@@ -226,7 +240,7 @@ a.app-nav__link:hover {
 .app-nav__link small {
   margin-left: auto;
   color: #98a2ae;
-  font-size: 0.66rem;
+  font-size: 0.78rem;
   font-weight: 500;
 }
 
@@ -241,7 +255,7 @@ a.app-nav__link:hover {
   padding: 0.33rem 0.5rem;
   border-radius: var(--radius-sm);
   color: var(--color-ink-muted);
-  font-size: 0.76rem;
+  font-size: 0.82rem;
   text-decoration: none;
 }
 
@@ -265,17 +279,17 @@ a.app-nav__link:hover {
 .app-sidebar__status p {
   margin: 0 0 0.2rem;
   color: var(--color-ink-muted);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
 }
 
 .app-sidebar__status strong {
-  font-size: 0.82rem;
+  font-size: 0.86rem;
 }
 
 .app-sidebar__status span {
   margin-top: 0.35rem;
   color: var(--color-ink-muted);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   line-height: 1.55;
 }
 
@@ -313,13 +327,13 @@ a.app-nav__link:hover {
 
 .app-topbar__label {
   color: var(--color-ink);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 700;
 }
 
 .app-topbar__meta {
   color: var(--color-ink-muted);
-  font-size: 0.76rem;
+  font-size: 0.82rem;
 }
 
 .app-topbar__separator {
@@ -346,7 +360,7 @@ a.app-nav__link:hover {
   padding: 0.38rem 0.7rem;
   border: 1px solid transparent;
   border-radius: var(--radius-md);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 600;
   line-height: 1.2;
   text-decoration: none;
@@ -433,7 +447,7 @@ a.app-nav__link:hover {
 .app-page-header .page-pretitle {
   margin-bottom: 0.3rem;
   color: var(--color-primary);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.06em;
 }
@@ -463,7 +477,7 @@ a.app-nav__link:hover {
   border-radius: 999px;
   color: #526071;
   background: #eef1f4;
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
@@ -524,7 +538,7 @@ a.app-nav__link:hover {
 
 .system-strip__label {
   color: var(--color-ink-muted);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
 }
 
 .system-strip__value {
@@ -550,7 +564,7 @@ a.app-nav__link:hover {
   border-radius: var(--radius-md);
   color: var(--color-ink-muted);
   background: var(--color-surface);
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   line-height: 1.55;
 }
 
@@ -638,7 +652,7 @@ a.app-nav__link:hover {
 .app-card__header p {
   margin: 0.18rem 0 0;
   color: var(--color-ink-muted);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   line-height: 1.5;
 }
 
@@ -678,7 +692,7 @@ a.app-nav__link:hover {
 .selected-case h3 {
   margin: 0;
   color: var(--color-ink);
-  font-size: 0.82rem;
+  font-size: 0.86rem;
   font-weight: 700;
 }
 
@@ -686,14 +700,14 @@ a.app-nav__link:hover {
 .selected-case p {
   margin: 0.25rem 0 0;
   color: var(--color-ink-muted);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   line-height: 1.55;
 }
 
 .case-picker__heading > span {
   color: var(--color-ink-muted);
   font-family: var(--font-data);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   white-space: nowrap;
 }
 
@@ -711,7 +725,7 @@ a.app-nav__link:hover {
   border-radius: var(--radius-sm);
   color: var(--color-ink-muted);
   background: var(--color-surface);
-  font-size: 0.66rem;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -738,7 +752,7 @@ a.app-nav__link:hover {
 
 .case-select > span {
   color: var(--color-ink-muted);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
@@ -750,7 +764,7 @@ a.app-nav__link:hover {
   border-radius: var(--radius-md);
   color: var(--color-ink);
   background: var(--color-surface);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
 }
 
 .case-select select:disabled {
@@ -771,7 +785,7 @@ a.app-nav__link:hover {
   align-items: center;
   gap: 0.4rem;
   color: var(--color-ink-muted);
-  font-size: 0.66rem;
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
@@ -782,7 +796,7 @@ a.app-nav__link:hover {
   border-radius: var(--radius-md);
   color: var(--color-ink);
   background: var(--color-surface);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
 }
 
 .replay-clock {
@@ -794,7 +808,7 @@ a.app-nav__link:hover {
   display: block;
   color: var(--color-ink);
   font-family: var(--font-data);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 600;
   text-align: right;
 }
@@ -822,7 +836,7 @@ a.app-nav__link:hover {
   border-radius: var(--radius-md);
   color: #8f2b2b;
   background: var(--color-danger-soft);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
 }
 
 .device-status {
@@ -853,12 +867,12 @@ a.app-nav__link:hover {
 
 .device-status__screen span {
   color: #aebdcd;
-  font-size: 0.66rem;
+  font-size: 0.78rem;
 }
 
 .device-status h3 {
   margin: 0.85rem 0 0.55rem;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 700;
 }
 
@@ -884,7 +898,7 @@ a.app-nav__link:hover {
 .replay-provenance dt,
 .model-row__meta dt {
   color: var(--color-ink-muted);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 500;
 }
 
@@ -894,7 +908,7 @@ a.app-nav__link:hover {
 .model-row__meta dd {
   margin: 0;
   color: var(--color-ink);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
@@ -923,7 +937,7 @@ a.app-nav__link:hover {
 
 .selected-case__topline > span {
   color: var(--color-ink-muted);
-  font-size: 0.66rem;
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
@@ -938,7 +952,7 @@ a.app-nav__link:hover {
 
 .selected-case dt {
   color: var(--color-ink-muted);
-  font-size: 0.64rem;
+  font-size: 0.78rem;
 }
 
 .selected-case dd {
@@ -946,7 +960,7 @@ a.app-nav__link:hover {
   overflow-wrap: anywhere;
   color: var(--color-ink);
   font-family: var(--font-data);
-  font-size: 0.66rem;
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
@@ -975,7 +989,7 @@ a.app-nav__link:hover {
 .empty-state h3 {
   margin: 0;
   color: var(--color-ink);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 700;
 }
 
@@ -983,7 +997,7 @@ a.app-nav__link:hover {
   max-width: 38rem;
   margin: 0.35rem 0 0;
   color: var(--color-ink-muted);
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   line-height: 1.65;
 }
 
@@ -1002,7 +1016,7 @@ a.app-nav__link:hover {
   padding: 0.45rem 0.7rem;
   border-bottom: 1px solid var(--color-line);
   color: var(--color-ink-muted);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
 }
 
 .output-list__row:last-child {
@@ -1011,7 +1025,7 @@ a.app-nav__link:hover {
 
 .output-list__row strong {
   color: var(--color-ink-muted);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
@@ -1032,14 +1046,14 @@ a.app-nav__link:hover {
 .replay-evidence__header h3 {
   margin: 0;
   color: var(--color-ink);
-  font-size: 0.82rem;
+  font-size: 0.86rem;
   font-weight: 700;
 }
 
 .replay-evidence__header p {
   margin: 0.22rem 0 0;
   color: var(--color-ink-muted);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   line-height: 1.5;
 }
 
@@ -1069,7 +1083,7 @@ a.app-nav__link:hover {
 
 .waveform-panel__header > strong {
   color: var(--color-ink);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   white-space: nowrap;
 }
 
@@ -1083,7 +1097,7 @@ a.app-nav__link:hover {
 .waveform-legend span {
   color: var(--color-ink-muted);
   font-family: var(--font-data);
-  font-size: 0.58rem;
+  font-size: 0.75rem;
   white-space: nowrap;
 }
 
@@ -1142,7 +1156,7 @@ a.app-nav__link:hover {
 
 .evidence-timeline__row > span {
   color: var(--color-ink-muted);
-  font-size: 0.64rem;
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
@@ -1212,14 +1226,14 @@ a.app-nav__link:hover {
 .activity-result-summary span {
   display: block;
   color: #52759a;
-  font-size: 0.62rem;
+  font-size: 0.78rem;
 }
 
 .activity-result-summary strong {
   display: block;
   margin-top: 0.25rem;
   color: #1d5c9b;
-  font-size: 0.74rem;
+  font-size: 0.82rem;
 }
 
 .model-evidence-grid > div,
@@ -1235,7 +1249,7 @@ a.app-nav__link:hover {
 .routine-day-grid span {
   display: block;
   color: var(--color-ink-muted);
-  font-size: 0.62rem;
+  font-size: 0.78rem;
 }
 
 .model-evidence-grid strong,
@@ -1245,13 +1259,13 @@ a.app-nav__link:hover {
   overflow-wrap: anywhere;
   color: var(--color-ink);
   font-family: var(--font-data);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
 }
 
 .routine-day-grid article p {
   margin: 0.3rem 0 0;
   color: var(--color-ink-muted);
-  font-size: 0.64rem;
+  font-size: 0.78rem;
   line-height: 1.5;
 }
 
@@ -1268,7 +1282,7 @@ a.app-nav__link:hover {
 
 .replay-messages p {
   margin: 0;
-  font-size: 0.66rem;
+  font-size: 0.78rem;
   line-height: 1.5;
 }
 
@@ -1313,7 +1327,7 @@ a.app-nav__link:hover {
 .integrity-alert p {
   margin: 0;
   color: #315d88;
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   line-height: 1.65;
 }
 
@@ -1342,14 +1356,14 @@ a.app-nav__link:hover {
 
 .batch-actions strong {
   color: var(--color-ink);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
 }
 
 .batch-actions p,
 .batch-task__note {
   margin: 0.2rem 0 0;
   color: var(--color-ink-muted);
-  font-size: 0.67rem;
+  font-size: 0.78rem;
   line-height: 1.55;
 }
 
@@ -1373,12 +1387,12 @@ a.app-nav__link:hover {
 .batch-task__headline span {
   color: var(--color-ink-muted);
   font-family: var(--font-data);
-  font-size: 0.62rem;
+  font-size: 0.78rem;
 }
 
 .batch-task__headline strong {
   color: var(--color-ink);
-  font-size: 0.82rem;
+  font-size: 0.86rem;
 }
 
 .batch-task > progress {
@@ -1428,7 +1442,7 @@ a.app-nav__link:hover {
 .batch-model-grid span,
 .batch-model-grid small {
   color: var(--color-ink-muted);
-  font-size: 0.63rem;
+  font-size: 0.78rem;
 }
 
 .batch-counters dd,
@@ -1439,7 +1453,7 @@ a.app-nav__link:hover {
   overflow-wrap: anywhere;
   color: var(--color-ink);
   font-family: var(--font-data);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 700;
 }
 
@@ -1503,7 +1517,7 @@ a.app-nav__link:hover {
 
 .report-panel > header span:not(.status-badge) {
   color: var(--color-primary);
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   font-weight: 700;
 }
 
@@ -1517,7 +1531,7 @@ a.app-nav__link:hover {
   min-height: 3.7rem;
   margin: 0.65rem 0;
   color: var(--color-ink-muted);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   line-height: 1.65;
 }
 
@@ -1537,28 +1551,28 @@ a.app-nav__link:hover {
 .report-metrics dt,
 .report-integrity dt {
   color: var(--color-ink-muted);
-  font-size: 0.64rem;
+  font-size: 0.78rem;
 }
 
 .report-metrics dd {
   margin: 0.12rem 0 0;
   color: var(--color-ink);
   font-family: var(--font-data);
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   font-weight: 700;
 }
 
 .report-metrics p {
   margin: 0.22rem 0 0;
   color: var(--color-ink-muted);
-  font-size: 0.64rem;
+  font-size: 0.78rem;
   line-height: 1.5;
 }
 
 .report-limitations {
   margin-top: 0.7rem;
   color: var(--color-ink-muted);
-  font-size: 0.67rem;
+  font-size: 0.78rem;
 }
 
 .report-limitations summary {
@@ -1596,7 +1610,7 @@ a.app-nav__link:hover {
   overflow-wrap: anywhere;
   color: var(--color-ink);
   font-family: var(--font-data);
-  font-size: 0.64rem;
+  font-size: 0.78rem;
 }
 
 .report-disclaimers {
@@ -1618,7 +1632,7 @@ a.app-nav__link:hover {
 .report-disclaimers ul {
   padding-left: 1rem;
   margin: 0;
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   line-height: 1.55;
 }
 
@@ -1673,19 +1687,19 @@ a.app-nav__link:hover {
 .model-row__title h3 {
   margin: 0;
   color: var(--color-ink);
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   font-weight: 700;
 }
 
 .model-row__title span {
   color: var(--color-ink-muted);
-  font-size: 0.66rem;
+  font-size: 0.78rem;
 }
 
 .model-row__content p {
   margin: 0.28rem 0 0;
   color: var(--color-ink-muted);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   line-height: 1.6;
 }
 
