@@ -2125,7 +2125,9 @@ svg {
 .chart-frame {
   min-height: 240px;
   margin-top: 12px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-gutter: stable;
   background: #fff;
   border: 1px solid #e2e9ec;
   border-radius: 9px;
@@ -2135,8 +2137,10 @@ svg {
   display: block;
   width: 100%;
   height: auto;
+  min-width: 640px;
   min-height: 240px;
   font-family: var(--font-body);
+  text-rendering: geometricPrecision;
 }
 
 .evidence-chart__grid,
@@ -2211,11 +2215,24 @@ svg {
 
 .evidence-chart__annotation {
   fill: #8c3339;
-  font-weight: 600;
+  font-size: 12.5px;
+  font-weight: 750;
 }
 
 .evidence-chart__annotation--activity {
   fill: #176a64;
+}
+
+.evidence-chart__annotation-bg {
+  fill: #fff4f3;
+  stroke: rgba(194, 57, 52, 0.38);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.evidence-chart__annotation-bg--activity {
+  fill: #edf9f7;
+  stroke: rgba(18, 134, 126, 0.35);
 }
 
 .evidence-chart__routine-row {

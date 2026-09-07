@@ -428,12 +428,12 @@ function setEvidenceLegend(items) {
 function renderSensorChart(evidence) {
   const svg = elements["evidence-chart"];
   const width = 760;
-  const height = 270;
-  const paddingLeft = 54;
-  const paddingRight = 18;
-  const paddingTop = 34;
-  const paddingBottom = 32;
-  const panelGap = evidence.series.length > 1 ? 28 : 0;
+  const height = 356;
+  const paddingLeft = 64;
+  const paddingRight = 20;
+  const paddingTop = 80;
+  const paddingBottom = 42;
+  const panelGap = evidence.series.length > 1 ? 52 : 0;
   const panelHeight = (height - paddingTop - paddingBottom - panelGap) / evidence.series.length;
   const durationMs = Math.max(1, evidence.stream.duration_ms);
   const xFor = (offsetMs) => paddingLeft + (Math.min(durationMs, Math.max(0, offsetMs)) / durationMs) * (width - paddingLeft - paddingRight);
@@ -445,6 +445,7 @@ function renderSensorChart(evidence) {
     `显示 ${evidence.stream.displayed_point_count} 个实际抽样点；每条曲线按自己的单位单独缩放。`,
   );
   svg.replaceChildren(title, description);
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
 
   evidence.events.forEach((event, index) => {
     const startX = xFor(event.start_offset_ms);
@@ -452,13 +453,23 @@ function renderSensorChart(evidence) {
     const truthTone = evidence.truth_category === "SIMULATED_FALL" ? "fall" : "activity";
     svg.append(createSvgElement("rect", {
       x: startX,
-      y: paddingTop - 12,
+      y: paddingTop - 8,
       width: Math.max(1, endX - startX),
-      height: height - paddingTop - paddingBottom + 18,
+      height: height - paddingTop - paddingBottom + 8,
       class: `evidence-chart__truth evidence-chart__truth--${truthTone}`,
     }));
     if (index === 0 && endX - startX > 48) {
-      appendSvgText(svg, `已登记标签 ${event.label}`, startX + 5, 16, `evidence-chart__annotation evidence-chart__annotation--${truthTone}`);
+      const annotationText = `登记动作：${event.label}`;
+      const annotationWidth = Math.min(260, Math.max(128, annotationText.length * 15 + 24));
+      svg.append(createSvgElement("rect", {
+        x: paddingLeft,
+        y: 12,
+        width: annotationWidth,
+        height: 28,
+        rx: 6,
+        class: `evidence-chart__annotation-bg evidence-chart__annotation-bg--${truthTone}`,
+      }));
+      appendSvgText(svg, annotationText, paddingLeft + 11, 31, `evidence-chart__annotation evidence-chart__annotation--${truthTone}`);
     }
   });
 
@@ -481,9 +492,9 @@ function renderSensorChart(evidence) {
       const y = panelTop + ratio * panelHeight;
       svg.append(createSvgElement("line", { x1: paddingLeft, x2: width - paddingRight, y1: y, y2: y, class: ratio === 1 ? "evidence-chart__axis" : "evidence-chart__grid" }));
     });
-    appendSvgText(svg, `${series.label} · ${series.unit}`, paddingLeft, panelTop - 8, "evidence-chart__label");
-    appendSvgText(svg, yMaximum.toFixed(yMaximum >= 10 ? 1 : 2), paddingLeft - 7, panelTop + 4, "evidence-chart__tick", "end");
-    appendSvgText(svg, "0", paddingLeft - 7, panelBottom + 3, "evidence-chart__tick", "end");
+    appendSvgText(svg, `${series.label} · ${series.unit}`, paddingLeft, panelTop - 13, "evidence-chart__label");
+    appendSvgText(svg, yMaximum.toFixed(yMaximum >= 10 ? 1 : 2), paddingLeft - 10, panelTop + 5, "evidence-chart__tick", "end");
+    appendSvgText(svg, "0", paddingLeft - 10, panelBottom + 4, "evidence-chart__tick", "end");
 
     const pathData = values.map((point, index) => {
       const command = index === 0 ? "M" : "L";
