@@ -68,6 +68,12 @@
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2M5 10h14v11H5zM12 14v3" /></svg>
               仅本机
             </span>
+            <form id="presentation-form" action="/" method="get" novalidate>
+              <button id="presentation-toggle" class="presentation-toggle" type="submit" aria-pressed="false" aria-label="评委投屏模式，当前关闭">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                <span>投屏模式</span><small id="presentation-state">关</small>
+              </button>
+            </form>
             <form id="reload-form" action="/" method="get" novalidate>
               <button id="reload-button" class="icon-button" type="submit" aria-label="重新读取本机内容">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2 5M20 4v7h-7" /></svg>
@@ -166,15 +172,24 @@
                 </dl>
                 <div class="upload-result__grid">
                   <article class="generated-analysis">
-                    <span>结果是怎样得出的</span>
-                    <p id="upload-analysis-summary" class="analysis-summary">等待模型完成计算。</p>
-                    <h4>关键实测依据</h4>
-                    <ul id="upload-evidence-list"></ul>
-                    <h4>各模型如何参与判断</h4>
-                    <ol id="upload-model-reasoning" class="model-reasoning-list"></ol>
-                    <div class="analysis-decision"><strong>最终结论</strong><p id="upload-conclusion">—</p></div>
-                    <p id="upload-analysis-rule" class="analysis-rule">三个模型分开计算，不相加成一个总分。</p>
-                    <p id="upload-analysis-scope" class="analysis-scope">本页只显示研究模型能够支持的结论。</p>
+                    <span>本次判断</span>
+                    <p id="upload-brief-title" class="analysis-brief__headline" role="status" aria-live="polite">等待模型完成计算。</p>
+                    <h4 class="analysis-brief__heading">三条关键依据</h4>
+                    <ul id="upload-brief-evidence" class="analysis-brief__evidence"></ul>
+                    <p class="analysis-brief__scope"><strong>适用边界：</strong><span id="upload-brief-scope">结果只反映本次研究模型和输入记录。</span></p>
+                    <details id="upload-analysis-details" class="analysis-details">
+                      <summary>展开完整判断依据与模型推导</summary>
+                      <div class="analysis-details__content">
+                        <p id="upload-analysis-summary" class="analysis-summary">等待模型完成计算。</p>
+                        <h4>全部实测依据</h4>
+                        <ul id="upload-evidence-list"></ul>
+                        <h4>各模型如何参与判断</h4>
+                        <ol id="upload-model-reasoning" class="model-reasoning-list"></ol>
+                        <div class="analysis-decision"><strong>完整结论</strong><p id="upload-conclusion">—</p></div>
+                        <p id="upload-analysis-rule" class="analysis-rule">三个模型分开计算，不相加成一个总分。</p>
+                        <p id="upload-analysis-scope" class="analysis-scope">本页只显示研究模型能够支持的结论。</p>
+                      </div>
+                    </details>
                   </article>
                   <div class="upload-visual-stack">
                     <figure class="risk-figure">
@@ -201,6 +216,8 @@
                   <span id="case-count" class="count-badge">135 组</span>
                 </header>
 
+                <p class="case-panel__hint">按数据类型选取记录。下方数字是已登记案例数，不是风险或报警次数。</p>
+
                 <form id="case-search-form" class="search-field" role="search" novalidate>
                   <label class="visually-hidden" for="case-search">搜索案例编号</label>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12zM15 15l5 5" /></svg>
@@ -210,15 +227,16 @@
                   </button>
                 </form>
 
-                <form id="case-filters" class="filter-tabs" role="group" aria-label="按案例类型筛选" novalidate>
-                  <button type="submit" data-filter="all" aria-pressed="false">全部 <span id="filter-all-count">135</span></button>
-                  <button type="submit" data-filter="fall" aria-pressed="false">受控跌倒 <span>40</span></button>
-                  <button type="submit" data-filter="adl" aria-pressed="false">日常活动 <span>60</span></button>
-                  <button type="submit" data-filter="activity" aria-pressed="false">活动识别 <span>4</span></button>
-                  <button type="submit" data-filter="routine" aria-pressed="false">生活规律 <span>1</span></button>
-                  <button class="is-active" type="submit" data-filter="self" aria-pressed="true">自主采集 <span id="filter-self-count">30</span></button>
+                <form id="case-filters" class="case-overview" role="group" aria-label="按案例类型筛选" novalidate>
+                  <button type="submit" data-filter="all" aria-pressed="false"><span class="case-overview__top"><span>全部案例</span><strong id="filter-all-count">135</strong></span><small>所有来源</small></button>
+                  <button type="submit" data-filter="fall" aria-pressed="false"><span class="case-overview__top"><span>受控跌倒</span><strong id="filter-fall-count">40</strong></span><small>WEDA-FALL</small></button>
+                  <button type="submit" data-filter="adl" aria-pressed="false"><span class="case-overview__top"><span>日常活动</span><strong id="filter-adl-count">60</strong></span><small>WEDA-FALL</small></button>
+                  <button type="submit" data-filter="activity" aria-pressed="false"><span class="case-overview__top"><span>活动识别</span><strong id="filter-activity-count">4</strong></span><small>CAPTURE-24</small></button>
+                  <button type="submit" data-filter="routine" aria-pressed="false"><span class="case-overview__top"><span>生活规律</span><strong id="filter-routine-count">1</strong></span><small>合成演示</small></button>
+                  <button class="is-active" type="submit" data-filter="self" aria-pressed="true"><span class="case-overview__top"><span>自主采集</span><strong id="filter-self-count">30</strong></span><small>P01 工程验证</small></button>
                 </form>
 
+                <div class="case-list__heading"><strong>可回放记录</strong><span id="case-list-range" role="status" aria-live="polite">显示 1–6 / 30 组</span></div>
                 <div id="case-list" class="case-list" role="list" aria-label="可回放案例"></div>
                 <div id="case-empty" class="case-empty" hidden>
                   <strong>没有匹配的案例</strong><p>清除搜索或切换其他案例类型。</p>
@@ -312,39 +330,45 @@
                   <p id="result-metric-caption">表示这段动作与受控跌倒动作有多相似；不是现实跌倒概率。</p>
                 </div>
 
-                <article class="result-analysis" aria-labelledby="result-analysis-title" aria-live="polite" aria-atomic="false">
+                <article class="result-analysis" aria-labelledby="result-analysis-title">
                   <div class="result-analysis__label">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v12H8l-4 4zM8 9h8M8 13h5" /></svg>
                     <span>结果分析</span>
                   </div>
                   <h3 id="result-analysis-title">等待本次检测</h3>
-                  <div class="analysis-decision analysis-decision--lead">
-                    <strong>结论先看</strong>
-                    <p id="result-analysis-conclusion">等待本次检测。</p>
-                  </div>
-                  <p id="result-analysis-summary" class="analysis-summary">开始检测后，这里会先给结论，再列出实测依据、模型推导过程和适用边界。</p>
+                  <p id="result-brief-title" class="analysis-brief__headline" role="status" aria-live="polite">开始检测后显示简明结论。</p>
                   <dl class="result-analysis__facts">
                     <div><dt>当前动作或规律</dt><dd id="result-analysis-activity">等待运行</dd></div>
                     <div><dt>跌倒动作筛查</dt><dd id="result-analysis-fall">等待运行</dd></div>
                     <div><dt>提前风险分析</dt><dd id="result-analysis-risk">等待运行</dd></div>
                   </dl>
-                  <section class="result-analysis__section" aria-labelledby="result-evidence-heading">
-                    <h4 id="result-evidence-heading"><span class="section-step">1</span>关键实测依据</h4>
-                    <ul id="result-analysis-evidence-list"></ul>
-                  </section>
-                  <section class="result-analysis__section" aria-labelledby="result-model-heading">
-                    <h4 id="result-model-heading"><span class="section-step">2</span>各模型如何参与判断</h4>
-                    <ol id="result-model-reasoning" class="model-reasoning-list"></ol>
-                  </section>
-                  <section class="result-analysis__section" aria-labelledby="result-synthesis-heading">
-                    <h4 id="result-synthesis-heading"><span class="section-step">3</span>交叉核对过程</h4>
-                    <div class="result-analysis__synthesis result-analysis__synthesis--inline"><p id="result-analysis-synthesis">等待实际模型结果。</p></div>
-                  </section>
-                  <section class="result-analysis__section result-analysis__section--bounds" aria-labelledby="result-bounds-heading">
-                    <h4 id="result-bounds-heading"><span class="section-step">4</span>适用边界与使用规则</h4>
-                    <p id="result-analysis-rule" class="analysis-rule">模型结果分开计算，不会相加成一个“综合风险分”。</p>
-                    <p id="result-analysis-scope" class="analysis-scope">没有实际输入或未运行的模型，不会被写成已经排除风险。</p>
-                  </section>
+                  <h4 class="analysis-brief__heading">三条关键依据</h4>
+                  <ul id="result-brief-evidence" class="analysis-brief__evidence"></ul>
+                  <p class="analysis-brief__scope"><strong>适用边界：</strong><span id="result-brief-scope">没有运行的模型，不会被写成已经排除风险。</span></p>
+                  <details id="result-analysis-details" class="analysis-details">
+                    <summary>展开完整判断依据与模型推导</summary>
+                    <div class="analysis-details__content">
+                      <p id="result-analysis-summary" class="analysis-summary">开始检测后，这里会列出实测依据、模型推导过程和适用边界。</p>
+                      <div class="analysis-decision analysis-decision--lead"><strong>完整结论</strong><p id="result-analysis-conclusion">等待本次检测。</p></div>
+                      <section class="result-analysis__section" aria-labelledby="result-evidence-heading">
+                        <h4 id="result-evidence-heading"><span class="section-step">1</span>全部实测依据</h4>
+                        <ul id="result-analysis-evidence-list"></ul>
+                      </section>
+                      <section class="result-analysis__section" aria-labelledby="result-model-heading">
+                        <h4 id="result-model-heading"><span class="section-step">2</span>各模型如何参与判断</h4>
+                        <ol id="result-model-reasoning" class="model-reasoning-list"></ol>
+                      </section>
+                      <section class="result-analysis__section" aria-labelledby="result-synthesis-heading">
+                        <h4 id="result-synthesis-heading"><span class="section-step">3</span>交叉核对过程</h4>
+                        <div class="result-analysis__synthesis result-analysis__synthesis--inline"><p id="result-analysis-synthesis">等待实际模型结果。</p></div>
+                      </section>
+                      <section class="result-analysis__section result-analysis__section--bounds" aria-labelledby="result-bounds-heading">
+                        <h4 id="result-bounds-heading"><span class="section-step">4</span>适用边界与使用规则</h4>
+                        <p id="result-analysis-rule" class="analysis-rule">模型结果分开计算，不会相加成一个“综合风险分”。</p>
+                        <p id="result-analysis-scope" class="analysis-scope">没有实际输入或未运行的模型，不会被写成已经排除风险。</p>
+                      </section>
+                    </div>
+                  </details>
                   <a class="analysis-evidence-link" href="#evidence">查看下方动作示意、实际波形与逐秒模型曲线</a>
                 </article>
 

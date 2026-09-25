@@ -237,14 +237,15 @@ const state = {
 
 const ids = [
   "page-loading", "page-error", "page-error-message", "app-content", "service-status",
-  "reload-form", "reload-button", "retry-form", "retry-button", "case-search-form",
-  "case-search", "clear-search", "case-filters", "case-count", "case-list", "case-empty",
+  "presentation-form", "presentation-toggle", "presentation-state", "reload-form", "reload-button", "retry-form", "retry-button", "case-search-form",
+  "case-search", "clear-search", "case-filters", "case-count", "case-list-range", "case-list", "case-empty",
   "case-pagination-form", "case-prev", "case-next", "case-page-status", "watch-device", "watch-time",
   "watch-case-index", "watch-case-label", "watch-stage-label", "watch-result",
   "watch-score-fill", "watch-score-text", "device-connection", "playback-form", "run-button",
   "pause-button", "reset-button", "playback-status", "result-state", "selected-truth",
   "selected-case-id", "selected-case-title", "selected-case-note", "result-metric-label",
   "result-metric-value", "result-meter-fill", "result-metric-caption", "result-analysis-title",
+  "result-brief-title", "result-brief-evidence", "result-brief-scope", "result-analysis-details",
   "result-analysis-summary", "result-analysis-activity", "result-analysis-fall", "result-analysis-risk",
   "result-analysis-evidence-list", "result-model-reasoning", "result-analysis-synthesis",
   "result-analysis-conclusion", "result-analysis-rule", "result-analysis-scope", "detection-pipeline",
@@ -255,10 +256,12 @@ const ids = [
   "chart-summary", "evidence-source", "evidence-input", "evidence-method", "evidence-result",
   "evidence-limit", "truth-notice", "limitations-list", "fixture-id",
   "collection-count", "collection-status-copy", "heading-collection-count", "boundary-collection-count",
-  "boundary-title", "filter-all-count", "filter-self-count", "upload-form", "upload-dropzone", "sensor-file",
+  "boundary-title", "filter-all-count", "filter-fall-count", "filter-adl-count",
+  "filter-activity-count", "filter-routine-count", "filter-self-count", "upload-form", "upload-dropzone", "sensor-file",
   "upload-file-row", "upload-file-name", "upload-file-meta", "upload-remove", "acceleration-unit",
   "gyroscope-unit", "upload-error", "upload-error-copy", "upload-submit", "upload-process-title",
   "upload-pipeline", "upload-result", "upload-result-title", "upload-result-state", "upload-quality", "upload-activity",
+  "upload-brief-title", "upload-brief-evidence", "upload-brief-scope", "upload-analysis-details",
   "upload-fall", "upload-persistence", "upload-evidence-list", "upload-conclusion", "upload-risk-meta",
   "upload-analysis-summary", "upload-model-reasoning", "upload-analysis-rule", "upload-analysis-scope",
   "upload-risk-chart", "upload-risk-summary", "upload-signal-chart", "upload-waveform-meta", "upload-waveform-summary",
@@ -897,7 +900,52 @@ function renderModelReasoning(container, reasoning = []) {
   }));
 }
 
-function renderReasonedAnalysis(target, interpretation) {
+function selectBriefEvidence(interpretation) {
+  const evidence = interpretation.evidence || [];
+  const models = interpretation.model_reasoning || [];
+  const completed = models.filter((item) => item.status === "COMPLETED");
+  const unavailable = models.find((item) => item.model === "跌倒动作模型" && item.status !== "COMPLETED")
+    || models.find((item) => ["NOT_APPLICABLE", "INSUFFICIENT_DURATION"].includes(item.status));
+  const fall = completed.find((item) => item.model === "跌倒动作模型");
+  const earlyRisk = completed.find((item) => item.model === "提前风险模型");
+  if (fall) {
+    return [
+      { label: "实测波形", value: evidence[1] || evidence[0] },
+      { label: fall.model, value: fall.finding },
+      earlyRisk
+        ? { label: earlyRisk.model, value: earlyRisk.finding }
+        : { label: "输入限制", value: unavailable?.finding || evidence[2] },
+    ];
+  }
+  return [
+    { label: "输入记录", value: evidence[0] },
+    completed[0]
+      ? { label: completed[0].model, value: completed[0].finding }
+      : { label: "实测依据", value: evidence[1] },
+    unavailable
+      ? {
+          label: `${unavailable.model}${unavailable.status === "INSUFFICIENT_DURATION" ? "数据不足" : "未运行"}`,
+          value: unavailable.finding,
+        }
+      : { label: "交叉核对", value: evidence[2] || interpretation.synthesis },
+  ];
+}
+
+function renderBriefEvidence(container, entries) {
+  container.replaceChildren(...entries.filter((entry) => entry.value).map((entry) => {
+    const row = createElement("li");
+    row.append(
+      createElement("strong", { text: entry.label }),
+      createElement("span", { text: entry.value }),
+    );
+    return row;
+  }));
+}
+
+function renderReasonedAnalysis(target, interpretation, options = {}) {
+  target.briefTitle.textContent = options.briefHeadline || interpretation.headline || interpretation.conclusion;
+  renderBriefEvidence(target.briefEvidence, selectBriefEvidence(interpretation));
+  target.briefScope.textContent = interpretation.scope_note;
   target.summary.textContent = interpretation.headline || interpretation.conclusion;
   target.evidence.replaceChildren(
     ...interpretation.evidence.map((entry) => createElement("li", { text: entry })),
@@ -911,6 +959,12 @@ function renderReasonedAnalysis(target, interpretation) {
 function renderPendingCaseAnalysis(mode = "pending") {
   const running = mode === "running";
   elements["result-analysis-title"].textContent = running ? "正在按六步流程形成结论" : "等待本次检测";
+  elements["result-brief-title"].textContent = running ? "正在计算，尚未形成结论。" : "开始检测后显示简明结论。";
+  elements["result-brief-evidence"].replaceChildren(
+    createElement("li", { text: running ? "正在核对输入、波形和模型输出。" : "运行完成后显示三条来自本次记录的关键依据。" }),
+  );
+  elements["result-brief-scope"].textContent = "没有运行的模型，不会被写成已经排除风险。";
+  elements["result-analysis-details"].open = false;
   elements["result-analysis-summary"].textContent = running
     ? "系统正在依次核对输入、模型结果和波形依据；完成前不提前写结论。"
     : "开始检测后，这里会先给结论，再列出实测依据、模型推导过程和适用边界。";
@@ -934,6 +988,9 @@ function renderCompletedCaseAnalysis(interpretation) {
   elements["result-analysis-risk"].textContent = interpretation.risk_screening;
   elements["result-analysis-synthesis"].textContent = interpretation.synthesis;
   renderReasonedAnalysis({
+    briefTitle: elements["result-brief-title"],
+    briefEvidence: elements["result-brief-evidence"],
+    briefScope: elements["result-brief-scope"],
     summary: elements["result-analysis-summary"],
     evidence: elements["result-analysis-evidence-list"],
     models: elements["result-model-reasoning"],
@@ -1018,7 +1075,9 @@ function renderDashboardMeta(dashboard) {
     ? "公开数据模型与30组自主采集工程验证均已接入"
     : "公开数据模型已运行，自主采集验证仍为空";
   elements["filter-all-count"].textContent = String(caseCatalog.length);
-  elements["filter-self-count"].textContent = String(dashboard.self_collected.received_case_count);
+  ["fall", "adl", "activity", "routine", "self"].forEach((kind) => {
+    elements[`filter-${kind}-count`].textContent = String(caseCatalog.filter((item) => item.kind === kind).length);
+  });
   elements["limitations-list"].replaceChildren(
     ...dashboard.truth.limitations.slice(0, 6).map((item) => createElement("li", { text: item })),
   );
@@ -1041,6 +1100,9 @@ function renderCases() {
   const pageItems = matches.slice(start, start + CASES_PER_PAGE);
 
   elements["case-count"].textContent = `${matches.length} 组`;
+  elements["case-list-range"].textContent = matches.length
+    ? `显示 ${start + 1}–${start + pageItems.length} / ${matches.length} 组`
+    : "显示 0 / 0 组";
   elements["case-page-status"].textContent = `第 ${state.page} / ${pageCount} 页`;
   elements["case-prev"].disabled = state.page <= 1;
   elements["case-next"].disabled = state.page >= pageCount;
@@ -1062,10 +1124,11 @@ function renderCases() {
     copy.append(
       createElement("strong", { text: item.shortTitle }),
       createElement("code", { text: item.id }),
+      createElement("small", { text: `${item.source} · ${item.rate} · ${item.axes}` }),
     );
     const status = createElement("span", {
       className: `case-item__status case-item__status--${item.kind}`,
-      text: item.kind === "fall" ? "跌倒" : item.kind === "adl" ? "日常" : item.kind === "activity" ? "活动" : item.kind === "self" ? "自采" : "规律",
+      text: item.kind === "fall" ? "受控" : item.kind === "adl" ? "日常" : item.kind === "activity" ? "活动" : item.kind === "self" ? "自采" : "合成",
     });
     button.append(index, copy, status);
     row.append(button);
@@ -1378,22 +1441,31 @@ function renderUploadResult(payload) {
   elements["upload-fall"].textContent = interpretation.fall_screening;
   elements["upload-persistence"].textContent = `未保存 · SHA-256 ${payload.file.sha256.slice(0, 12)}…`;
   renderReasonedAnalysis({
+    briefTitle: elements["upload-brief-title"],
+    briefEvidence: elements["upload-brief-evidence"],
+    briefScope: elements["upload-brief-scope"],
     summary: elements["upload-analysis-summary"],
     evidence: elements["upload-evidence-list"],
     models: elements["upload-model-reasoning"],
     conclusion: elements["upload-conclusion"],
     rule: elements["upload-analysis-rule"],
     scope: elements["upload-analysis-scope"],
-  }, interpretation);
+  }, interpretation, {
+    briefHeadline: analysis.fall_model.status === "COMPLETED" ? null : interpretation.fall_screening,
+  });
   renderUploadSignalChart(analysis.waveform, payload.quality);
-  elements["upload-result-state"].className = interpretation.review_required
-    ? "result-state result-state--warning"
-    : "result-state result-state--clear";
-  elements["upload-result-state"].textContent = analysis.fall_model.candidate_windows?.length
-    ? "发现跌倒候选"
+  elements["upload-result-state"].className = analysis.fall_model.status !== "COMPLETED"
+    ? "result-state result-state--neutral"
     : interpretation.review_required
-      ? "需要复核"
-      : "更接近日常活动";
+      ? "result-state result-state--warning"
+      : "result-state result-state--clear";
+  elements["upload-result-state"].textContent = analysis.fall_model.status !== "COMPLETED"
+    ? "筛查数据不足"
+    : analysis.fall_model.candidate_windows?.length
+      ? "发现跌倒候选"
+      : interpretation.review_required
+        ? "需要复核"
+        : "更接近日常活动";
   if (risk.status === "COMPLETED") {
     elements["upload-risk-meta"].textContent = `${risk.timeline.length} 个逐秒时间点 · 公开数据代理模型`;
     renderRiskChart(elements["upload-risk-chart"], risk, {
@@ -1426,6 +1498,7 @@ async function runUploadAnalysis() {
   state.uploadController = new AbortController();
   elements["upload-error"].hidden = true;
   elements["upload-result"].hidden = true;
+  elements["upload-analysis-details"].open = false;
   resetUploadPipeline();
   renderSharedPipeline(elements["upload-pipeline"], [], { activeIndex: 0 });
   elements["upload-process-title"].textContent = "服务器正在依次运行模型";
@@ -1575,6 +1648,32 @@ function setupNavigationTracking() {
   targets.forEach((target) => observer.observe(target));
 }
 
+function setPresentationMode(enabled) {
+  document.body.dataset.view = enabled ? "presentation" : "standard";
+  elements["presentation-toggle"].setAttribute("aria-pressed", String(enabled));
+  elements["presentation-toggle"].setAttribute("aria-label", `评委投屏模式，当前${enabled ? "开启" : "关闭"}`);
+  elements["presentation-state"].textContent = enabled ? "开" : "关";
+  try {
+    window.sessionStorage.setItem("smartwatch-presentation-mode", enabled ? "1" : "0");
+  } catch (_) {
+    // Storage can be unavailable in a restricted browser; the toggle still works for this page.
+  }
+}
+
+function setupPresentationMode() {
+  let enabled = false;
+  try {
+    enabled = window.sessionStorage.getItem("smartwatch-presentation-mode") === "1";
+  } catch (_) {
+    // Continue in standard mode when session storage is unavailable.
+  }
+  setPresentationMode(enabled);
+  elements["presentation-form"].addEventListener("submit", (event) => {
+    event.preventDefault();
+    setPresentationMode(elements["presentation-toggle"].getAttribute("aria-pressed") !== "true");
+  });
+}
+
 elements["reload-form"].addEventListener("submit", (event) => {
   event.preventDefault();
   loadDashboard();
@@ -1600,6 +1699,7 @@ window.addEventListener("beforeunload", () => {
 setupCaseControls();
 setupUploadControls();
 setupNavigationTracking();
+setupPresentationMode();
 updateClock();
 state.clockTimer = window.setInterval(updateClock, 30_000);
 loadDashboard();
