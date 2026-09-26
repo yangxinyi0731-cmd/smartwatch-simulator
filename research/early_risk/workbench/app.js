@@ -230,22 +230,23 @@ const state = {
   evidenceController: null,
   evidenceCache: new Map(),
   selectedEvidence: null,
+  currentResultTone: null,
   uploadFile: null,
   uploadController: null,
   initialSelectionApplied: false,
 };
 
 const ids = [
-  "page-loading", "page-error", "page-error-message", "app-content", "service-status",
+  "page-loading", "page-error", "page-error-message", "app-content", "service-status", "topbar-current", "sidebar-case-count",
   "presentation-form", "presentation-toggle", "presentation-state", "reload-form", "reload-button", "retry-form", "retry-button", "case-search-form",
   "case-search", "clear-search", "case-filters", "case-count", "case-list-range", "case-list", "case-empty",
   "case-pagination-form", "case-prev", "case-next", "case-page-status", "watch-device", "watch-time",
   "watch-case-index", "watch-case-label", "watch-stage-label", "watch-result",
   "watch-score-fill", "watch-score-text", "device-connection", "playback-form", "run-button",
-  "pause-button", "reset-button", "playback-status", "result-state", "selected-truth",
+  "pause-button", "reset-button", "playback-status", "analysis", "result-state", "case-result-analysis", "selected-truth",
   "selected-case-id", "selected-case-title", "selected-case-note", "result-metric-label",
   "result-metric-value", "result-meter-fill", "result-metric-caption", "result-analysis-title",
-  "result-brief-title", "result-brief-evidence", "result-brief-scope", "result-analysis-details",
+  "result-brief-title", "result-brief-evidence", "result-brief-scope", "open-full-analysis", "result-analysis-details",
   "result-analysis-summary", "result-analysis-activity", "result-analysis-fall", "result-analysis-risk",
   "result-analysis-evidence-list", "result-model-reasoning", "result-analysis-synthesis",
   "result-analysis-conclusion", "result-analysis-rule", "result-analysis-scope", "detection-pipeline",
@@ -260,15 +261,23 @@ const ids = [
   "filter-activity-count", "filter-routine-count", "filter-self-count", "upload-form", "upload-dropzone", "sensor-file",
   "upload-file-row", "upload-file-name", "upload-file-meta", "upload-remove", "acceleration-unit",
   "gyroscope-unit", "upload-error", "upload-error-copy", "upload-submit", "upload-process-title",
-  "upload-pipeline", "upload-result", "upload-result-title", "upload-result-state", "upload-quality", "upload-activity",
+  "upload-pipeline", "upload-result", "upload-result-title", "upload-result-state", "upload-generated-analysis", "upload-quality", "upload-activity",
   "upload-brief-title", "upload-brief-evidence", "upload-brief-scope", "upload-analysis-details",
   "upload-fall", "upload-persistence", "upload-evidence-list", "upload-conclusion", "upload-risk-meta",
   "upload-analysis-summary", "upload-model-reasoning", "upload-analysis-rule", "upload-analysis-scope",
   "upload-risk-chart", "upload-risk-summary", "upload-signal-chart", "upload-waveform-meta", "upload-waveform-summary",
   "case-risk-panel", "case-risk-chart", "case-risk-anchor",
-  "case-risk-snapshots", "case-risk-summary",
+  "case-risk-snapshots", "case-risk-summary", "case-detail", "case-detail-close", "case-detail-dismiss",
+  "case-detail-open", "case-detail-kind", "case-detail-id", "case-detail-title", "case-detail-note",
+  "case-detail-source", "case-detail-rate", "case-detail-axes", "case-detail-window",
+  "case-detail-status", "case-detail-conclusion",
 ];
 const elements = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)]));
+
+// Keep reading, tab, and visual order aligned: the case dashboard is the first work surface.
+const workbenchLayout = document.querySelector(".simulator-layout");
+elements["app-content"].insertBefore(workbenchLayout, document.getElementById("upload"));
+elements["app-content"].insertBefore(elements.evidence, document.getElementById("upload"));
 
 function createElement(tagName, options = {}) {
   const element = document.createElement(tagName);
@@ -958,6 +967,7 @@ function renderReasonedAnalysis(target, interpretation, options = {}) {
 
 function renderPendingCaseAnalysis(mode = "pending") {
   const running = mode === "running";
+  elements["case-result-analysis"].dataset.tone = running ? "info" : "neutral";
   elements["result-analysis-title"].textContent = running ? "正在按六步流程形成结论" : "等待本次检测";
   elements["result-brief-title"].textContent = running ? "正在计算，尚未形成结论。" : "开始检测后显示简明结论。";
   elements["result-brief-evidence"].replaceChildren(
@@ -1074,6 +1084,7 @@ function renderDashboardMeta(dashboard) {
   elements["boundary-title"].textContent = dashboard.self_collected.claim_enabled
     ? "公开数据模型与30组自主采集工程验证均已接入"
     : "公开数据模型已运行，自主采集验证仍为空";
+  elements["sidebar-case-count"].textContent = String(caseCatalog.length);
   elements["filter-all-count"].textContent = String(caseCatalog.length);
   ["fall", "adl", "activity", "routine", "self"].forEach((kind) => {
     elements[`filter-${kind}-count`].textContent = String(caseCatalog.filter((item) => item.kind === kind).length);
@@ -1110,12 +1121,14 @@ function renderCases() {
 
   const nodes = pageItems.map((item) => {
     const catalogIndex = caseCatalog.indexOf(item) + 1;
+    const completedHere = item.id === state.selectedCase?.id && state.playbackStep >= 5;
     const row = createElement("article", { className: "case-row", attrs: { role: "listitem" } });
     const button = createElement("button", {
       className: `case-item${item.id === state.selectedCase?.id ? " is-selected" : ""}`,
       attrs: {
         type: "button",
         "data-case-id": item.id,
+        "data-analysis-tone": completedHere ? state.currentResultTone : null,
         "aria-pressed": String(item.id === state.selectedCase?.id),
       },
     });
@@ -1130,7 +1143,11 @@ function renderCases() {
       className: `case-item__status case-item__status--${item.kind}`,
       text: item.kind === "fall" ? "受控" : item.kind === "adl" ? "日常" : item.kind === "activity" ? "活动" : item.kind === "self" ? "自采" : "合成",
     });
-    button.append(index, copy, status);
+    const outcome = createElement("span", {
+      className: "case-item__outcome",
+      text: completedHere ? `本次筛查：${elements["result-state"].textContent}` : "待运行检测",
+    });
+    button.append(index, copy, status, outcome);
     row.append(button);
     return row;
   });
@@ -1154,6 +1171,28 @@ function truthClass(item) {
   return "truth-tag";
 }
 
+function syncCaseDetail(interpretation = null, progressLabel = null) {
+  const item = state.selectedCase;
+  if (!item) return;
+  elements["case-detail-kind"].className = truthClass(item);
+  elements["case-detail-kind"].textContent = item.truthLabel;
+  elements["case-detail-id"].textContent = item.id;
+  elements["case-detail-title"].textContent = item.title;
+  elements["case-detail-note"].textContent = item.note;
+  elements["case-detail-source"].textContent = item.source;
+  elements["case-detail-rate"].textContent = item.rate;
+  elements["case-detail-axes"].textContent = item.axes;
+  elements["case-detail-window"].textContent = item.window;
+  elements["case-detail-status"].textContent = interpretation
+    ? elements["result-state"].textContent
+    : progressLabel || "尚未运行";
+  elements["case-detail-conclusion"].textContent = interpretation
+    ? interpretation.conclusion
+    : progressLabel
+      ? "六步检测尚未结束，不能把中间状态写成最终结论。"
+      : "请运行下方六步检测。登记动作类型不等于模型判断结果。";
+}
+
 function selectCase(caseId, announce = true) {
   const selected = caseCatalog.find((item) => item.id === caseId);
   if (!selected) return;
@@ -1173,6 +1212,7 @@ function selectCase(caseId, announce = true) {
   elements["result-metric-caption"].textContent = selected.metricHelp;
   elements["result-meter-fill"].style.width = "0%";
   renderPendingCaseAnalysis();
+  syncCaseDetail();
 
   elements["watch-case-index"].textContent = `案例 ${String(catalogIndex).padStart(3, "0")} / ${caseCatalog.length}`;
   elements["watch-case-label"].textContent = selected.source;
@@ -1218,6 +1258,7 @@ function startPlayback() {
   elements["result-state"].className = "result-state result-state--running";
   elements["result-state"].textContent = "检测中";
   elements["case-pipeline-state"].textContent = "六步流程运行中";
+  syncCaseDetail(null, "检测中");
   renderPendingCaseAnalysis("running");
   elements["evidence-result"].textContent = "正在把案例结果与已核验输入依据并列复核。";
 
@@ -1254,7 +1295,7 @@ function finishPlayback() {
   let watchState = "complete";
   let meterWidth = 100;
 
-  if (item.kind === "fall" || item.kind === "adl") {
+  if (item.kind === "fall" || item.kind === "adl" || item.kind === "self") {
     const fall = live.fall_model;
     result = fall.screening;
     metricValue = fall.max_score === null ? "数据不足" : Number(fall.max_score).toFixed(3);
@@ -1296,10 +1337,13 @@ function finishPlayback() {
   elements["watch-score-text"].textContent = liveRiskReady ? "1 / 2 / 3 秒已计算" : "判断完成";
   elements["result-state"].className = `result-state result-state--${resultTone}`;
   elements["result-state"].textContent = result;
+  elements["case-result-analysis"].dataset.tone = resultTone;
+  state.currentResultTone = resultTone;
   elements["result-metric-value"].textContent = metricValue;
   elements["result-meter-fill"].style.width = `${Math.max(3, Math.min(100, meterWidth))}%`;
   elements["result-metric-caption"].textContent = caption;
   renderCompletedCaseAnalysis(interpretation);
+  syncCaseDetail(interpretation);
   elements["evidence-result"].textContent = interpretation.conclusion;
   const skippedCount = normalizedPipeline(state.selectedEvidence.pipeline)
     .filter((step) => ["NOT_APPLICABLE", "INSUFFICIENT_DURATION"].includes(step.status)).length;
@@ -1312,6 +1356,14 @@ function finishPlayback() {
   elements["pause-button"].disabled = true;
   state.playbackStep = 5;
   updatePipeline(5, true);
+  renderCases();
+  if (window.location.hash === "#monitor" || window.location.hash === "#analysis") {
+    elements["result-analysis-title"].focus({ preventScroll: true });
+    elements.analysis.scrollIntoView({
+      block: "start",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
+  }
 }
 
 function pausePlayback() {
@@ -1323,6 +1375,7 @@ function pausePlayback() {
   elements["run-button"].disabled = false;
   elements["pause-button"].disabled = true;
   elements["playback-status"].textContent = `检测停在步骤 ${state.playbackStep + 1} / 6，可以继续或重置。`;
+  syncCaseDetail(null, "检测已暂停");
 }
 
 function stopPlayback() {
@@ -1333,6 +1386,7 @@ function stopPlayback() {
 function resetPlayback(announce = true) {
   stopPlayback();
   state.playbackStep = -1;
+  state.currentResultTone = null;
   updatePipeline(-1);
   elements["watch-device"].dataset.state = "idle";
   elements["watch-stage-label"].textContent = "等待检测";
@@ -1341,6 +1395,7 @@ function resetPlayback(announce = true) {
   elements["watch-score-text"].textContent = "尚未运行";
   elements["result-state"].className = "result-state result-state--neutral";
   elements["result-state"].textContent = "等待运行";
+  syncCaseDetail();
   renderPendingCaseAnalysis();
   elements["case-pipeline-state"].textContent = state.selectedEvidence ? "数据已核对 · 等待运行" : "等待运行";
   if (state.selectedCase) elements["evidence-result"].textContent = pendingEvidenceConclusion(state.selectedCase);
@@ -1454,11 +1509,15 @@ function renderUploadResult(payload) {
     briefHeadline: analysis.fall_model.status === "COMPLETED" ? null : interpretation.fall_screening,
   });
   renderUploadSignalChart(analysis.waveform, payload.quality);
-  elements["upload-result-state"].className = analysis.fall_model.status !== "COMPLETED"
-    ? "result-state result-state--neutral"
-    : interpretation.review_required
-      ? "result-state result-state--warning"
-      : "result-state result-state--clear";
+  const uploadTone = analysis.fall_model.status !== "COMPLETED"
+    ? "neutral"
+    : analysis.fall_model.candidate_windows?.length
+      ? "candidate"
+      : interpretation.review_required
+        ? "warning"
+        : "clear";
+  elements["upload-result-state"].className = `result-state result-state--${uploadTone}`;
+  elements["upload-generated-analysis"].dataset.tone = uploadTone;
   elements["upload-result-state"].textContent = analysis.fall_model.status !== "COMPLETED"
     ? "筛查数据不足"
     : analysis.fall_model.candidate_windows?.length
@@ -1486,7 +1545,11 @@ function renderUploadResult(payload) {
   }
   elements["upload-process-title"].textContent = "六步分析完成";
   elements["upload-result-title"].setAttribute("tabindex", "-1");
-  elements["upload-result-title"].focus();
+  elements["upload-result-title"].focus({ preventScroll: true });
+  elements["upload-result"].scrollIntoView({
+    block: "start",
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+  });
 }
 
 async function runUploadAnalysis() {
@@ -1568,7 +1631,57 @@ function syncFilterButtons() {
   });
 }
 
+let caseDetailReturnId = null;
+let caseDetailNavigateAway = false;
+
+function openCaseDetail(caseId) {
+  const dialog = elements["case-detail"];
+  caseDetailReturnId = caseId;
+  caseDetailNavigateAway = false;
+  syncCaseDetail(
+    state.playbackStep >= 5 ? state.selectedEvidence?.analysis?.interpretation : null,
+    state.playbackTimer ? "检测中" : state.playbackStep >= 0 && state.playbackStep < 5 ? "检测已暂停" : null,
+  );
+  if (typeof dialog.showModal === "function") dialog.showModal();
+  else window.location.hash = "monitor";
+}
+
+function setupCaseDetail() {
+  const dialog = elements["case-detail"];
+  elements["case-detail-open"].addEventListener("click", (event) => {
+    event.preventDefault();
+    caseDetailNavigateAway = true;
+    dialog.close();
+    window.location.hash = "monitor";
+    elements["run-button"].focus({ preventScroll: true });
+  });
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  dialog.addEventListener("close", () => {
+    if (!caseDetailNavigateAway && caseDetailReturnId) {
+      document.querySelector(`#case-list button[data-case-id="${CSS.escape(caseDetailReturnId)}"]`)?.focus();
+    }
+    caseDetailNavigateAway = false;
+  });
+}
+
 function setupCaseControls() {
+  elements["result-analysis-details"].addEventListener("toggle", () => {
+    elements["open-full-analysis"].setAttribute(
+      "aria-expanded", String(elements["result-analysis-details"].open),
+    );
+  });
+  elements["open-full-analysis"].addEventListener("click", (event) => {
+    event.preventDefault();
+    const details = elements["result-analysis-details"];
+    details.open = true;
+    details.querySelector("summary").focus({ preventScroll: true });
+    details.scrollIntoView({
+      block: "start",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
+  });
   elements["case-filters"].addEventListener("submit", (event) => {
     event.preventDefault();
     const button = event.submitter?.closest("button[data-filter]");
@@ -1581,7 +1694,10 @@ function setupCaseControls() {
   });
   elements["case-list"].addEventListener("click", (event) => {
     const button = event.target.closest("button[data-case-id]");
-    if (button) selectCase(button.dataset.caseId);
+    if (button) {
+      if (state.selectedCase?.id !== button.dataset.caseId) selectCase(button.dataset.caseId);
+      openCaseDetail(button.dataset.caseId);
+    }
   });
   elements["case-search-form"].addEventListener("submit", (event) => {
     event.preventDefault();
@@ -1617,7 +1733,10 @@ function setupNavigationTracking() {
     links.forEach((link) => {
       const active = link.getAttribute("href") === `#${targetId}`;
       link.classList.toggle("is-current", active);
-      if (active) link.setAttribute("aria-current", "page");
+      if (active) {
+        link.setAttribute("aria-current", "page");
+        elements["topbar-current"].textContent = link.querySelector(".sidebar-nav__copy strong")?.textContent || "样本总览";
+      }
       else link.removeAttribute("aria-current");
     });
   };
@@ -1697,6 +1816,7 @@ window.addEventListener("beforeunload", () => {
 });
 
 setupCaseControls();
+setupCaseDetail();
 setupUploadControls();
 setupNavigationTracking();
 setupPresentationMode();

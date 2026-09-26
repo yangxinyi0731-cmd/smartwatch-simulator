@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import threading
 import base64
 from contextlib import contextmanager
@@ -280,9 +281,11 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
             assert "1 / 2 / 3 秒研究分数" in html
             assert "逐秒风险变化" in html
             assert "加速度与腕部转动变化" in html
-            assert "操作模拟手表" in html
+            assert "样本总览" in html
+            assert "运行六步检测" in html
+            assert "登记动作类型不等于模型判断结果" in html
             assert "跌倒特征匹配度" in html
-            assert "结果分析" in html
+            assert "本次模型判断" in html
             assert "共用六步判断流程" in html
             assert "各模型如何参与判断" in html
             assert "只有数据来源不同" in html
@@ -294,7 +297,54 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
             assert "后端尚未接入" not in html
             assert "年轻参与者" not in html
             assert "真实老人" not in html
+            analysis_start = html.index('<section id="analysis"')
+            continuation_start = html.index(
+                '<section class="panel analysis-continuation"', analysis_start
+            )
+            evidence_start = html.index('<section id="evidence"', continuation_start)
+            analysis_markup = html[analysis_start:continuation_start]
+            continuation_markup = html[continuation_start:evidence_start]
+            assert re.search(r"</article>\s*</section>\s*$", analysis_markup)
+            assert re.search(r"</section>\s*</section>\s*$", continuation_markup)
+            assert 'class="result-analysis"' in analysis_markup
+            assert 'class="selected-case"' not in analysis_markup
+            assert 'class="result-meter"' not in analysis_markup
+            assert 'id="detection-pipeline"' not in analysis_markup
+            assert 'id="result-analysis-details"' not in analysis_markup
+            assert (
+                continuation_markup.index('id="result-analysis-details"')
+                < continuation_markup.index('class="selected-case"')
+                < continuation_markup.index('class="result-meter"')
+                < continuation_markup.index('class="case-pipeline-heading"')
+                < continuation_markup.index('id="detection-pipeline"')
+            )
+            assert 'id="case-result-analysis"' not in continuation_markup
+
+            upload_start = html.index('<section id="upload-result"')
+            upload_end = html.index('class="simulator-layout"', upload_start)
+            upload_markup = html[upload_start:upload_end]
+            assert upload_markup.index('class="generated-analysis"') < upload_markup.index(
+                'class="result-facts"'
+            )
+            case_headline = re.search(r'id="result-brief-title"[^>]*>([^<]*)<', analysis_markup)
+            upload_headline = re.search(r'id="upload-brief-title"[^>]*>([^<]*)<', upload_markup)
+            assert case_headline and "开始检测后" in case_headline.group(1)
+            assert upload_headline and "等待" in upload_headline.group(1)
+            assert all(
+                "发现跌倒候选" not in headline.group(1) and "需要复核" not in headline.group(1)
+                for headline in (case_headline, upload_headline)
+            )
             assert response.headers["X-Content-Type-Options"] == "nosniff"
+
+        with urlopen(f"{base_url}/app.css", timeout=5) as response:  # noqa: S310
+            css = response.read().decode("utf-8")
+            assert re.search(
+                r"\.simulator-layout\s*\{[^}]*align-items:\s*start\s*;", css
+            )
+            assert re.search(
+                r"\.analysis-continuation\s*\{[^}]*grid-column:\s*1\s*/\s*-1\s*;",
+                css,
+            )
 
         with urlopen(f"{base_url}/app.js", timeout=5) as response:  # noqa: S310
             script = response.read().decode("utf-8")
@@ -310,6 +360,29 @@ def test_http_surface_serves_public_life_context_and_safe_demo() -> None:
             assert "/api/analyze-upload" in script
             assert "年轻参与者" not in script
             assert "真实老人" not in script
+            assert 'NOT_APPLICABLE: "未运行"' in script
+            pending = script.split("function renderPendingCaseAnalysis(", 1)[1].split(
+                "function renderCompletedCaseAnalysis(", 1
+            )[0]
+            assert "正在计算，尚未形成结论" in pending
+            assert "开始检测后显示简明结论" in pending
+            playback = script.split("function finishPlayback()", 1)[1].split(
+                "function pausePlayback()", 1
+            )[0]
+            assert "result = fall.screening;" in playback
+            assert playback.index("if (fall.candidate_windows?.length)") < playback.index(
+                "else if (interpretation.review_required)"
+            )
+            assert 'result = "需要复核"' in playback
+            upload_result = script.split("function renderUploadResult(", 1)[1].split(
+                'elements["upload-result-state"].textContent = ', 1
+            )[1].split(";", 1)[0]
+            assert upload_result.index('analysis.fall_model.status !== "COMPLETED"') < upload_result.index(
+                'analysis.fall_model.candidate_windows?.length'
+            ) < upload_result.index("interpretation.review_required")
+            assert '"筛查数据不足"' in upload_result
+            assert '"发现跌倒候选"' in upload_result
+            assert '"需要复核"' in upload_result
 
         routine_evidence, _ = read_json(
             f"{base_url}/api/case-evidence/synthetic-routine-100-v1"
