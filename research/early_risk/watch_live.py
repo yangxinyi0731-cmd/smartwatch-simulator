@@ -1,11 +1,14 @@
-"""USB 串口实时读取 M5StickS3 六轴数据流，并提供滚动研究分析。
+"""实时读取 M5StickS3 六轴数据流（USB 串口或 Wi-Fi 热点），并提供滚动研究分析。
 
-仅在用户显式调用 /api/live/start 时占用串口；停止后立即释放。
+仅在用户显式调用 /api/live/start 时占用串口或连接手表热点；停止后立即释放。
+滚动结果会同步推送到手表屏幕（USB 与 Wi-Fi 两种连接都支持）。
 所有输出都是滚动窗口上的研究模型结果，不是现实报警。
 """
 from __future__ import annotations
 
+import json
 import re
+import socket
 import threading
 import time
 from collections import deque
@@ -34,6 +37,10 @@ ANALYSIS_WINDOW_S = 30.0
 ANALYSIS_CACHE_S = 2.0
 MINIMUM_ANALYSIS_SAMPLES = 50
 OUTPUT_DIR = PROJECT_ROOT / "data" / "raw" / "watch"
+WIFI_TARGET_PATH = OUTPUT_DIR / "wifi_target.json"
+WIFI_HOST = "192.168.4.1"
+WIFI_PORT = 5005
+SOURCES = ("usb", "wifi")
 LINE_RE = re.compile(
     r"^(\d+),(-?\d+\.?\d*),(-?\d+\.?\d*),(-?\d+\.?\d*),"
     r"(-?\d+\.?\d*),(-?\d+\.?\d*),(-?\d+\.?\d*)$"
@@ -59,28 +66,45 @@ def find_watch_port() -> str | None:
     return candidates[0].device if candidates else None
 
 
+def resolve_wifi_host() -> str:
+    """读取 tools/watch_join_wifi.py 记录的手表 Wi-Fi 地址；否则退回默认热点地址。"""
+    try:
+        payload = json.loads(WIFI_TARGET_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return WIFI_HOST
+    host = str(payload.get("ip", "")).strip()
+    return host or WIFI_HOST
+
+
 class WatchLiveSession:
     def __init__(self) -> None:
         self._lock = threading.Lock()
         self._stop_event = threading.Event()
         self._thread: threading.Thread | None = None
         self._serial = None
+        self._wifi_socket: socket.socket | None = None
+        self._wifi_file = None
         self._buffer: deque[tuple[int, tuple[float, ...]]] = deque(
             maxlen=int(BUFFER_SECONDS * TARGET_RATE_HZ) + 100
         )
         self._cursor = 0
         self._status = "stopped"
+        self._source = "usb"
         self._port: str | None = None
         self._last_error: str | None = None
         self._last_sample_at: float | None = None
         self._started_at: float | None = None
         self._analysis_cache: tuple[float, dict[str, Any]] | None = None
+        self._pushed_text: str | None = None
+        self._alert_active = False
 
-    def start(self) -> dict[str, Any]:
+    def start(self, source: str = "usb") -> dict[str, Any]:
         with self._lock:
+            if source not in SOURCES:
+                raise ValueError("数据来源必须是 usb（USB 串口）或 wifi（手表热点）。")
             if self._thread is not None and self._thread.is_alive():
                 return self._status_payload_locked()
-            if serial is None:
+            if source == "usb" and serial is None:
                 self._status = "error"
                 self._last_error = "本机缺少串口支持库（pyserial），无法读取手表数据。"
                 return self._status_payload_locked()
@@ -91,6 +115,9 @@ class WatchLiveSession:
             self._last_error = None
             self._last_sample_at = None
             self._port = None
+            self._source = source
+            self._pushed_text = None
+            self._alert_active = False
             self._started_at = time.time()
             self._status = "connecting"
             self._thread = threading.Thread(
@@ -100,16 +127,37 @@ class WatchLiveSession:
             return self._status_payload_locked()
 
     def stop(self) -> dict[str, Any]:
+        self.send_command("#CLEAR")
+        self.send_command("#VIB:0")
         self._stop_event.set()
         thread = self._thread
         if thread is not None:
             thread.join(timeout=2.0)
         with self._lock:
-            self._close_serial_locked()
+            self._close_connection_locked()
             self._thread = None
+            self._pushed_text = None
+            self._alert_active = False
             if self._status != "error":
                 self._status = "stopped"
             return self._status_payload_locked()
+
+    def send_command(self, command: str) -> bool:
+        payload = (command.strip() + "\n").encode("utf-8")
+        with self._lock:
+            source = self._source
+            serial_port = self._serial
+            wifi_socket = self._wifi_socket
+        try:
+            if source == "usb" and serial_port is not None:
+                serial_port.write(payload)
+                return True
+            if source == "wifi" and wifi_socket is not None:
+                wifi_socket.sendall(payload)
+                return True
+        except Exception:
+            return False
+        return False
 
     def snapshot(self, since: int) -> dict[str, Any]:
         with self._lock:
@@ -126,6 +174,7 @@ class WatchLiveSession:
             )
             payload: dict[str, Any] = {
                 "status": self._status,
+                "source": self._source,
                 "port": self._port,
                 "last_error": self._last_error,
                 "sample_count": total,
@@ -173,6 +222,7 @@ class WatchLiveSession:
     def _status_payload_locked(self) -> dict[str, Any]:
         return {
             "status": self._status,
+            "source": self._source,
             "port": self._port,
             "last_error": self._last_error,
             "sample_count": self._cursor,
@@ -187,56 +237,103 @@ class WatchLiveSession:
             return 0.0
         return round((len(rows) - 1) / span_s, 1)
 
-    def _close_serial_locked(self) -> None:
+    def _close_connection_locked(self) -> None:
         if self._serial is not None:
             try:
                 self._serial.close()
             except Exception:
                 pass
             self._serial = None
+        if self._wifi_file is not None:
+            try:
+                self._wifi_file.close()
+            except Exception:
+                pass
+            self._wifi_file = None
+        if self._wifi_socket is not None:
+            try:
+                self._wifi_socket.close()
+            except Exception:
+                pass
+            self._wifi_socket = None
+
+    def _ensure_connection_locked(self) -> bool:
+        if self._source == "usb":
+            if self._serial is not None:
+                return True
+            candidate = find_watch_port()
+            if candidate is None:
+                self._status = "connecting"
+                self._last_error = (
+                    "没有找到 Espressif 串口设备；请确认手表已用数据线连接。"
+                )
+                return False
+            try:
+                self._serial = serial.Serial(candidate, 115200, timeout=0.5)
+            except Exception as exc:
+                self._status = "connecting"
+                self._last_error = f"串口打开失败：{exc}"
+                return False
+            self._port = candidate
+            self._status = "live"
+            self._last_error = None
+            return True
+
+        if self._wifi_socket is not None:
+            return True
+        host = resolve_wifi_host()
+        try:
+            self._wifi_socket = socket.create_connection((host, WIFI_PORT), timeout=4.0)
+            self._wifi_file = self._wifi_socket.makefile("rb")
+        except OSError as exc:
+            self._wifi_socket = None
+            self._wifi_file = None
+            self._status = "connecting"
+            self._last_error = (
+                f"连接手表 Wi-Fi 失败：{exc}；请确认手表已通过"
+                " scripts\\windows\\connect-watch-wifi.cmd 连接过网络。"
+            )
+            return False
+        self._port = f"Wi-Fi {host}:{WIFI_PORT}"
+        self._status = "live"
+        self._last_error = None
+        return True
+
+    def _read_line(self) -> bytes:
+        with self._lock:
+            source = self._source
+            serial_port = self._serial
+            wifi_file = self._wifi_file
+        if source == "usb":
+            return serial_port.readline()
+        return wifi_file.readline()
 
     def _run(self) -> None:
         while not self._stop_event.is_set():
             with self._lock:
-                if self._serial is None:
-                    candidate = find_watch_port()
-                    if candidate is None:
-                        self._status = "connecting"
-                        self._last_error = (
-                            "没有找到 Espressif 串口设备；请确认手表已用数据线连接。"
-                        )
-                    else:
-                        try:
-                            self._serial = serial.Serial(candidate, 115200, timeout=0.5)
-                            self._port = candidate
-                            self._status = "live"
-                            self._last_error = None
-                        except Exception as exc:
-                            self._status = "connecting"
-                            self._last_error = f"串口打开失败：{exc}"
-                serial_port = self._serial
-            if serial_port is None:
+                connected = self._ensure_connection_locked()
+            if not connected:
                 if self._stop_event.wait(RECONNECT_INTERVAL_S):
                     return
                 continue
             try:
-                line = serial_port.readline()
+                line = self._read_line()
             except Exception as exc:
                 with self._lock:
-                    self._close_serial_locked()
+                    self._close_connection_locked()
                     self._status = "reconnecting"
-                    self._last_error = f"串口读取失败：{exc}"
+                    self._last_error = f"读取失败：{exc}，正在尝试重新连接。"
                 if self._stop_event.wait(RECONNECT_INTERVAL_S):
                     return
                 continue
             if not line:
                 with self._lock:
                     if (
-                        self._serial is not None
+                        self._status == "live"
                         and self._last_sample_at is not None
                         and time.monotonic() - self._last_sample_at > OFFLINE_AFTER_S
                     ):
-                        self._close_serial_locked()
+                        self._close_connection_locked()
                         self._status = "reconnecting"
                         self._last_error = "超过 3 秒没有收到数据，正在尝试重新连接。"
                 continue
@@ -267,9 +364,48 @@ class WatchLiveSession:
             result = self._compute_analysis(rows)
         except Exception as exc:  # pragma: no cover - 防御性兜底
             result = {"status": "ERROR", "detail": f"滚动分析暂时失败：{exc}"}
+        try:
+            self._push_device_text(result)
+        except Exception:  # pragma: no cover - 推送失败不影响网页结果
+            pass
         with self._lock:
             self._analysis_cache = (now, result)
         return result
+
+    def _push_device_text(self, result: dict[str, Any]) -> None:
+        if result.get("status") != "COMPLETED":
+            if self._pushed_text != "分析中":
+                self.send_command("#STATUS:分析中")
+                self._pushed_text = "分析中"
+            return
+        fall = result.get("fall", {})
+        candidates = (
+            int(fall.get("candidate_count") or 0)
+            if fall.get("status") == "COMPLETED"
+            else 0
+        )
+        activity = result.get("activity", {})
+        label = (
+            activity.get("label")
+            if activity.get("status") == "COMPLETED"
+            else "滚动分析"
+        )
+        if candidates:
+            text = f"跌倒候选 {candidates} 个"
+            if not self._alert_active or text != self._pushed_text:
+                self.send_command(f"#TEXT:{text}")
+                self.send_command("#VIB:1")
+                self._alert_active = True
+                self._pushed_text = text
+            return
+        if self._alert_active:
+            self.send_command("#TEXT:")
+            self.send_command("#VIB:0")
+            self._alert_active = False
+        text = f"{label} · 无跌倒候选"
+        if text != self._pushed_text:
+            self.send_command(f"#STATUS:{text}")
+            self._pushed_text = text
 
     def _compute_analysis(
         self, rows: list[tuple[int, tuple[float, ...]]]

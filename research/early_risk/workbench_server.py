@@ -33,6 +33,7 @@ from research.early_risk.upload_analysis import (
     analyze_upload_request,
     build_analysis_pipeline,
 )
+from research.early_risk.import_watch_serial import import_watch_recording
 from research.early_risk.watch_live import WatchLiveSession
 
 
@@ -72,7 +73,63 @@ SELF_COLLECTED_REPORT_PATH = (
 WATCH_COLLECTED_REGISTRY_PATH = (
     PROJECT_ROOT / "data" / "catalog" / "watch_collected_v1.json"
 )
+WATCH_RAW_DIR = PROJECT_ROOT / "data" / "raw" / "watch"
+LIVE_IMPORT_ACTIONS = {
+    "walking": "走路",
+    "sitting": "坐下",
+    "sit-fast": "快速坐下",
+    "bending": "弯腰",
+    "arm-swing": "摆臂",
+    "balance-loss": "失衡",
+    "still": "静止",
+    "other": "其他",
+}
 LIVE_SESSION = WatchLiveSession()
+
+
+def import_live_recording(payload: dict[str, Any]) -> dict[str, Any]:
+    """把手表实时保存的记录登记为一个“手表实测”案例。"""
+    kind = str(payload.get("kind", "")).strip()
+    action = str(payload.get("action", "")).strip()
+    note = str(payload.get("note", "")).strip()
+    if kind not in {"person", "device"}:
+        raise ValueError("登记类型必须是真人佩戴动作或设备测试。")
+    if action not in LIVE_IMPORT_ACTIONS:
+        raise ValueError("动作类型不在允许列表内。")
+    if len(note) > 60:
+        raise ValueError("备注不能超过 60 个字。")
+    file_value = str(payload.get("file", "")).strip()
+    if file_value:
+        candidate = (PROJECT_ROOT / file_value).resolve()
+    else:
+        files = sorted(WATCH_RAW_DIR.glob("live-*.csv"))
+        if not files:
+            raise ValueError("还没有可登记的文件，请先点击“保存本次实时数据”。")
+        candidate = files[-1].resolve()
+    raw_root = WATCH_RAW_DIR.resolve()
+    if raw_root != candidate.parent and raw_root not in candidate.parents:
+        raise ValueError("只能登记 data/raw/watch 目录内的实时文件。")
+    if not candidate.is_file():
+        raise ValueError("找不到要登记的实时文件。")
+    label = LIVE_IMPORT_ACTIONS[action]
+    if kind == "person":
+        participant = "P01"
+        action_group = "worn_action"
+        meaning = f"真人佩戴手表完成“{label}”动作；由实时保存记录登记"
+    else:
+        participant = "M01"
+        action_group = "device_test"
+        meaning = f"设备测试（不是人的动作）：{label}；由实时保存记录登记"
+    if note:
+        meaning = f"{meaning}；备注：{note}"
+    return import_watch_recording(
+        candidate,
+        participant=participant,
+        action_code=action,
+        action_label=label,
+        action_group=action_group,
+        expected_meaning=meaning,
+    )
 NEW_DATA_FORMAT_PATH = PROJECT_ROOT / "docs" / "early_risk" / "NEW_DATA_FORMAT.md"
 
 MAX_SIMULATE_REQUEST_BYTES = 16 * 1024
@@ -1424,6 +1481,7 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
             "/api/live/start",
             "/api/live/stop",
             "/api/live/save",
+            "/api/live/import",
         }:
             self._write_error(
                 HTTPStatus.NOT_FOUND,
@@ -1463,15 +1521,23 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
             elif route == "/api/simulate":
                 result = simulate_policy(payload)
             elif route == "/api/live/start":
-                result = LIVE_SESSION.start()
+                source = str(payload.get("source", "usb")).strip() or "usb"
+                result = LIVE_SESSION.start(source)
             elif route == "/api/live/stop":
                 result = LIVE_SESSION.stop()
+            elif route == "/api/live/import":
+                result = import_live_recording(payload)
             else:
                 result = LIVE_SESSION.save_recording()
         except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
             if route == "/api/analyze-upload":
                 code = "INVALID_SENSOR_FILE"
-            elif route in {"/api/live/start", "/api/live/stop", "/api/live/save"}:
+            elif route in {
+                "/api/live/start",
+                "/api/live/stop",
+                "/api/live/save",
+                "/api/live/import",
+            }:
                 code = "LIVE_REQUEST_INVALID"
             else:
                 code = "INVALID_DRY_RUN_CONFIG"

@@ -483,6 +483,7 @@ def test_watch_live_parsing_and_idle_endpoint() -> None:
     with running_workbench() as base_url:
         live, _ = read_json(f"{base_url}/api/live")
         assert live["status"] == "stopped"
+        assert live["source"] == "usb"
         assert live["samples"] == []
         assert live["analysis"]["status"] == "WAITING"
 
@@ -495,3 +496,73 @@ def test_watch_live_parsing_and_idle_endpoint() -> None:
         with urlopen(request, timeout=5) as response:  # noqa: S310
             stopped = json.load(response)
         assert stopped["status"] == "stopped"
+
+        bad_source = Request(
+            f"{base_url}/api/live/start",
+            data=json.dumps({"source": "bluetooth"}).encode("utf-8"),
+            headers={"Content-Type": "application/json", "Accept": "application/json"},
+            method="POST",
+        )
+        with pytest.raises(HTTPError) as source_error:
+            urlopen(bad_source, timeout=5)  # noqa: S310 - loopback test server
+        assert source_error.value.code == 422
+
+
+def test_watch_live_pushes_device_text_and_rejects_bad_source() -> None:
+    from research.early_risk.watch_live import WatchLiveSession, resolve_wifi_host
+
+    assert resolve_wifi_host()
+
+    session = WatchLiveSession()
+    sent: list[str] = []
+    session.send_command = lambda command: sent.append(command) or True  # type: ignore[method-assign]
+    with pytest.raises(ValueError, match="数据来源"):
+        session.start("bluetooth")
+
+    session._push_device_text(
+        {
+            "status": "COMPLETED",
+            "activity": {"status": "COMPLETED", "label": "走路"},
+            "fall": {"status": "COMPLETED", "candidate_count": 0},
+        }
+    )
+    assert sent == ["#STATUS:走路 · 无跌倒候选"]
+
+    sent.clear()
+    session._push_device_text(
+        {
+            "status": "COMPLETED",
+            "activity": {"status": "COMPLETED", "label": "走路"},
+            "fall": {"status": "COMPLETED", "candidate_count": 2},
+        }
+    )
+    assert "#TEXT:跌倒候选 2 个" in sent
+    assert "#VIB:1" in sent
+
+    sent.clear()
+    session._push_device_text(
+        {
+            "status": "COMPLETED",
+            "activity": {"status": "COMPLETED", "label": "走路"},
+            "fall": {"status": "COMPLETED", "candidate_count": 0},
+        }
+    )
+    assert sent[0] == "#TEXT:"
+    assert "#VIB:0" in sent
+
+
+def test_live_import_rejects_invalid_kind_action_and_path() -> None:
+    from research.early_risk.workbench_server import import_live_recording
+
+    with pytest.raises(ValueError):
+        import_live_recording({"kind": "robot", "action": "walking"})
+    with pytest.raises(ValueError):
+        import_live_recording({"kind": "person", "action": "dancing"})
+    with pytest.raises(ValueError):
+        import_live_recording(
+            {
+                "kind": "person",
+                "action": "walking",
+                "file": "docs/early_risk/NEW_DATA_FORMAT.md",
+            }
+        )

@@ -287,8 +287,9 @@ const ids = [
   "collection-count", "collection-status-copy", "heading-collection-count", "boundary-collection-count",
   "boundary-title", "filter-all-count", "filter-fall-count", "filter-adl-count",
   "filter-activity-count", "filter-routine-count", "filter-self-count", "filter-watch-count", "upload-form", "upload-dropzone", "sensor-file",
-  "live-form", "live-start", "live-stop", "live-save", "live-connection", "live-state", "live-port", "live-rate", "live-count",
+  "live-form", "live-start", "live-stop", "live-save", "live-source", "live-connection", "live-state", "live-source-label", "live-port", "live-rate", "live-count",
   "live-chart", "live-meta", "live-summary", "live-activity", "live-fall", "live-risk", "live-conclusion",
+  "live-alert", "live-alert-text", "live-import", "live-import-form", "live-import-kind", "live-import-action", "live-import-note", "live-import-run", "live-import-result",
   "upload-file-row", "upload-file-name", "upload-file-meta", "upload-remove", "acceleration-unit",
   "gyroscope-unit", "upload-error", "upload-error-copy", "upload-submit", "upload-process-title",
   "upload-pipeline", "upload-result", "upload-result-title", "upload-result-state", "upload-generated-analysis", "upload-quality", "upload-activity",
@@ -1864,6 +1865,7 @@ const liveState = {
   samples: [],
   lastT: null,
   timer: null,
+  savedFile: null,
 };
 
 const LIVE_STATUS_LABELS = {
@@ -1885,6 +1887,7 @@ function liveApplyStatus(payload) {
   elements["live-state"].textContent = label;
   elements["live-connection"].dataset.state =
     payload.status === "live" ? "ready" : payload.status === "stopped" ? "idle" : "busy";
+  elements["live-source-label"].textContent = payload.source === "wifi" ? "Wi-Fi 无线" : "USB 串口";
   elements["live-port"].textContent = payload.port || "—";
   elements["live-rate"].textContent = payload.rate_hz ? `${payload.rate_hz} 次/秒` : "—";
   elements["live-count"].textContent = String(payload.sample_count ?? 0);
@@ -1936,6 +1939,7 @@ function liveUpdateAnalysis(analysis) {
     elements["live-activity"].textContent = analysis.detail || "等待数据";
     elements["live-fall"].textContent = "等待数据";
     elements["live-risk"].textContent = "等待数据";
+    elements["live-alert"].hidden = true;
     return;
   }
   if (analysis.status === "ERROR") {
@@ -1952,6 +1956,11 @@ function liveUpdateAnalysis(analysis) {
   } else {
     elements["live-fall"].textContent = fall.detail || "数据不足";
   }
+  const hasFallCandidate = fall.status === "COMPLETED" && Number(fall.candidate_count) > 0;
+  elements["live-alert"].hidden = !hasFallCandidate;
+  if (hasFallCandidate) {
+    elements["live-alert-text"].textContent = `发现 ${fall.candidate_count} 个跌倒候选窗口（最高特征匹配度 ${Number(fall.max_score).toFixed(3)}）`;
+  }
   if (risk.status === "COMPLETED" && risk.attention_detected) {
     elements["live-risk"].textContent = `1/2/3 秒线索：${["1", "2", "3"]
       .map((horizon) => (risk.attention_detected[horizon] ? "有" : "无"))
@@ -1965,11 +1974,11 @@ function liveUpdateAnalysis(analysis) {
   }
 }
 
-async function livePost(path) {
+async function livePost(path, body = {}) {
   const response = await fetch(path, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: "{}",
+    body: JSON.stringify(body),
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -1997,6 +2006,7 @@ async function livePoll() {
     if (payload.status === "stopped" || payload.status === "error") {
       liveStopPolling();
       liveApplyStatus(payload);
+      elements["live-alert"].hidden = true;
       elements["live-start"].disabled = false;
       elements["live-stop"].disabled = true;
       elements["live-save"].disabled = false;
@@ -2022,7 +2032,8 @@ async function liveStart() {
   if (liveState.busy) return;
   liveState.busy = true;
   try {
-    const payload = await livePost("/api/live/start");
+    const requested = document.querySelector('input[name="live-source"]:checked')?.value;
+    const payload = await livePost("/api/live/start", { source: requested === "wifi" ? "wifi" : "usb" });
     liveStopPolling();
     liveState.samples = [];
     liveState.cursor = 0;
@@ -2050,6 +2061,7 @@ async function liveStop() {
     liveStopPolling();
     liveApplyStatus(payload);
     elements["live-state"].textContent = "已停止";
+    elements["live-alert"].hidden = true;
     elements["live-start"].disabled = false;
     elements["live-stop"].disabled = true;
   } catch (error) {
@@ -2064,10 +2076,34 @@ async function liveSave() {
   liveState.busy = true;
   try {
     const payload = await livePost("/api/live/save");
-    elements["live-summary"].textContent = `已保存 ${payload.sample_count} 个样本（${payload.duration_s} 秒）到 ${payload.file}；可在“新数据检测”里继续分析，或交给导入流程登记为案例。`;
+    liveState.savedFile = payload.file;
+    elements["live-summary"].textContent = `已保存 ${payload.sample_count} 个样本（${payload.duration_s} 秒）到 ${payload.file}；可在下面登记为案例，或在“新数据检测”里继续分析。`;
+    elements["live-import"].hidden = false;
+    elements["live-import-result"].textContent = "选择类型和动作后点击“登记为案例”。";
   } catch (error) {
     elements["live-summary"].textContent = error.message;
   } finally {
+    liveState.busy = false;
+  }
+}
+
+async function liveImport() {
+  if (liveState.busy) return;
+  liveState.busy = true;
+  elements["live-import-run"].disabled = true;
+  elements["live-import-result"].textContent = "正在运行三个研究模型并登记案例…";
+  try {
+    const payload = await livePost("/api/live/import", {
+      file: liveState.savedFile || "",
+      kind: elements["live-import-kind"].value,
+      action: elements["live-import-action"].value,
+      note: elements["live-import-note"].value.trim(),
+    });
+    elements["live-import-result"].textContent = `已登记案例 ${payload.case_id}（手表实测共 ${payload.case_count} 条）；刷新页面后可在“样本总览”里打开这条记录。`;
+  } catch (error) {
+    elements["live-import-result"].textContent = error.message;
+  } finally {
+    elements["live-import-run"].disabled = false;
     liveState.busy = false;
   }
 }
@@ -2080,11 +2116,17 @@ function setupLiveControls() {
     else if (submitter?.id === "live-stop") liveStop();
     else if (submitter?.id === "live-save") liveSave();
   });
+  elements["live-import-form"]?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    liveImport();
+  });
   fetch("/api/live?since=0", { headers: { Accept: "application/json" } })
     .then((response) => (response.ok ? response.json() : null))
     .then((payload) => {
       if (!payload) return;
       liveApplyStatus(payload);
+      const wifiRadio = document.querySelector('input[name="live-source"][value="wifi"]');
+      if (payload.source === "wifi" && wifiRadio) wifiRadio.checked = true;
       if (payload.status !== "stopped") {
         liveState.active = true;
         liveState.cursor = payload.cursor || 0;

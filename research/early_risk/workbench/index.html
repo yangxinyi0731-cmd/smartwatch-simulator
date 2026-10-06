@@ -564,12 +564,17 @@
 
             <section id="live" class="live-lab anchor-section" aria-labelledby="live-title">
               <header class="panel-heading panel-heading--stacked">
-                <div><p class="panel-kicker">设备实时 · USB</p><h2 id="live-title">手表实时波形与滚动筛查</h2></div>
+                <div><p class="panel-kicker">设备实时 · USB / Wi-Fi</p><h2 id="live-title">手表实时波形与滚动筛查</h2></div>
                 <span id="live-connection" class="device-connection" data-state="idle"><b aria-hidden="true"></b><span id="live-state">未开始</span></span>
               </header>
-              <p class="case-panel__hint">用数据线读取手表此刻发送的六轴数据，在浏览器里滚动显示波形和研究模型输出。这里是研究演示，不是现实报警；数据只在本机处理。</p>
+              <p class="case-panel__hint">用数据线，或让手表连上手机热点后免插线读取此刻的六轴数据，在浏览器里滚动显示波形和研究模型输出，并把滚动判断同步到手表屏幕。这里是研究演示，不是现实报警；数据只在本机处理。</p>
 
               <form id="live-form" class="live-controls" aria-label="实时读取控制" novalidate>
+                <fieldset id="live-source" class="live-source">
+                  <legend>数据来源</legend>
+                  <label><input type="radio" name="live-source" value="usb" checked /> <span>USB 串口（插线）</span></label>
+                  <label><input type="radio" name="live-source" value="wifi" /> <span>Wi-Fi 无线（免插线）</span></label>
+                </fieldset>
                 <button id="live-start" class="button button--primary" type="submit">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" /></svg><span>开始实时读取</span>
                 </button>
@@ -578,7 +583,8 @@
               </form>
 
               <dl class="live-facts" aria-label="实时连接状态">
-                <div><dt>串口端口</dt><dd id="live-port">—</dd></div>
+                <div><dt>数据来源</dt><dd id="live-source-label">USB 串口</dd></div>
+                <div><dt>连接端口</dt><dd id="live-port">—</dd></div>
                 <div><dt>采样速率</dt><dd id="live-rate">—</dd></div>
                 <div><dt>已读取样本</dt><dd id="live-count">0</dd></div>
               </dl>
@@ -606,7 +612,39 @@
                 </div>
               </div>
 
-              <p class="upload-privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2M5 10h14v11H5z" /></svg>只在本机读取串口；除非点击“保存本次实时数据”，否则不会写入任何文件。</p>
+              <div id="live-alert" class="live-alert" hidden>
+                <strong id="live-alert-text">发现跌倒候选</strong>
+                <small>滚动窗口筛查结果 · 仅研究演示，不会通知任何人</small>
+              </div>
+
+              <div id="live-import" class="live-import" hidden>
+                <h3>把这次实时数据登记为案例</h3>
+                <form id="live-import-form" class="live-import-form" aria-label="实时数据登记表单" novalidate>
+                  <label><span>类型</span>
+                    <select id="live-import-kind">
+                      <option value="person">真人佩戴动作（P 开头）</option>
+                      <option value="device">设备测试，不是人的动作（M 开头）</option>
+                    </select>
+                  </label>
+                  <label><span>动作</span>
+                    <select id="live-import-action">
+                      <option value="walking">走路</option>
+                      <option value="sitting">坐下</option>
+                      <option value="sit-fast">快速坐下</option>
+                      <option value="bending">弯腰</option>
+                      <option value="arm-swing">摆臂</option>
+                      <option value="balance-loss">失衡</option>
+                      <option value="still" selected>静止</option>
+                      <option value="other">其他</option>
+                    </select>
+                  </label>
+                  <label><span>备注（可留空）</span><input id="live-import-note" type="text" maxlength="60" placeholder="例如：第一组，桌面测试" /></label>
+                  <button id="live-import-run" class="button button--quiet" type="submit">登记为案例</button>
+                </form>
+                <p id="live-import-result" class="chart-summary" role="status">登记后会写入手表实测案例库，可在“样本总览”里打开。</p>
+              </div>
+
+              <p class="upload-privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2M5 10h14v11H5z" /></svg>只在本机读取串口或手表热点；除非点击“保存本次实时数据”，否则不会写入任何文件。</p>
             </section>
 
             <section id="records" class="model-strip anchor-section" aria-labelledby="model-strip-title">

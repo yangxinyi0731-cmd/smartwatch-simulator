@@ -200,22 +200,20 @@ def _build_report(registry: dict[str, Any], imported_on: str) -> dict[str, Any]:
     }
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="导入手表（M5StickS3）串口采集记录。")
-    parser.add_argument("source_csv", type=Path)
-    parser.add_argument("--participant", default="PW01")
-    parser.add_argument("--action-code", default="still")
-    parser.add_argument("--action-label", default="静止")
-    parser.add_argument("--action-group", default="device_test")
-    parser.add_argument(
-        "--expected-meaning",
-        default="设备静置测试；用于验证手表采集与分析链路",
-    )
-    parser.add_argument("--captured-on", default=date.today().isoformat())
-    parser.add_argument("--imported-on", default=date.today().isoformat())
-    args = parser.parse_args()
-
-    source_csv = args.source_csv.resolve()
+def import_watch_recording(
+    source_csv: Path,
+    *,
+    participant: str = "PW01",
+    action_code: str = "still",
+    action_label: str = "静止",
+    action_group: str = "device_test",
+    expected_meaning: str = "设备静置测试；用于验证手表采集与分析链路",
+    captured_on: str | None = None,
+    imported_on: str | None = None,
+) -> dict[str, Any]:
+    captured_on = captured_on or date.today().isoformat()
+    imported_on = imported_on or date.today().isoformat()
+    source_csv = source_csv.resolve()
     if not source_csv.is_file():
         raise FileNotFoundError(f"找不到采集文件：{source_csv}")
 
@@ -223,7 +221,7 @@ def main() -> None:
     normalized, quality = _normalize(times, sensors, source_metrics)
 
     registry = _load_registry()
-    case_id = _next_case_id(registry["cases"], args.participant, args.action_code)
+    case_id = _next_case_id(registry["cases"], participant, action_code)
     if not CASE_ID_PATTERN.match(case_id):
         raise ValueError(f"案例编号格式无效：{case_id}")
 
@@ -244,15 +242,15 @@ def main() -> None:
 
     case = {
         "case_id": case_id,
-        "participant_id": args.participant,
-        "action_code": args.action_code,
-        "action_label": args.action_label,
-        "action_group": args.action_group,
-        "expected_meaning": args.expected_meaning,
+        "participant_id": participant,
+        "action_code": action_code,
+        "action_label": action_label,
+        "action_group": action_group,
+        "expected_meaning": expected_meaning,
         "truth_category": "WATCH_SERIAL_RECORDING",
         "reported_label_source": "operator_input",
         "independent_label_verification": False,
-        "capture_date": args.captured_on,
+        "capture_date": captured_on,
         "source_format": "m5sticks3_serial_csv",
         "source_file": source_relative,
         "source_file_sha256": _sha256_bytes(source_bytes),
@@ -273,34 +271,57 @@ def main() -> None:
     registry["received_case_count"] = len(registry["cases"])
     registry["accepted_case_count"] = len(registry["cases"])
     registry["rejected_case_count"] = 0
-    registry["updated_on"] = args.imported_on
+    registry["updated_on"] = imported_on
     REGISTRY_PATH.parent.mkdir(parents=True, exist_ok=True)
     REGISTRY_PATH.write_text(
         json.dumps(registry, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
 
-    report = _build_report(registry, args.imported_on)
+    report = _build_report(registry, imported_on)
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
     REPORT_PATH.write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
 
-    print(
-        json.dumps(
-            {
-                "status": report["status"],
-                "case_id": case_id,
-                "case_count": report["case_count"],
-                "registry": str(REGISTRY_PATH.relative_to(PROJECT_ROOT)),
-                "report": str(REPORT_PATH.relative_to(PROJECT_ROOT)),
-                "fall_screening": summary["fall_screening"],
-                "activity_label": summary["activity_label"],
-            },
-            ensure_ascii=False,
-        )
+    return {
+        "status": report["status"],
+        "case_id": case_id,
+        "case_count": report["case_count"],
+        "registry": str(REGISTRY_PATH.relative_to(PROJECT_ROOT)),
+        "report": str(REPORT_PATH.relative_to(PROJECT_ROOT)),
+        "fall_screening": summary["fall_screening"],
+        "activity_label": summary["activity_label"],
+    }
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="导入手表（M5StickS3）串口采集记录。")
+    parser.add_argument("source_csv", type=Path)
+    parser.add_argument("--participant", default="PW01")
+    parser.add_argument("--action-code", default="still")
+    parser.add_argument("--action-label", default="静止")
+    parser.add_argument("--action-group", default="device_test")
+    parser.add_argument(
+        "--expected-meaning",
+        default="设备静置测试；用于验证手表采集与分析链路",
     )
+    parser.add_argument("--captured-on", default=None)
+    parser.add_argument("--imported-on", default=None)
+    args = parser.parse_args()
+
+    result = import_watch_recording(
+        args.source_csv,
+        participant=args.participant,
+        action_code=args.action_code,
+        action_label=args.action_label,
+        action_group=args.action_group,
+        expected_meaning=args.expected_meaning,
+        captured_on=args.captured_on,
+        imported_on=args.imported_on,
+    )
+    print(json.dumps(result, ensure_ascii=False))
 
 
 if __name__ == "__main__":
