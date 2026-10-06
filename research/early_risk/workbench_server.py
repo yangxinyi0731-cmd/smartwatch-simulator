@@ -13,7 +13,7 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
-from urllib.parse import unquote, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 import numpy as np
 import yaml
@@ -33,6 +33,7 @@ from research.early_risk.upload_analysis import (
     analyze_upload_request,
     build_analysis_pipeline,
 )
+from research.early_risk.watch_live import WatchLiveSession
 
 
 WORKBENCH_ROOT = Path(__file__).with_name("workbench")
@@ -68,6 +69,10 @@ SELF_COLLECTED_REGISTRY_PATH = (
 SELF_COLLECTED_REPORT_PATH = (
     PROJECT_ROOT / "reports" / "early_risk" / "self_collected_p01_v1.json"
 )
+WATCH_COLLECTED_REGISTRY_PATH = (
+    PROJECT_ROOT / "data" / "catalog" / "watch_collected_v1.json"
+)
+LIVE_SESSION = WatchLiveSession()
 NEW_DATA_FORMAT_PATH = PROJECT_ROOT / "docs" / "early_risk" / "NEW_DATA_FORMAT.md"
 
 MAX_SIMULATE_REQUEST_BYTES = 16 * 1024
@@ -579,6 +584,121 @@ def _build_self_collected_evidence(case_id: str) -> dict[str, Any]:
     }
 
 
+def _build_watch_evidence(case_id: str) -> dict[str, Any]:
+    registry = _read_json(WATCH_COLLECTED_REGISTRY_PATH)
+    case = next(
+        (item for item in registry.get("cases", []) if item.get("case_id") == case_id),
+        None,
+    )
+    if case is None:
+        raise LookupError("没有找到这条手表实测记录。")
+    relative_path = Path(str(case["processed_relative_path"]))
+    if relative_path.is_absolute() or ".." in relative_path.parts:
+        raise ValueError("手表实测记录路径无效。")
+    path = (PROJECT_ROOT / relative_path).resolve()
+    if PROJECT_ROOT not in path.parents or not path.is_file():
+        raise FileNotFoundError("手表实测记录文件不存在。")
+    if sha256_file(path) != case["processed_sha256"]:
+        raise ValueError("手表实测记录文件哈希与登记记录不一致。")
+
+    values = np.load(path, allow_pickle=False)
+    expected_shape = (int(case["sample_count"]), 6)
+    if values.shape != expected_shape or values.dtype != np.float32:
+        raise ValueError("手表实测数组与登记规格不一致。")
+    if not np.isfinite(values).all():
+        raise ValueError("手表实测记录包含无效数值。")
+    sample_rate_hz = float(case["sample_rate_hz"])
+    if sample_rate_hz != 50.0:
+        raise ValueError("手表实测记录必须已经统一为 50 Hz。")
+
+    acceleration = np.linalg.norm(values[:, :3], axis=1)
+    rotation = np.linalg.norm(values[:, 3:], axis=1)
+    required_indices = (int(np.argmax(acceleration)), int(np.argmax(rotation)))
+    indices = _downsample_indices(len(values), required_indices)
+    series = [
+        {
+            "id": "acceleration_magnitude",
+            "label": "加速度合量",
+            "unit": "m/s²",
+            "values": [
+                [int(round(index * 1000 / sample_rate_hz)), round(float(acceleration[index]), 6)]
+                for index in indices
+            ],
+        },
+        {
+            "id": "angular_velocity_magnitude",
+            "label": "角速度合量",
+            "unit": "rad/s",
+            "values": [
+                [int(round(index * 1000 / sample_rate_hz)), round(float(rotation[index]), 6)]
+                for index in indices
+            ],
+        },
+    ]
+    analysis = analyze_normalized_imu(values)
+    quality = case.get("quality", {})
+    flags = list(quality.get("flags", []))
+    activity = analysis["activity_model"]
+    fall = analysis["fall_model"]
+    risk = analysis["early_risk_model"]
+    pipeline = build_analysis_pipeline(
+        validation=(
+            "COMPLETED",
+            "手表串口采集来源、处理文件哈希、六轴通道和动作名称已登记。",
+        ),
+        normalization=(
+            "COMPLETED",
+            f"手表单条数据流已统一为 50 Hz，共 {len(values)} 个标准采样点。",
+        ),
+        activity=(
+            activity["status"],
+            f"活动识别完成：{activity['label']}。" if activity["status"] == "COMPLETED" else activity["detail"],
+        ),
+        fall=(
+            fall["status"],
+            (
+                f"{fall['screening']}；最高特征匹配度 {fall['max_score']:.3f}，"
+                f"共 {len(fall['candidate_windows'])} 个窗口达到筛查条件。"
+            ),
+        ),
+        risk=(risk["status"], analysis["interpretation"]["risk_screening"]),
+    )
+    duration_ms = int(case["duration_ms"])
+    return {
+        "case_id": case_id,
+        "evidence_type": "sensor_waveform",
+        "source_label": "手表实测 · M5StickS3 · USB 串口",
+        "truth_category": case["truth_category"],
+        "content_verified": True,
+        "stream": {
+            "sample_rate_hz": sample_rate_hz,
+            "sample_count": len(values),
+            "displayed_point_count": len(indices),
+            "duration_ms": duration_ms,
+            "channels": list(case["channels"]),
+            "axis_count": 6,
+        },
+        "quality": {"flag_count": len(flags), "flags": flags},
+        "events": [
+            {
+                "event_type": "WATCH_SERIAL_RECORDING",
+                "label": case["action_label"],
+                "start_offset_ms": 0,
+                "end_offset_ms": duration_ms,
+            }
+        ],
+        "series": series,
+        "analysis": analysis,
+        "pipeline": pipeline,
+        "limitations": [
+            "波形来自 M5StickS3 手表的实际串口采集记录，处理文件已经过内容哈希和数组形状核对。",
+            "动作名称由采集操作者登记，没有视频或第二标注者进行独立复核。",
+            "本记录用于工程链路验证，数量有限，不构成对任何人群的现实风险验证。",
+            "1、2、3 秒输出仍是公开受控数据代理研究分数，不是现实跌倒预测。",
+        ],
+    }
+
+
 def _build_sensor_evidence(case_id: str) -> dict[str, Any]:
     settings = Settings.from_environment()
     if not settings.database_path.is_file():
@@ -839,6 +959,8 @@ def build_case_evidence(case_id: str) -> dict[str, Any]:
         return _build_routine_evidence(case_id)
     if case_id.startswith("self-p01-"):
         return _build_self_collected_evidence(case_id)
+    if case_id.startswith("watch-"):
+        return _build_watch_evidence(case_id)
     return _build_sensor_evidence(case_id)
 
 
@@ -854,6 +976,11 @@ def build_workbench_payload() -> dict[str, Any]:
     self_collected = _read_json(SELF_COLLECTED_REGISTRY_PATH)
     self_collected_report = _read_json(SELF_COLLECTED_REPORT_PATH)
     self_collected_complete = _self_collected_complete(self_collected)
+    watch_collected = (
+        _read_json(WATCH_COLLECTED_REGISTRY_PATH)
+        if WATCH_COLLECTED_REGISTRY_PATH.is_file()
+        else None
+    )
 
     gate_results = gate["results"]
     audit_results = audit["results"]
@@ -880,8 +1007,9 @@ def build_workbench_payload() -> dict[str, Any]:
             "limitations": gate["limitations"],
             "notice": (
                 "本工作台会对六轴公开案例和用户选择的新文件真实运行研究模型，"
-                "并已登记 P01 的 30 组自主采集动作；页面逐秒显示 1、2、3 秒代理风险、"
-                "波形依据和格式化结论。临时上传文件只在内存中分析，也不会发送任何通知。"
+                "并已登记 P01 的 30 组自主采集动作与 M5StickS3 手表实测记录；"
+                "页面逐秒显示 1、2、3 秒代理风险、波形依据和格式化结论。"
+                "临时上传文件只在内存中分析，也不会发送任何通知。"
             ),
         },
         "public_risk_model": {
@@ -913,6 +1041,27 @@ def build_workbench_payload() -> dict[str, Any]:
                 "claim": self_collected_report["claim"],
             },
         },
+        "watch_collected": (
+            {
+                "status": watch_collected["status"],
+                "device": watch_collected.get("device", "M5StickS3"),
+                "received_case_count": watch_collected["received_case_count"],
+                "accepted_case_count": watch_collected["accepted_case_count"],
+                "cases": watch_collected["cases"],
+                "note": watch_collected.get("note", ""),
+                "limitations": watch_collected.get("limitations", []),
+            }
+            if watch_collected is not None
+            else {
+                "status": "EMPTY",
+                "device": "M5StickS3",
+                "received_case_count": 0,
+                "accepted_case_count": 0,
+                "cases": [],
+                "note": "",
+                "limitations": [],
+            }
+        ),
         "pipeline": list(PIPELINE_STAGES),
         "contract": {
             "id": contract["contract_id"],
@@ -1189,11 +1338,28 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
                         "self_collected_case_count": int(
                             self_collected["accepted_case_count"]
                         ),
+                        "watch_test_case_count": (
+                            int(
+                                _read_json(WATCH_COLLECTED_REGISTRY_PATH)[
+                                    "accepted_case_count"
+                                ]
+                            )
+                            if WATCH_COLLECTED_REGISTRY_PATH.is_file()
+                            else 0
+                        ),
                         "real_world_prediction_evidence": False,
                         "deployment_approved": False,
                         "external_notifications_enabled": False,
                     },
                 )
+                return
+            if route == "/api/live":
+                query = parse_qs(urlparse(self.path).query)
+                try:
+                    since = max(0, int(query.get("since", ["0"])[0]))
+                except ValueError:
+                    since = 0
+                self._write_json(HTTPStatus.OK, LIVE_SESSION.snapshot(since))
                 return
             if route == "/api/workbench":
                 self._write_json(HTTPStatus.OK, build_workbench_payload())
@@ -1252,7 +1418,13 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler API
         route = urlparse(self.path).path
-        if route not in {"/api/simulate", "/api/analyze-upload"}:
+        if route not in {
+            "/api/simulate",
+            "/api/analyze-upload",
+            "/api/live/start",
+            "/api/live/stop",
+            "/api/live/save",
+        }:
             self._write_error(
                 HTTPStatus.NOT_FOUND,
                 code="NOT_FOUND",
@@ -1286,19 +1458,26 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
             payload = json.loads(body.decode("utf-8")) if body else {}
             if not isinstance(payload, dict):
                 raise ValueError("请求顶层必须是对象。")
-            result = (
-                analyze_upload_request(payload)
-                if route == "/api/analyze-upload"
-                else simulate_policy(payload)
-            )
+            if route == "/api/analyze-upload":
+                result = analyze_upload_request(payload)
+            elif route == "/api/simulate":
+                result = simulate_policy(payload)
+            elif route == "/api/live/start":
+                result = LIVE_SESSION.start()
+            elif route == "/api/live/stop":
+                result = LIVE_SESSION.stop()
+            else:
+                result = LIVE_SESSION.save_recording()
         except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+            if route == "/api/analyze-upload":
+                code = "INVALID_SENSOR_FILE"
+            elif route in {"/api/live/start", "/api/live/stop", "/api/live/save"}:
+                code = "LIVE_REQUEST_INVALID"
+            else:
+                code = "INVALID_DRY_RUN_CONFIG"
             self._write_error(
                 HTTPStatus.UNPROCESSABLE_ENTITY,
-                code=(
-                    "INVALID_SENSOR_FILE"
-                    if route == "/api/analyze-upload"
-                    else "INVALID_DRY_RUN_CONFIG"
-                ),
+                code=code,
                 message=str(exc),
             )
             return

@@ -466,3 +466,32 @@ def test_http_surface_rejects_path_traversal_and_non_json_posts() -> None:
         with pytest.raises(HTTPError) as oversized_error:
             urlopen(oversized_request, timeout=5)  # noqa: S310 - loopback test server
         assert oversized_error.value.code == 413
+
+
+def test_watch_live_parsing_and_idle_endpoint() -> None:
+    from research.early_risk.watch_live import parse_sample_line
+
+    parsed = parse_sample_line("1234,-0.1000,0.2000,9.8000,0.0100,0.0200,0.0300")
+    assert parsed is not None
+    t_ms, values = parsed
+    assert t_ms == 1234
+    assert len(values) == 6
+    assert abs(values[2] - 9.8) < 1e-6
+    assert parse_sample_line("bad line") is None
+    assert parse_sample_line("1234,1,2,3") is None
+
+    with running_workbench() as base_url:
+        live, _ = read_json(f"{base_url}/api/live")
+        assert live["status"] == "stopped"
+        assert live["samples"] == []
+        assert live["analysis"]["status"] == "WAITING"
+
+        request = Request(
+            f"{base_url}/api/live/stop",
+            data=b"{}",
+            headers={"Content-Type": "application/json", "Accept": "application/json"},
+            method="POST",
+        )
+        with urlopen(request, timeout=5) as response:  # noqa: S310
+            stopped = json.load(response)
+        assert stopped["status"] == "stopped"

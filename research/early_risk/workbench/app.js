@@ -217,6 +217,34 @@ function buildSelfCollectedCases(dashboard) {
   });
 }
 
+function buildWatchCases(dashboard) {
+  return (dashboard.watch_collected?.cases || []).map((item) => {
+    const summary = item.analysis_summary || {};
+    const durationSeconds = (item.duration_ms / 1000).toFixed(1);
+    return {
+      id: item.case_id,
+      kind: "watch",
+      source: "手表实测",
+      sourceLabel: "手表实测 · M5StickS3",
+      truth: item.truth_category,
+      truthLabel: `手表实测 · ${item.action_label}`,
+      title: `手表实测记录：${item.action_label}`,
+      shortTitle: `${item.action_label} · 手表采集`,
+      note: `M5StickS3 手表通过 USB 串口实际采集的 ${durationSeconds} 秒六轴记录；登记含义为“${item.expected_meaning}”。`,
+      label: item.action_code,
+      participant: item.participant_id,
+      rate: `${item.sample_rate_hz} Hz`,
+      axes: "6 轴 IMU",
+      window: `${durationSeconds} 秒连续记录`,
+      model: "三个研究模型共同分析",
+      metricLabel: "跌倒特征匹配度",
+      metricHelp: "表示这段手表实测动作与受控模拟跌倒窗口的相似程度；用于工程复核，不是现实跌倒概率。",
+      score: summary.fall_max_score,
+      alarms: summary.fall_candidate_window_count,
+    };
+  });
+}
+
 const state = {
   dashboard: null,
   loadController: null,
@@ -258,7 +286,9 @@ const ids = [
   "evidence-limit", "truth-notice", "limitations-list", "fixture-id",
   "collection-count", "collection-status-copy", "heading-collection-count", "boundary-collection-count",
   "boundary-title", "filter-all-count", "filter-fall-count", "filter-adl-count",
-  "filter-activity-count", "filter-routine-count", "filter-self-count", "upload-form", "upload-dropzone", "sensor-file",
+  "filter-activity-count", "filter-routine-count", "filter-self-count", "filter-watch-count", "upload-form", "upload-dropzone", "sensor-file",
+  "live-form", "live-start", "live-stop", "live-save", "live-connection", "live-state", "live-port", "live-rate", "live-count",
+  "live-chart", "live-meta", "live-summary", "live-activity", "live-fall", "live-risk", "live-conclusion",
   "upload-file-row", "upload-file-name", "upload-file-meta", "upload-remove", "acceleration-unit",
   "gyroscope-unit", "upload-error", "upload-error-copy", "upload-submit", "upload-process-title",
   "upload-pipeline", "upload-result", "upload-result-title", "upload-result-state", "upload-generated-analysis", "upload-quality", "upload-activity",
@@ -387,6 +417,19 @@ function motionPresentation(item) {
     const [motion, title] = selfMotions[item.label] || ["unknown", item.shortTitle.split(" · ")[0]];
     return { motion, title, caption: "线条人物只说明采集时登记的动作；实际判断依据来自六轴波形和模型输出。" };
   }
+  if (item.kind === "watch") {
+    const watchMotions = {
+      still: ["resting", "静止（设备静置）"],
+      walking: ["walking", "正常走路"],
+      normal_sit: ["daily", "正常坐下"],
+      fast_sit: ["daily", "快速坐下"],
+      bend_pickup: ["daily", "弯腰捡东西"],
+      large_arm_swing: ["daily", "大幅度摆臂"],
+      safe_instability: ["fall", "安全失衡"],
+    };
+    const [motion, title] = watchMotions[item.label] || ["unknown", item.shortTitle.split(" · ")[0]];
+    return { motion, title, caption: "线条人物只说明采集时登记的动作；实际判断依据来自手表六轴波形和模型输出。" };
+  }
   if (item.label === "walking") {
     return { motion: "walking", title: "走路动作", caption: "线条人物只说明案例类别；实际依据来自腕部三轴信号。" };
   }
@@ -409,6 +452,9 @@ function evidenceMethod(item) {
   if (item.kind === "self") {
     return "同一段六轴记录依次运行活动识别、跌倒候选筛查和提前 1/2/3 秒研究模型，再用原始波形交叉核对。";
   }
+  if (item.kind === "watch") {
+    return "同一段手表实测记录依次运行活动识别、跌倒候选筛查和提前 1/2/3 秒研究模型，再用实际波形交叉核对。";
+  }
   return "运行生活规律模型，逐日比较同一合成档案中用餐、午睡和散步的时间、次数与持续时长。";
 }
 
@@ -416,6 +462,7 @@ function pendingEvidenceConclusion(item) {
   if (item.kind === "fall" || item.kind === "adl") return "开始检测后，结合保存匹配度与跌倒动作记录生成。";
   if (item.kind === "activity") return "开始检测后，显示活动模型的实际输出以及它是否与登记类别一致。";
   if (item.kind === "self") return "开始检测后，显示三个模型的实际输出、关键波形和生成结论。";
+  if (item.kind === "watch") return "开始检测后，显示三个模型对手表实测记录的实际输出、关键波形和生成结论。";
   return "开始检测后，显示规律模型实际标记了多少项规则偏离。";
 }
 
@@ -425,6 +472,7 @@ function completedEvidenceConclusion(item, result) {
   }
   if (item.kind === "activity") return `${result}；登记类别为“${item.shortTitle.split(" · ")[0]}”。`;
   if (item.kind === "self") return `${result}；跌倒特征匹配度 ${formatPercent(item.score)}，达到筛查条件的窗口 ${item.alarms} 个。`;
+  if (item.kind === "watch") return `${result}；跌倒特征匹配度 ${formatPercent(item.score)}，达到筛查条件的窗口 ${item.alarms} 个。`;
   return `${result}；输入为 100 天、551 条固定种子合成事件。`;
 }
 
@@ -1050,11 +1098,12 @@ async function loadDashboard() {
     const dashboard = await fetchJson("/api/workbench", { signal: state.loadController.signal });
     state.dashboard = dashboard;
     const selfCollectedCases = buildSelfCollectedCases(dashboard);
-    caseCatalog = [...selfCollectedCases, ...baseCaseCatalog];
-    if (!state.initialSelectionApplied && selfCollectedCases.length) {
-      state.filter = "self";
+    const watchCases = buildWatchCases(dashboard);
+    caseCatalog = [...watchCases, ...selfCollectedCases, ...baseCaseCatalog];
+    if (!state.initialSelectionApplied && (watchCases.length || selfCollectedCases.length)) {
+      state.filter = watchCases.length ? "watch" : "self";
       state.page = 1;
-      state.selectedCase = selfCollectedCases[0];
+      state.selectedCase = watchCases[0] || selfCollectedCases[0];
       state.initialSelectionApplied = true;
     }
     renderDashboardMeta(dashboard);
@@ -1062,6 +1111,7 @@ async function loadDashboard() {
     renderCases();
     selectCase(state.selectedCase.id, false);
     showContent();
+    applyHashTarget();
     elements["service-status"].textContent = "本机案例已就绪";
     elements["service-status"].classList.remove("is-error");
   } catch (error) {
@@ -1086,7 +1136,7 @@ function renderDashboardMeta(dashboard) {
     : "公开数据模型已运行，自主采集验证仍为空";
   elements["sidebar-case-count"].textContent = String(caseCatalog.length);
   elements["filter-all-count"].textContent = String(caseCatalog.length);
-  ["fall", "adl", "activity", "routine", "self"].forEach((kind) => {
+  ["fall", "adl", "activity", "routine", "self", "watch"].forEach((kind) => {
     elements[`filter-${kind}-count`].textContent = String(caseCatalog.filter((item) => item.kind === kind).length);
   });
   elements["limitations-list"].replaceChildren(
@@ -1141,7 +1191,7 @@ function renderCases() {
     );
     const status = createElement("span", {
       className: `case-item__status case-item__status--${item.kind}`,
-      text: item.kind === "fall" ? "受控" : item.kind === "adl" ? "日常" : item.kind === "activity" ? "活动" : item.kind === "self" ? "自采" : "合成",
+      text: item.kind === "fall" ? "受控" : item.kind === "adl" ? "日常" : item.kind === "activity" ? "活动" : item.kind === "self" ? "自采" : item.kind === "watch" ? "手表" : "合成",
     });
     const outcome = createElement("span", {
       className: "case-item__outcome",
@@ -1167,6 +1217,7 @@ function truthClass(item) {
   if (item.kind === "fall") return "truth-tag truth-tag--fall";
   if (item.kind === "activity") return "truth-tag truth-tag--activity";
   if (item.kind === "self") return "truth-tag truth-tag--activity";
+  if (item.kind === "watch") return "truth-tag truth-tag--activity";
   if (item.kind === "routine") return "truth-tag truth-tag--routine";
   return "truth-tag";
 }
@@ -1295,7 +1346,7 @@ function finishPlayback() {
   let watchState = "complete";
   let meterWidth = 100;
 
-  if (item.kind === "fall" || item.kind === "adl" || item.kind === "self") {
+  if (item.kind === "fall" || item.kind === "adl" || item.kind === "self" || item.kind === "watch") {
     const fall = live.fall_model;
     result = fall.screening;
     metricValue = fall.max_score === null ? "数据不足" : Number(fall.max_score).toFixed(3);
@@ -1767,6 +1818,19 @@ function setupNavigationTracking() {
   targets.forEach((target) => observer.observe(target));
 }
 
+function applyHashTarget() {
+  const hash = window.location.hash;
+  if (!hash || hash.length < 2) return;
+  try {
+    const target = document.querySelector(hash);
+    if (target) {
+      window.setTimeout(() => target.scrollIntoView({ block: "start" }), 80);
+    }
+  } catch (_) {
+    // Ignore anchors that are not valid selectors.
+  }
+}
+
 function setPresentationMode(enabled) {
   document.body.dataset.view = enabled ? "presentation" : "standard";
   elements["presentation-toggle"].setAttribute("aria-pressed", String(enabled));
@@ -1793,6 +1857,250 @@ function setupPresentationMode() {
   });
 }
 
+const liveState = {
+  active: false,
+  busy: false,
+  cursor: 0,
+  samples: [],
+  lastT: null,
+  timer: null,
+};
+
+const LIVE_STATUS_LABELS = {
+  stopped: "未开始",
+  connecting: "正在连接",
+  live: "已连接",
+  reconnecting: "断线重连中",
+  error: "连接错误",
+};
+
+function liveShowError(message) {
+  elements["live-state"].textContent = "读取中断";
+  elements["live-connection"].dataset.state = "busy";
+  elements["live-summary"].textContent = message;
+}
+
+function liveApplyStatus(payload) {
+  const label = LIVE_STATUS_LABELS[payload.status] || payload.status || "未知状态";
+  elements["live-state"].textContent = label;
+  elements["live-connection"].dataset.state =
+    payload.status === "live" ? "ready" : payload.status === "stopped" ? "idle" : "busy";
+  elements["live-port"].textContent = payload.port || "—";
+  elements["live-rate"].textContent = payload.rate_hz ? `${payload.rate_hz} 次/秒` : "—";
+  elements["live-count"].textContent = String(payload.sample_count ?? 0);
+  if (payload.last_error && payload.status !== "live") {
+    elements["live-summary"].textContent = payload.last_error;
+  }
+}
+
+function liveRenderChart() {
+  const svg = elements["live-chart"];
+  const width = 760;
+  const height = 240;
+  const padX = 14;
+  const padY = 16;
+  const gridRows = [];
+  for (let row = 0; row <= 3; row += 1) {
+    const y = padY + ((height - padY * 2) * row) / 3;
+    gridRows.push(`<line class="live-chart-grid" x1="${padX}" y1="${y.toFixed(1)}" x2="${width - padX}" y2="${y.toFixed(1)}" />`);
+  }
+  let path = "";
+  if (liveState.samples.length >= 2 && liveState.lastT !== null) {
+    const startT = liveState.lastT - 30000;
+    const windowed = liveState.samples.filter((sample) => sample[0] >= startT);
+    let maxMagnitude = 12;
+    windowed.forEach((sample) => {
+      const magnitude = Math.hypot(sample[1], sample[2], sample[3]);
+      if (magnitude > maxMagnitude) maxMagnitude = magnitude;
+    });
+    const usableWidth = width - padX * 2;
+    const usableHeight = height - padY * 2;
+    path = windowed
+      .map((sample, index) => {
+        const magnitude = Math.hypot(sample[1], sample[2], sample[3]);
+        const x = padX + (usableWidth * (sample[0] - startT)) / 30000;
+        const y = height - padY - (usableHeight * Math.min(magnitude, maxMagnitude)) / maxMagnitude;
+        return `${index === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
+      })
+      .join(" ");
+    elements["live-meta"].textContent = `最近 ${windowed.length} 个样本 · 合量峰值 ${maxMagnitude.toFixed(1)} m/s²`;
+  } else {
+    elements["live-meta"].textContent = liveState.active ? "等待数据" : "等待开始";
+  }
+  svg.innerHTML = `${gridRows.join("")}${path ? `<path class="live-chart-path" d="${path}" />` : ""}`;
+}
+
+function liveUpdateAnalysis(analysis) {
+  if (!analysis) return;
+  if (analysis.status === "WAITING") {
+    elements["live-activity"].textContent = analysis.detail || "等待数据";
+    elements["live-fall"].textContent = "等待数据";
+    elements["live-risk"].textContent = "等待数据";
+    return;
+  }
+  if (analysis.status === "ERROR") {
+    elements["live-conclusion"].textContent = analysis.detail || "滚动分析暂时失败。";
+    return;
+  }
+  const activity = analysis.activity || {};
+  const fall = analysis.fall || {};
+  const risk = analysis.risk || {};
+  elements["live-activity"].textContent =
+    activity.status === "COMPLETED" ? activity.label : activity.detail || "数据不足";
+  if (fall.status === "COMPLETED") {
+    elements["live-fall"].textContent = `${fall.screening}；最高特征匹配度 ${Number(fall.max_score).toFixed(3)}，达标窗口 ${fall.candidate_count} 个`;
+  } else {
+    elements["live-fall"].textContent = fall.detail || "数据不足";
+  }
+  if (risk.status === "COMPLETED" && risk.attention_detected) {
+    elements["live-risk"].textContent = `1/2/3 秒线索：${["1", "2", "3"]
+      .map((horizon) => (risk.attention_detected[horizon] ? "有" : "无"))
+      .join(" / ")}`;
+  } else {
+    elements["live-risk"].textContent = "尚未运行";
+  }
+  elements["live-conclusion"].textContent = analysis.conclusion || "—";
+  if (analysis.peaks) {
+    elements["live-summary"].textContent = `最近 ${analysis.window_s} 秒窗口：加速度峰值 ${analysis.peaks.acceleration_mps2} m/s²，转动峰值 ${analysis.peaks.rotation_rad_s} rad/s。`;
+  }
+}
+
+async function livePost(path) {
+  const response = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: "{}",
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload?.error?.message || "操作没有完成，请稍后重试。");
+  }
+  return payload;
+}
+
+function liveStopPolling() {
+  liveState.active = false;
+  if (liveState.timer) {
+    window.clearInterval(liveState.timer);
+    liveState.timer = null;
+  }
+}
+
+async function livePoll() {
+  if (!liveState.active) return;
+  try {
+    const response = await fetch(`/api/live?since=${liveState.cursor}`, {
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) throw new Error("实时接口暂时不可用。");
+    const payload = await response.json();
+    if (payload.status === "stopped" || payload.status === "error") {
+      liveStopPolling();
+      liveApplyStatus(payload);
+      elements["live-start"].disabled = false;
+      elements["live-stop"].disabled = true;
+      elements["live-save"].disabled = false;
+      return;
+    }
+    liveApplyStatus(payload);
+    if (payload.samples?.length) {
+      payload.samples.forEach((sample) => liveState.samples.push(sample));
+      if (liveState.samples.length > 1900) {
+        liveState.samples = liveState.samples.slice(-1900);
+      }
+      liveState.lastT = payload.samples[payload.samples.length - 1][0];
+    }
+    liveState.cursor = payload.cursor ?? liveState.cursor;
+    liveRenderChart();
+    liveUpdateAnalysis(payload.analysis);
+  } catch (error) {
+    liveShowError(error.message);
+  }
+}
+
+async function liveStart() {
+  if (liveState.busy) return;
+  liveState.busy = true;
+  try {
+    const payload = await livePost("/api/live/start");
+    liveStopPolling();
+    liveState.samples = [];
+    liveState.cursor = 0;
+    liveState.lastT = null;
+    liveState.active = true;
+    liveApplyStatus(payload);
+    elements["live-start"].disabled = true;
+    elements["live-stop"].disabled = false;
+    elements["live-save"].disabled = false;
+    liveRenderChart();
+    liveState.timer = window.setInterval(livePoll, 1000);
+    livePoll();
+  } catch (error) {
+    liveShowError(error.message);
+  } finally {
+    liveState.busy = false;
+  }
+}
+
+async function liveStop() {
+  if (liveState.busy) return;
+  liveState.busy = true;
+  try {
+    const payload = await livePost("/api/live/stop");
+    liveStopPolling();
+    liveApplyStatus(payload);
+    elements["live-state"].textContent = "已停止";
+    elements["live-start"].disabled = false;
+    elements["live-stop"].disabled = true;
+  } catch (error) {
+    liveShowError(error.message);
+  } finally {
+    liveState.busy = false;
+  }
+}
+
+async function liveSave() {
+  if (liveState.busy) return;
+  liveState.busy = true;
+  try {
+    const payload = await livePost("/api/live/save");
+    elements["live-summary"].textContent = `已保存 ${payload.sample_count} 个样本（${payload.duration_s} 秒）到 ${payload.file}；可在“新数据检测”里继续分析，或交给导入流程登记为案例。`;
+  } catch (error) {
+    elements["live-summary"].textContent = error.message;
+  } finally {
+    liveState.busy = false;
+  }
+}
+
+function setupLiveControls() {
+  elements["live-form"]?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const submitter = event.submitter;
+    if (submitter?.id === "live-start") liveStart();
+    else if (submitter?.id === "live-stop") liveStop();
+    else if (submitter?.id === "live-save") liveSave();
+  });
+  fetch("/api/live?since=0", { headers: { Accept: "application/json" } })
+    .then((response) => (response.ok ? response.json() : null))
+    .then((payload) => {
+      if (!payload) return;
+      liveApplyStatus(payload);
+      if (payload.status !== "stopped") {
+        liveState.active = true;
+        liveState.cursor = payload.cursor || 0;
+        payload.samples?.forEach((sample) => liveState.samples.push(sample));
+        if (payload.samples?.length) {
+          liveState.lastT = payload.samples[payload.samples.length - 1][0];
+        }
+        elements["live-start"].disabled = true;
+        elements["live-stop"].disabled = false;
+        liveRenderChart();
+        liveState.timer = window.setInterval(livePoll, 1000);
+      }
+    })
+    .catch(() => {});
+}
+
 elements["reload-form"].addEventListener("submit", (event) => {
   event.preventDefault();
   loadDashboard();
@@ -1812,6 +2120,7 @@ window.addEventListener("beforeunload", () => {
   state.loadController?.abort();
   state.evidenceController?.abort();
   state.uploadController?.abort();
+  if (liveState.timer) window.clearInterval(liveState.timer);
   if (state.clockTimer) window.clearInterval(state.clockTimer);
 });
 
@@ -1820,6 +2129,7 @@ setupCaseDetail();
 setupUploadControls();
 setupNavigationTracking();
 setupPresentationMode();
+setupLiveControls();
 updateClock();
 state.clockTimer = window.setInterval(updateClock, 30_000);
 loadDashboard();

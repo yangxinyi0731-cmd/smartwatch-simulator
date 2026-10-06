@@ -1,6 +1,19 @@
 # 项目持续状态
 
-更新时间：2026-09-26
+更新时间：2026-10-06
+
+## 2026-10-06：硬件接入：关 1/关 2 通过，关 3 采集工具就绪
+
+- 主仓库新增硬件工作线。M5StickS3（ESP32-S3-PICO-1，MAC 7c:e8:b1:e4:a1:c4）完成 Arduino 环境配置并首次烧录成功：M5Stack 板包 3.3.9（中国镜像）、M5Unified 0.2.25、M5GFX 0.2.32；官方 IMU 测试程序在表屏显示六轴数字（用户现场确认）。烧录可自动复位，无需手动进下载模式。
+- 新增 `firmware/m5sticks3_imu_stream/`（50 Hz 六轴串口数据流固件，已修复无读取端时的节拍“追赶爆发”问题）与 `tools/watch_recorder.py`、`scripts/windows/record-watch.cmd`（自动找串口、按名称和时长采集、保存到 `data/raw/watch/`，已被 .gitignore 忽略）。
+- 实测证据：10 秒静止采集 500 点、实际采样率 50.0 Hz；静止加速度合量 1.011 g、角速度量化步长 0.061（≈±2000 dps 量程 1 LSB），确认真机原始单位为 g 和 deg/s，采集脚本统一换算为 m/s² 与 rad/s。
+- 平台接入（同日）：新增 `research/early_risk/import_watch_serial.py`、登记文件 `data/catalog/watch_collected_v1.json` 与报告 `reports/early_risk/watch_collected_v1.json`；工作台服务器新增“手表实测”证据路由 `_build_watch_evidence`、`/api/workbench` 的 `watch_collected` 区块和 `/api/health` 的 `watch_test_case_count`；前端案例库新增“手表实测”分类卡片与 `watch` 类型渲染。首条真实记录 `watch-m01-still-01`（命名约定：P=真人动作录制、M=非真人设备测试；设备静置 25 秒、1250 点、50 Hz）已登记：跌倒筛查“未发现明显跌倒候选”、活动输出“睡眠或躺卧候选”；证据接口返回 241 个抽样点与六步流程。
+- 验证证据：`tests` 48 项 + `backend/tests` 59 项 = 107 项全部通过；`node --check` 通过；无头浏览器截图核对“手表实测 1”分类卡片、案例卡与默认选中（截图存档 `output/playwright/watch-category-still-case.png`）；页面与接口均为最新代码。
+- USB 实时首版（关 5 阶段 A，同日）：新增 `research/early_risk/watch_live.py`（串口读取线程、断线重连、120 秒滚动缓冲、滚动分析、保存 CSV）与工作台接口 `GET /api/live`（快照 + 滚动分析）和 `POST /api/live/start|stop|save`；前端新增“手表实时”导航与区域（连接状态、速率、样本数、最近 30 秒实时波形、每 2 秒滚动筛查、断线提示、保存按钮）。
+- 实时实测证据：启动后连续读取 24 秒，状态 `live`、端口 COM4、速率 50.0 次/秒、1200 个样本；滚动分析完成（活动输出“进食动作候选”、跌倒筛查“未发现明显跌倒候选”最高 0.585、提前风险已运行）；停止后保存 `data/raw/watch/live-20261006-124105.csv`（1211 样本、24.2 秒）。测试更新为 `tests` 49 项 + `backend/tests` 59 项 = 108 项全部通过。
+- 注意：实时读取在会话期间占用串口，与录制工具互斥；实时数据只有点击“保存本次实时数据”才会写入本机文件。
+- 待办：真实动作采集（走路/坐下/弯腰等，参与者编号待用户确定）、关 4 上传工作台演示、关 5 的 Wi-Fi 传输版本（USB 版已完成首版）、关 7-8 振动与外壳；关 0-2 的实物照片未归档；本工作线未提交或推送 Git。
+- 使用入口：录制用 `scripts\windows\record-watch.cmd`；实时查看在工作台“手表实时”区域（`#live`）。
 
 ## 当前阶段：留白修复版已同步 GitHub，等待用户复核
 

@@ -1,0 +1,91 @@
+{
+  "registry_version": "1.0.0",
+  "status": "WATCH_ENGINEERING_TEST",
+  "device": "M5StickS3 (ESP32-S3-PICO-1)",
+  "firmware": "firmware/m5sticks3_imu_stream",
+  "collection_tool": "tools/watch_recorder.py",
+  "transport": "USB Serial/JTAG（USB 串口），目标 50 Hz",
+  "received_case_count": 1,
+  "accepted_case_count": 1,
+  "rejected_case_count": 0,
+  "cases": [
+    {
+      "case_id": "watch-m01-still-01",
+      "participant_id": "M01",
+      "action_code": "still",
+      "action_label": "静止",
+      "action_group": "device_test",
+      "expected_meaning": "设备静置测试；用于验证手表采集与分析链路",
+      "truth_category": "WATCH_SERIAL_RECORDING",
+      "reported_label_source": "operator_input",
+      "independent_label_verification": false,
+      "capture_date": "2026-10-06",
+      "source_format": "m5sticks3_serial_csv",
+      "source_file": "data/raw/watch/watch-still-01.csv",
+      "source_file_sha256": "4772f69226fe7cb8ec615e61c167cb1f6cbcb4042e3b438e9da3b1a94f6bc5e4",
+      "processed_relative_path": "data/cases/watch_m5sticks3_v1/watch-m01-still-01.npy",
+      "processed_sha256": "9d5aad654d667f956c32d738e750b4711c361751f82af97a03e911131bff02ec",
+      "channels": [
+        "ax",
+        "ay",
+        "az",
+        "gx",
+        "gy",
+        "gz"
+      ],
+      "sample_rate_hz": 50.0,
+      "sample_count": 1250,
+      "duration_ms": 24980,
+      "quality": {
+        "status": "ACCEPTED",
+        "level": "良好",
+        "flags": [],
+        "source_sample_count": 1250,
+        "source_rate_hz": 50.0,
+        "max_source_gap_ms": 20.0,
+        "normalized_sample_count": 1250,
+        "normalized_rate_hz": 50.0,
+        "duration_s": 24.98
+      },
+      "analysis_summary": {
+        "activity_label": "睡眠或躺卧候选",
+        "activity_status": "COMPLETED",
+        "fall_screening": "未发现明显跌倒候选",
+        "fall_max_score": 0.057868,
+        "fall_threshold": 0.7,
+        "fall_candidate_window_count": 0,
+        "early_risk_attention_detected": {
+          "1": false,
+          "2": false,
+          "3": false
+        },
+        "conclusion": "综合判断：本段动作更接近日常活动。跌倒动作模型滑动检查了全部 22 个连续 4 秒窗口，最高特征匹配度 0.058，没有达到关注阈值 0.70。波形交叉核对也没有发现加速度与角速度同步失稳的组合（加速度峰值 10.44 m/s²、角速度峰值 0.12 rad/s）。活动识别模型把动作背景识别为“睡眠或躺卧候选”，与上述结果一致。提前风险代理分数同样没有给出需要关注的一致线索。因此本次没有形成跌倒候选；这属于相似度筛查的正常结果，不代表已排除所有风险。"
+      }
+    }
+  ],
+  "required_channels": [
+    "ax",
+    "ay",
+    "az",
+    "gx",
+    "gy",
+    "gz"
+  ],
+  "canonical_sample_rate_hz": 50.0,
+  "canonical_units": [
+    "m/s^2",
+    "m/s^2",
+    "m/s^2",
+    "rad/s",
+    "rad/s",
+    "rad/s"
+  ],
+  "note": "M5StickS3 手表通过 USB 串口实际采集的六轴记录；原始单位为 g 与 deg/s，采集脚本统一换算为 m/s² 与 rad/s 并重采样到 50 Hz。记录用于验证真实设备采集链路并运行现有研究模型，不代表现实跌倒预测能力。",
+  "limitations": [
+    "手表实测记录来自 M5StickS3（ESP32-S3-PICO-1）经 USB 串口采集，固件与采集脚本分别为 firmware/m5sticks3_imu_stream 与 tools/watch_recorder.py。",
+    "命名约定：P 开头为真人动作录制；M 开头为非真人的设备测试记录（仍为真实设备数据）；程序生成的合成数据不进入手表实测分类。本条的编号与动作名称由采集时登记，没有视频或第二标注者进行独立复核。",
+    "记录数量有限且属于工程测试，不构成对任何人群的现实风险验证。",
+    "1、2、3 秒输出仍是公开受控数据代理研究分数，不是现实跌倒预测；页面不发送任何通知。"
+  ],
+  "updated_on": "2026-10-06"
+}

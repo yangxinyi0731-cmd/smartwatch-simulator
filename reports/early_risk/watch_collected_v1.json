@@ -1,0 +1,47 @@
+{
+  "report_id": "watch-collected-engineering-test-v1",
+  "status": "COMPLETED",
+  "imported_on": "2026-10-06",
+  "device": "M5StickS3 (ESP32-S3-PICO-1)",
+  "collection_tool": "tools/watch_recorder.py",
+  "case_count": 1,
+  "cases": [
+    {
+      "case_id": "watch-m01-still-01",
+      "action_label": "静止",
+      "captured_on": "2026-10-06",
+      "quality": {
+        "status": "ACCEPTED",
+        "level": "良好",
+        "flags": [],
+        "source_sample_count": 1250,
+        "source_rate_hz": 50.0,
+        "max_source_gap_ms": 20.0,
+        "normalized_sample_count": 1250,
+        "normalized_rate_hz": 50.0,
+        "duration_s": 24.98
+      },
+      "analysis_summary": {
+        "activity_label": "睡眠或躺卧候选",
+        "activity_status": "COMPLETED",
+        "fall_screening": "未发现明显跌倒候选",
+        "fall_max_score": 0.057868,
+        "fall_threshold": 0.7,
+        "fall_candidate_window_count": 0,
+        "early_risk_attention_detected": {
+          "1": false,
+          "2": false,
+          "3": false
+        },
+        "conclusion": "综合判断：本段动作更接近日常活动。跌倒动作模型滑动检查了全部 22 个连续 4 秒窗口，最高特征匹配度 0.058，没有达到关注阈值 0.70。波形交叉核对也没有发现加速度与角速度同步失稳的组合（加速度峰值 10.44 m/s²、角速度峰值 0.12 rad/s）。活动识别模型把动作背景识别为“睡眠或躺卧候选”，与上述结果一致。提前风险代理分数同样没有给出需要关注的一致线索。因此本次没有形成跌倒候选；这属于相似度筛查的正常结果，不代表已排除所有风险。"
+      }
+    }
+  ],
+  "claim": "已登记 1 条由 M5StickS3 手表通过 USB 串口实际采集的六轴记录，并由当前活动识别、跌倒候选筛查和 1/2/3 秒研究模型完成计算。",
+  "limitations": [
+    "手表实测记录来自 M5StickS3（ESP32-S3-PICO-1）经 USB 串口采集，固件与采集脚本分别为 firmware/m5sticks3_imu_stream 与 tools/watch_recorder.py。",
+    "命名约定：P 开头为真人动作录制；M 开头为非真人的设备测试记录（仍为真实设备数据）；程序生成的合成数据不进入手表实测分类。本条的编号与动作名称由采集时登记，没有视频或第二标注者进行独立复核。",
+    "记录数量有限且属于工程测试，不构成对任何人群的现实风险验证。",
+    "1、2、3 秒输出仍是公开受控数据代理研究分数，不是现实跌倒预测；页面不发送任何通知。"
+  ]
+}

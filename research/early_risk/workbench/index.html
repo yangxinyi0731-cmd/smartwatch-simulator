@@ -69,6 +69,10 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M5 14v6h14v-6" /></svg>
             <span class="sidebar-nav__copy"><strong>新数据检测</strong><small>上传本机六轴文件</small></span>
           </a>
+          <a class="sidebar-nav__link" href="#live" aria-label="手表实时：读取本机串口实时数据">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 5 13h5l-1 9 8-11h-5z" /></svg>
+            <span class="sidebar-nav__copy"><strong>手表实时</strong><small>USB 实时波形</small></span>
+          </a>
           <a class="sidebar-nav__link" href="#records" aria-label="模型状态：了解四个模型">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5" /></svg>
             <span class="sidebar-nav__copy"><strong>模型状态</strong><small>了解四个模型</small></span>
@@ -272,6 +276,7 @@
                   <button type="submit" data-filter="activity" aria-pressed="false"><span class="case-overview__top"><span>活动识别</span><strong id="filter-activity-count">4</strong></span><small>CAPTURE-24</small></button>
                   <button type="submit" data-filter="routine" aria-pressed="false"><span class="case-overview__top"><span>生活规律</span><strong id="filter-routine-count">1</strong></span><small>合成演示</small></button>
                   <button class="is-active" type="submit" data-filter="self" aria-pressed="true"><span class="case-overview__top"><span>自主采集</span><strong id="filter-self-count">30</strong></span><small>P01 工程验证</small></button>
+                  <button type="submit" data-filter="watch" aria-pressed="false"><span class="case-overview__top"><span>手表实测</span><strong id="filter-watch-count">0</strong></span><small>M5StickS3</small></button>
                 </form>
 
                 <div class="case-list__heading"><strong>可回放记录</strong><span id="case-list-range" role="status" aria-live="polite">显示 1–6 / 30 组</span></div>
@@ -555,6 +560,53 @@
                   <p id="evidence-limit">波形用于展示输入变化，不能单独证明某个方向或身体部位造成了结果。</p>
                 </div>
               </div>
+            </section>
+
+            <section id="live" class="live-lab anchor-section" aria-labelledby="live-title">
+              <header class="panel-heading panel-heading--stacked">
+                <div><p class="panel-kicker">设备实时 · USB</p><h2 id="live-title">手表实时波形与滚动筛查</h2></div>
+                <span id="live-connection" class="device-connection" data-state="idle"><b aria-hidden="true"></b><span id="live-state">未开始</span></span>
+              </header>
+              <p class="case-panel__hint">用数据线读取手表此刻发送的六轴数据，在浏览器里滚动显示波形和研究模型输出。这里是研究演示，不是现实报警；数据只在本机处理。</p>
+
+              <form id="live-form" class="live-controls" aria-label="实时读取控制" novalidate>
+                <button id="live-start" class="button button--primary" type="submit">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5l11 7-11 7z" /></svg><span>开始实时读取</span>
+                </button>
+                <button id="live-stop" class="button button--quiet" type="submit" disabled>停止</button>
+                <button id="live-save" class="button button--quiet" type="submit" disabled>保存本次实时数据</button>
+              </form>
+
+              <dl class="live-facts" aria-label="实时连接状态">
+                <div><dt>串口端口</dt><dd id="live-port">—</dd></div>
+                <div><dt>采样速率</dt><dd id="live-rate">—</dd></div>
+                <div><dt>已读取样本</dt><dd id="live-count">0</dd></div>
+              </dl>
+
+              <div class="live-grid">
+                <figure class="risk-figure">
+                  <figcaption><div><span>实时波形</span><strong>加速度合量 · 最近 30 秒</strong></div><small id="live-meta">等待开始</small></figcaption>
+                  <div class="risk-chart-frame">
+                    <svg id="live-chart" viewBox="0 0 760 240" role="img" aria-labelledby="live-chart-title live-chart-desc">
+                      <title id="live-chart-title">手表实时加速度合量波形</title>
+                      <desc id="live-chart-desc">开始实时读取后，这里显示最近 30 秒的实际输入变化。</desc>
+                    </svg>
+                  </div>
+                  <p id="live-summary" class="chart-summary">曲线只显示真实输入变化，不画随机数据。</p>
+                </figure>
+
+                <div class="live-analysis">
+                  <h3>滚动筛查 · 每 2 秒更新</h3>
+                  <dl class="result-facts">
+                    <div><dt>当前动作候选</dt><dd id="live-activity">等待数据</dd></div>
+                    <div><dt>跌倒动作筛查</dt><dd id="live-fall">等待数据</dd></div>
+                    <div><dt>提前风险线索</dt><dd id="live-risk">等待数据</dd></div>
+                  </dl>
+                  <p id="live-conclusion" class="analysis-summary">收到至少 1 秒数据后开始滚动计算；20 秒后活动识别才会运行。</p>
+                </div>
+              </div>
+
+              <p class="upload-privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2M5 10h14v11H5z" /></svg>只在本机读取串口；除非点击“保存本次实时数据”，否则不会写入任何文件。</p>
             </section>
 
             <section id="records" class="model-strip anchor-section" aria-labelledby="model-strip-title">
