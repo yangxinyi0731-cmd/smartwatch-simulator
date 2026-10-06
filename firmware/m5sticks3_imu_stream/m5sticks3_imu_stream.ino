@@ -216,6 +216,7 @@ static void refreshDisplay() {
 
 void setup() {
   M5.begin();
+  M5.Power.setExtOutput(true);
   M5.Display.setRotation(0);
   M5.Display.setTextFont(&fonts::efontCN_16);
   Serial.begin(115200);
