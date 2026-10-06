@@ -87,6 +87,31 @@ LIVE_IMPORT_ACTIONS = {
 LIVE_SESSION = WatchLiveSession()
 
 
+def build_live_command(payload: dict[str, Any]) -> str:
+    """把网页上的手表控制操作转换成手表指令（白名单校验，绝不回显密码）。"""
+    action = str(payload.get("action", "")).strip()
+    if action == "text":
+        value = str(payload.get("value", "")).strip()
+        if not 1 <= len(value) <= 40:
+            raise ValueError("手表屏幕文字需要在 1–40 个字之间。")
+        if "\n" in value or "\r" in value:
+            raise ValueError("手表屏幕文字不能包含换行。")
+        return f"#TEXT:{value}"
+    if action == "clear":
+        return "#TEXT:"
+    if action == "vibrate":
+        return "#VIB:1"
+    if action == "wifi":
+        ssid = str(payload.get("ssid", "")).strip()
+        password = str(payload.get("password", ""))
+        if not 1 <= len(ssid) <= 32 or any(bad in ssid for bad in ("\n", "\r", "|")):
+            raise ValueError("Wi-Fi 名称不合法（不能包含换行或竖线）。")
+        if len(password) > 63 or "\n" in password or "\r" in password:
+            raise ValueError("Wi-Fi 密码不合法。")
+        return f"#STA:{ssid}|{password}"
+    raise ValueError("不支持的手表指令。")
+
+
 def import_live_recording(payload: dict[str, Any]) -> dict[str, Any]:
     """把手表实时保存的记录登记为一个“手表实测”案例。"""
     kind = str(payload.get("kind", "")).strip()
@@ -1482,6 +1507,7 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
             "/api/live/stop",
             "/api/live/save",
             "/api/live/import",
+            "/api/live/command",
         }:
             self._write_error(
                 HTTPStatus.NOT_FOUND,
@@ -1527,6 +1553,13 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
                 result = LIVE_SESSION.stop()
             elif route == "/api/live/import":
                 result = import_live_recording(payload)
+            elif route == "/api/live/command":
+                command = build_live_command(payload)
+                if not LIVE_SESSION.send_command(command):
+                    raise ValueError(
+                        "手表当前没有连接，先开始 USB 或 Wi-Fi 实时读取后再发送指令。"
+                    )
+                result = {"status": "SENT", "action": str(payload.get("action", "")).strip()}
             else:
                 result = LIVE_SESSION.save_recording()
         except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
@@ -1537,6 +1570,7 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
                 "/api/live/stop",
                 "/api/live/save",
                 "/api/live/import",
+                "/api/live/command",
             }:
                 code = "LIVE_REQUEST_INVALID"
             else:

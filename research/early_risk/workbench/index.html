@@ -612,6 +612,25 @@
                 </div>
               </div>
 
+              <div id="live-control" class="live-control">
+                <h3>手表控制（双向交互）</h3>
+                <p id="live-device" class="live-device">等待连接手表。</p>
+                <form id="live-text-form" class="live-control-form" aria-label="手表屏幕文字" novalidate>
+                  <label><span>在手表屏幕显示文字</span><input id="live-text-input" type="text" maxlength="40" placeholder="例如：走路测试" /></label>
+                  <button id="live-text-send" class="button button--quiet" type="submit">发送到手表</button>
+                </form>
+                <form id="live-wifi-form" class="live-control-form" aria-label="手表网络配对" novalidate>
+                  <label><span>连接 Wi-Fi（热点名）</span><input id="live-wifi-ssid" type="text" maxlength="32" placeholder="手机热点名" /></label>
+                  <label><span>密码</span><input id="live-wifi-password" type="password" maxlength="63" /></label>
+                  <button id="live-wifi-send" class="button button--quiet" type="submit">让手表连接</button>
+                </form>
+                <div class="live-control-actions">
+                  <button id="live-vibrate" class="button button--quiet" type="button">振动提示</button>
+                  <button id="live-clear" class="button button--quiet" type="button">清除屏幕提示</button>
+                </div>
+                <p id="live-control-result" class="chart-summary" role="status">控制指令会通过当前连接（USB 或 Wi-Fi）发送到手表。</p>
+              </div>
+
               <div id="live-alert" class="live-alert" hidden>
                 <strong id="live-alert-text">发现跌倒候选</strong>
                 <small>滚动窗口筛查结果 · 仅研究演示，不会通知任何人</small>

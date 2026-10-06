@@ -290,6 +290,7 @@ const ids = [
   "live-form", "live-start", "live-stop", "live-save", "live-source", "live-connection", "live-state", "live-source-label", "live-port", "live-rate", "live-count",
   "live-chart", "live-meta", "live-summary", "live-activity", "live-fall", "live-risk", "live-conclusion",
   "live-alert", "live-alert-text", "live-import", "live-import-form", "live-import-kind", "live-import-action", "live-import-note", "live-import-run", "live-import-result",
+  "live-device", "live-text-form", "live-text-input", "live-text-send", "live-wifi-form", "live-wifi-ssid", "live-wifi-password", "live-wifi-send", "live-vibrate", "live-clear", "live-control-result",
   "upload-file-row", "upload-file-name", "upload-file-meta", "upload-remove", "acceleration-unit",
   "gyroscope-unit", "upload-error", "upload-error-copy", "upload-submit", "upload-process-title",
   "upload-pipeline", "upload-result", "upload-result-title", "upload-result-state", "upload-generated-analysis", "upload-quality", "upload-activity",
@@ -1888,6 +1889,19 @@ function liveApplyStatus(payload) {
   elements["live-connection"].dataset.state =
     payload.status === "live" ? "ready" : payload.status === "stopped" ? "idle" : "busy";
   elements["live-source-label"].textContent = payload.source === "wifi" ? "Wi-Fi 无线" : "USB 串口";
+  const device = payload.device || {};
+  const deviceParts = [];
+  if (Number.isFinite(device.bat)) {
+    deviceParts.push(`电量 ${device.bat}%${device.chg ? "（充电中）" : ""}`);
+  }
+  if (payload.status === "live") {
+    deviceParts.push(payload.source === "wifi" ? "Wi-Fi 已连接" : "USB 已连接");
+  }
+  if (device.sta && device.ip) deviceParts.push(`无线地址 ${device.ip}`);
+  if (device.ap) deviceParts.push("自带热点已开启");
+  elements["live-device"].textContent = deviceParts.length
+    ? deviceParts.join(" · ")
+    : "等待连接手表。";
   elements["live-port"].textContent = payload.port || "—";
   elements["live-rate"].textContent = payload.rate_hz ? `${payload.rate_hz} 次/秒` : "—";
   elements["live-count"].textContent = String(payload.sample_count ?? 0);
@@ -2108,6 +2122,21 @@ async function liveImport() {
   }
 }
 
+async function liveSendCommand(action, extra = {}) {
+  await livePost("/api/live/command", { action, ...extra });
+  if (action === "wifi") {
+    elements["live-control-result"].textContent =
+      "已发送配对指令；手表连上后，上方“手表状态”会显示无线地址。";
+  } else if (action === "text") {
+    elements["live-control-result"].textContent = `已把“${extra.value}”发送到手表屏幕。`;
+  } else if (action === "vibrate") {
+    elements["live-control-result"].textContent =
+      "已发送振动提示（装好振动模块后即可看到效果）。";
+  } else {
+    elements["live-control-result"].textContent = "已清除手表屏幕上的提示文字。";
+  }
+}
+
 function setupLiveControls() {
   elements["live-form"]?.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -2119,6 +2148,41 @@ function setupLiveControls() {
   elements["live-import-form"]?.addEventListener("submit", (event) => {
     event.preventDefault();
     liveImport();
+  });
+  elements["live-text-form"]?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const value = elements["live-text-input"].value.trim();
+    if (!value) return;
+    try {
+      await liveSendCommand("text", { value });
+    } catch (error) {
+      elements["live-control-result"].textContent = error.message;
+    }
+  });
+  elements["live-wifi-form"]?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const ssid = elements["live-wifi-ssid"].value.trim();
+    const password = elements["live-wifi-password"].value;
+    if (!ssid) return;
+    try {
+      await liveSendCommand("wifi", { ssid, password });
+    } catch (error) {
+      elements["live-control-result"].textContent = error.message;
+    }
+  });
+  elements["live-vibrate"]?.addEventListener("click", async () => {
+    try {
+      await liveSendCommand("vibrate");
+    } catch (error) {
+      elements["live-control-result"].textContent = error.message;
+    }
+  });
+  elements["live-clear"]?.addEventListener("click", async () => {
+    try {
+      await liveSendCommand("clear");
+    } catch (error) {
+      elements["live-control-result"].textContent = error.message;
+    }
   });
   fetch("/api/live?since=0", { headers: { Accept: "application/json" } })
     .then((response) => (response.ok ? response.json() : null))

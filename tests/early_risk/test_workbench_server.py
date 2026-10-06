@@ -507,6 +507,36 @@ def test_watch_live_parsing_and_idle_endpoint() -> None:
             urlopen(bad_source, timeout=5)  # noqa: S310 - loopback test server
         assert source_error.value.code == 422
 
+        command_request = Request(
+            f"{base_url}/api/live/command",
+            data=json.dumps({"action": "text", "value": "走路测试"}).encode("utf-8"),
+            headers={"Content-Type": "application/json", "Accept": "application/json"},
+            method="POST",
+        )
+        with pytest.raises(HTTPError) as command_error:
+            urlopen(command_request, timeout=5)  # noqa: S310 - loopback test server
+        assert command_error.value.code == 422
+
+
+def test_live_command_builder_validates_inputs() -> None:
+    from research.early_risk.workbench_server import build_live_command
+
+    assert build_live_command({"action": "text", "value": "走路测试"}) == "#TEXT:走路测试"
+    assert build_live_command({"action": "clear"}) == "#TEXT:"
+    assert build_live_command({"action": "vibrate"}) == "#VIB:1"
+    assert (
+        build_live_command({"action": "wifi", "ssid": "Phone", "password": "12345678"})
+        == "#STA:Phone|12345678"
+    )
+    with pytest.raises(ValueError):
+        build_live_command({"action": "text", "value": "x" * 41})
+    with pytest.raises(ValueError):
+        build_live_command({"action": "text", "value": "a\nb"})
+    with pytest.raises(ValueError):
+        build_live_command({"action": "wifi", "ssid": "Bad|Name", "password": "x"})
+    with pytest.raises(ValueError):
+        build_live_command({"action": "reboot"})
+
 
 def test_watch_live_pushes_device_text_and_rejects_bad_source() -> None:
     from research.early_risk.watch_live import WatchLiveSession, resolve_wifi_host

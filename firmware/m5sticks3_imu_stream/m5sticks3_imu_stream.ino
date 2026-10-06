@@ -35,11 +35,22 @@ static WiFiClient tcp_client;
 
 static void setWifi(bool enabled);
 
+static uint32_t last_device_report_ms = 0;
+
 static void sendLine(const String &line) {
   Serial.println(line);
   if (tcp_client && tcp_client.connected()) {
     tcp_client.println(line);
   }
+}
+
+static void sendDeviceInfo() {
+  char info[128];
+  snprintf(info, sizeof(info), "#DEV:bat=%d;chg=%d;sta=%d;ap=%d;ip=%s",
+           (int)M5.Power.getBatteryLevel(), M5.Power.isCharging() ? 1 : 0,
+           station_connected ? 1 : 0, wifi_enabled ? 1 : 0,
+           WiFi.localIP().toString().c_str());
+  sendLine(info);
 }
 
 static void handleCommand(String command) {
@@ -74,6 +85,7 @@ static void handleCommand(String command) {
     value.trim();
     setWifi(value == "1");
   } else if (command == "#NET") {
+    sendDeviceInfo();
     sendLine("#NET:mode=" + String((int)WiFi.getMode()) +
              " status=" + String((int)WiFi.status()) +
              " station=" + String(station_enabled ? 1 : 0) +
@@ -301,6 +313,10 @@ void loop() {
   }
 
   uint32_t now_ms = millis();
+  if (now_ms - last_device_report_ms >= 5000) {
+    last_device_report_ms = now_ms;
+    sendDeviceInfo();
+  }
   if (vibration_until_ms && now_ms > vibration_until_ms) {
     digitalWrite(VIBRATION_PIN, LOW);
     vibration_until_ms = 0;

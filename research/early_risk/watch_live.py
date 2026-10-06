@@ -97,6 +97,7 @@ class WatchLiveSession:
         self._analysis_cache: tuple[float, dict[str, Any]] | None = None
         self._pushed_text: str | None = None
         self._alert_active = False
+        self._device: dict[str, Any] = {}
 
     def start(self, source: str = "usb") -> dict[str, Any]:
         with self._lock:
@@ -118,6 +119,7 @@ class WatchLiveSession:
             self._source = source
             self._pushed_text = None
             self._alert_active = False
+            self._device = {}
             self._started_at = time.time()
             self._status = "connecting"
             self._thread = threading.Thread(
@@ -185,6 +187,7 @@ class WatchLiveSession:
                     for t_ms, values in selected
                 ],
                 "last_sample_age_s": round(age, 2) if age is not None else None,
+                "device": dict(self._device),
             }
         payload["analysis"] = self._analysis(rows)
         return payload
@@ -337,8 +340,10 @@ class WatchLiveSession:
                         self._status = "reconnecting"
                         self._last_error = "超过 3 秒没有收到数据，正在尝试重新连接。"
                 continue
-            parsed = parse_sample_line(line.decode("ascii", errors="ignore"))
+            text = line.decode("utf-8", errors="ignore").strip()
+            parsed = parse_sample_line(text)
             if parsed is None:
+                self._handle_info_line(text)
                 continue
             t_ms, values = parsed
             with self._lock:
@@ -348,6 +353,38 @@ class WatchLiveSession:
                 if self._status != "live":
                     self._status = "live"
                     self._last_error = None
+
+    def _handle_info_line(self, text: str) -> None:
+        if not text.startswith("#"):
+            return
+        if text.startswith("#DEV:"):
+            info: dict[str, Any] = {}
+            for pair in text[5:].split(";"):
+                if "=" not in pair:
+                    continue
+                key, _, value = pair.partition("=")
+                key = key.strip()
+                value = value.strip()
+                if key in {"bat", "chg", "sta", "ap"}:
+                    try:
+                        info[key] = int(value)
+                    except ValueError:
+                        continue
+                elif key == "ip":
+                    info[key] = value
+            if info:
+                with self._lock:
+                    self._device.update(info)
+        elif text.startswith("#STA:OK ip="):
+            with self._lock:
+                self._device["sta"] = 1
+                self._device["ip"] = text.split("ip=", 1)[1].strip()
+        elif text.startswith("#WIFI:AP"):
+            with self._lock:
+                self._device["ap"] = 1
+        elif text.startswith("#WIFI:OFF") or text.startswith("#WIFI:FAIL"):
+            with self._lock:
+                self._device["ap"] = 0
 
     def _analysis(self, rows: list[tuple[int, tuple[float, ...]]]) -> dict[str, Any]:
         if len(rows) < MINIMUM_ANALYSIS_SAMPLES:
