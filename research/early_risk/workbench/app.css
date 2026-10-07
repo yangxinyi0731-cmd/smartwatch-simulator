@@ -4579,6 +4579,22 @@ body[data-view="presentation"] .result-facts dt {
   color: var(--sim-header);
 }
 
+.live-notify {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sim-sidebar-muted);
+  cursor: pointer;
+}
+
+.live-notify input {
+  width: 16px;
+  height: 16px;
+}
+
 .live-control-hint {
   margin: 0;
   font-size: 15px;

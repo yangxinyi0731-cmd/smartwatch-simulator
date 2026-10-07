@@ -289,7 +289,7 @@ const ids = [
   "filter-activity-count", "filter-routine-count", "filter-self-count", "filter-watch-count", "upload-form", "upload-dropzone", "sensor-file",
   "live-form", "live-start", "live-stop", "live-save", "live-source", "live-connection", "live-state", "live-source-label", "live-port", "live-rate", "live-count",
   "live-chart", "live-meta", "live-summary", "live-activity", "live-fall", "live-risk", "live-conclusion",
-  "live-alert", "live-alert-text", "live-import", "live-import-form", "live-import-kind", "live-import-action", "live-import-note", "live-import-run", "live-import-result",
+  "live-alert", "live-alert-text", "live-notify", "live-import", "live-import-form", "live-import-kind", "live-import-action", "live-import-note", "live-import-run", "live-import-result",
   "live-device", "live-control-hint", "live-text-form", "live-text-input", "live-text-send", "live-wifi-form", "live-wifi-ssid", "live-wifi-password", "live-wifi-send", "live-vibrate", "live-clear", "live-control-result",
   "upload-file-row", "upload-file-name", "upload-file-meta", "upload-remove", "acceleration-unit",
   "gyroscope-unit", "upload-error", "upload-error-copy", "upload-submit", "upload-process-title",
@@ -1903,6 +1903,9 @@ function liveApplyStatus(payload) {
     ? deviceParts.join(" · ")
     : "等待连接手表。";
   const liveConnected = payload.status === "live";
+  if (typeof payload.notify === "boolean" && elements["live-notify"].checked !== payload.notify) {
+    elements["live-notify"].checked = payload.notify;
+  }
   elements["live-control-hint"].textContent = liveConnected
     ? "已连接：下面的按钮会立即作用在手表上，先点“振动提示”试一下。"
     : "还没连接：先在上方点“开始实时读取”，下面的按钮才能用。";
@@ -2156,6 +2159,18 @@ function setupLiveControls() {
   elements["live-import-form"]?.addEventListener("submit", (event) => {
     event.preventDefault();
     liveImport();
+  });
+  elements["live-notify"]?.addEventListener("change", async (event) => {
+    const enabled = event.target.checked;
+    try {
+      await livePost("/api/live/notify", { enabled });
+      elements["live-control-result"].textContent = enabled
+        ? "已开启：筛查结果会同步到手表（红屏 + 振动）。"
+        : "已关闭同步：手表屏幕和振动都不再收到提醒。";
+    } catch (error) {
+      event.target.checked = !enabled;
+      elements["live-control-result"].textContent = error.message;
+    }
   });
   elements["live-text-form"]?.addEventListener("submit", async (event) => {
     event.preventDefault();

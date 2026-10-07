@@ -98,6 +98,7 @@ class WatchLiveSession:
         self._pushed_text: str | None = None
         self._alert_active = False
         self._device: dict[str, Any] = {}
+        self._device_notify = True
 
     def start(self, source: str = "usb") -> dict[str, Any]:
         with self._lock:
@@ -120,6 +121,7 @@ class WatchLiveSession:
             self._pushed_text = None
             self._alert_active = False
             self._device = {}
+            self._device_notify = True
             self._started_at = time.time()
             self._status = "connecting"
             self._thread = threading.Thread(
@@ -161,6 +163,13 @@ class WatchLiveSession:
             return False
         return False
 
+    def set_device_notify(self, enabled: bool) -> dict[str, Any]:
+        self._device_notify = bool(enabled)
+        if not self._device_notify:
+            self.send_command("#TEXT:")
+            self.send_command("#VIB:0")
+        return {"status": "OK", "enabled": self._device_notify}
+
     def snapshot(self, since: int) -> dict[str, Any]:
         with self._lock:
             total = self._cursor
@@ -188,6 +197,7 @@ class WatchLiveSession:
                 ],
                 "last_sample_age_s": round(age, 2) if age is not None else None,
                 "device": dict(self._device),
+                "notify": self._device_notify,
             }
         payload["analysis"] = self._analysis(rows)
         return payload
@@ -410,6 +420,8 @@ class WatchLiveSession:
         return result
 
     def _push_device_text(self, result: dict[str, Any]) -> None:
+        if not self._device_notify:
+            return
         if result.get("status") != "COMPLETED":
             if self._pushed_text != "分析中":
                 self.send_command("#STATUS:分析中")
@@ -427,22 +439,37 @@ class WatchLiveSession:
             if activity.get("status") == "COMPLETED"
             else "滚动分析"
         )
+        risk = result.get("risk", {})
+        attention = (
+            risk.get("attention_detected")
+            if risk.get("status") == "COMPLETED"
+            else None
+        )
+        if attention and any(attention.get(horizon) for horizon in ("1", "2", "3")):
+            horizons = [
+                horizon for horizon in ("1", "2", "3") if attention.get(horizon)
+            ]
+            status_line = f"{label}·风险{horizons[0]}秒"
+        else:
+            status_line = f"{label}·无线索"
         if candidates:
             text = f"跌倒候选 {candidates} 个"
-            if not self._alert_active or text != self._pushed_text:
+            if not self._alert_active:
                 self.send_command(f"#TEXT:{text}")
                 self.send_command("#VIB:1")
                 self._alert_active = True
+                self._pushed_text = text
+            elif text != self._pushed_text:
+                self.send_command(f"#TEXT:{text}")
                 self._pushed_text = text
             return
         if self._alert_active:
             self.send_command("#TEXT:")
             self.send_command("#VIB:0")
             self._alert_active = False
-        text = f"{label} · 无跌倒候选"
-        if text != self._pushed_text:
-            self.send_command(f"#STATUS:{text}")
-            self._pushed_text = text
+        if status_line != self._pushed_text:
+            self.send_command(f"#STATUS:{status_line}")
+            self._pushed_text = status_line
 
     def _compute_analysis(
         self, rows: list[tuple[int, tuple[float, ...]]]

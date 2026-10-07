@@ -517,6 +517,47 @@ def test_watch_live_parsing_and_idle_endpoint() -> None:
             urlopen(command_request, timeout=5)  # noqa: S310 - loopback test server
         assert command_error.value.code == 422
 
+        notify_request = Request(
+            f"{base_url}/api/live/notify",
+            data=json.dumps({"enabled": "yes"}).encode("utf-8"),
+            headers={"Content-Type": "application/json", "Accept": "application/json"},
+            method="POST",
+        )
+        with pytest.raises(HTTPError) as notify_error:
+            urlopen(notify_request, timeout=5)  # noqa: S310 - loopback test server
+        assert notify_error.value.code == 422
+
+
+def test_watch_live_notify_switch_mutes_device_push() -> None:
+    from research.early_risk.watch_live import WatchLiveSession
+
+    session = WatchLiveSession()
+    sent: list[str] = []
+    session.send_command = lambda command: sent.append(command) or True  # type: ignore[method-assign]
+
+    session._push_device_text(
+        {
+            "status": "COMPLETED",
+            "activity": {"status": "COMPLETED", "label": "走路"},
+            "fall": {"status": "COMPLETED", "candidate_count": 2},
+        }
+    )
+    assert "#VIB:1" in sent
+
+    sent.clear()
+    result = session.set_device_notify(False)
+    assert result["enabled"] is False
+    assert "#TEXT:" in sent
+    session._push_device_text(
+        {
+            "status": "COMPLETED",
+            "activity": {"status": "COMPLETED", "label": "走路"},
+            "fall": {"status": "COMPLETED", "candidate_count": 3},
+        }
+    )
+    assert sent == ["#TEXT:", "#VIB:0"]
+    assert session.set_device_notify(True)["enabled"] is True
+
 
 def test_live_command_builder_validates_inputs() -> None:
     from research.early_risk.workbench_server import build_live_command
@@ -556,7 +597,18 @@ def test_watch_live_pushes_device_text_and_rejects_bad_source() -> None:
             "fall": {"status": "COMPLETED", "candidate_count": 0},
         }
     )
-    assert sent == ["#STATUS:走路 · 无跌倒候选"]
+    assert sent == ["#STATUS:走路·无线索"]
+
+    sent.clear()
+    session._push_device_text(
+        {
+            "status": "COMPLETED",
+            "activity": {"status": "COMPLETED", "label": "走路"},
+            "fall": {"status": "COMPLETED", "candidate_count": 0},
+            "risk": {"status": "COMPLETED", "attention_detected": {"1": True, "2": False, "3": False}},
+        }
+    )
+    assert sent == ["#STATUS:走路·风险1秒"]
 
     sent.clear()
     session._push_device_text(

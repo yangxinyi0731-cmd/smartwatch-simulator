@@ -1508,6 +1508,7 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
             "/api/live/save",
             "/api/live/import",
             "/api/live/command",
+            "/api/live/notify",
         }:
             self._write_error(
                 HTTPStatus.NOT_FOUND,
@@ -1560,6 +1561,11 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
                         "手表当前没有连接，先开始 USB 或 Wi-Fi 实时读取后再发送指令。"
                     )
                 result = {"status": "SENT", "action": str(payload.get("action", "")).strip()}
+            elif route == "/api/live/notify":
+                enabled = payload.get("enabled")
+                if not isinstance(enabled, bool):
+                    raise ValueError("提醒开关需要 true 或 false。")
+                result = LIVE_SESSION.set_device_notify(enabled)
             else:
                 result = LIVE_SESSION.save_recording()
         except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
@@ -1571,6 +1577,7 @@ class WorkbenchRequestHandler(BaseHTTPRequestHandler):
                 "/api/live/save",
                 "/api/live/import",
                 "/api/live/command",
+                "/api/live/notify",
             }:
                 code = "LIVE_REQUEST_INVALID"
             else:
