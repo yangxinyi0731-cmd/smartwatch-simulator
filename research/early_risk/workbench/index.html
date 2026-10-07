@@ -613,21 +613,23 @@
               </div>
 
               <div id="live-control" class="live-control">
-                <h3>手表控制（双向交互）</h3>
+                <h3>手表控制</h3>
+                <p id="live-control-hint" class="live-control-hint" data-state="idle">还没连接：先在上方点“开始实时读取”，下面的按钮才能用。</p>
                 <p id="live-device" class="live-device">等待连接手表。</p>
+                <div class="live-control-actions">
+                  <button id="live-vibrate" class="button button--primary" type="button" disabled>振动提示（先试这个）</button>
+                  <button id="live-clear" class="button button--quiet" type="button" disabled>清除屏幕提示</button>
+                </div>
+                <p class="live-control-note">“振动提示”= 让插在 Port A 的振动模块短震三下（约 2 秒），用来确认提醒通道正常。没装模块时点击不会有任何反应。</p>
                 <form id="live-text-form" class="live-control-form" aria-label="手表屏幕文字" novalidate>
                   <label><span>在手表屏幕显示文字</span><input id="live-text-input" type="text" maxlength="40" placeholder="例如：走路测试" /></label>
-                  <button id="live-text-send" class="button button--quiet" type="submit">发送到手表</button>
+                  <button id="live-text-send" class="button button--quiet" type="submit" disabled>发送到手表</button>
                 </form>
                 <form id="live-wifi-form" class="live-control-form" aria-label="手表网络配对" novalidate>
-                  <label><span>连接 Wi-Fi（热点名）</span><input id="live-wifi-ssid" type="text" maxlength="32" placeholder="手机热点名" /></label>
+                  <label><span>让手表连接 Wi-Fi（热点名）</span><input id="live-wifi-ssid" type="text" maxlength="32" placeholder="手机热点名" /></label>
                   <label><span>密码</span><input id="live-wifi-password" type="password" maxlength="63" /></label>
-                  <button id="live-wifi-send" class="button button--quiet" type="submit">让手表连接</button>
+                  <button id="live-wifi-send" class="button button--quiet" type="submit" disabled>开始配对</button>
                 </form>
-                <div class="live-control-actions">
-                  <button id="live-vibrate" class="button button--quiet" type="button">振动提示</button>
-                  <button id="live-clear" class="button button--quiet" type="button">清除屏幕提示</button>
-                </div>
                 <p id="live-control-result" class="chart-summary" role="status">控制指令会通过当前连接（USB 或 Wi-Fi）发送到手表。</p>
               </div>
 

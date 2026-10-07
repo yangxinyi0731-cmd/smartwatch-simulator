@@ -4579,6 +4579,23 @@ body[data-view="presentation"] .result-facts dt {
   color: var(--sim-header);
 }
 
+.live-control-hint {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--sim-amber);
+}
+
+.live-control-hint[data-state="ready"] {
+  color: var(--sim-teal);
+}
+
+.live-control-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--sim-sidebar-muted);
+}
+
 .live-device {
   margin: 0;
   font-size: 15px;

@@ -8,13 +8,15 @@ static const char *WIFI_AP_SSID = "HealthWatch";
 static const char *WIFI_AP_PASSWORD = "healthwatch";
 static const uint16_t WIFI_TCP_PORT = 5005;
 static const int VIBRATION_PIN = 9;
-static const uint32_t VIBRATION_MAX_MS = 2000;
+static const int VIBRATION_PIN_ALT = 10;
+static const uint32_t VIBRATION_PATTERN_MS = 1700;
 static const uint32_t ALERT_STALE_MS = 8000;
 
 static uint32_t next_sample_us = 0;
 static uint32_t sample_count = 0;
 static uint32_t last_display_ms = 0;
-static uint32_t vibration_until_ms = 0;
+static uint32_t vibration_started_ms = 0;
+static bool vibration_active = false;
 static uint32_t last_alert_ms = 0;
 
 static bool wifi_enabled = false;
@@ -130,11 +132,12 @@ static void handleCommand(String command) {
     String value = command.substring(5);
     value.trim();
     if (value == "1") {
-      digitalWrite(VIBRATION_PIN, HIGH);
-      vibration_until_ms = millis() + VIBRATION_MAX_MS;
+      vibration_active = true;
+      vibration_started_ms = millis();
     } else {
+      vibration_active = false;
       digitalWrite(VIBRATION_PIN, LOW);
-      vibration_until_ms = 0;
+      digitalWrite(VIBRATION_PIN_ALT, LOW);
     }
   }
   sendLine("#ACK:" + command);
@@ -222,7 +225,9 @@ void setup() {
   Serial.begin(115200);
   Serial.setTxTimeoutMs(5);
   pinMode(VIBRATION_PIN, OUTPUT);
+  pinMode(VIBRATION_PIN_ALT, OUTPUT);
   digitalWrite(VIBRATION_PIN, LOW);
+  digitalWrite(VIBRATION_PIN_ALT, LOW);
   WiFi.mode(WIFI_STA);
   WiFi.setSleep(false);
   if (WiFi.begin() == WL_NO_SSID_AVAIL) {
@@ -318,9 +323,17 @@ void loop() {
     last_device_report_ms = now_ms;
     sendDeviceInfo();
   }
-  if (vibration_until_ms && now_ms > vibration_until_ms) {
-    digitalWrite(VIBRATION_PIN, LOW);
-    vibration_until_ms = 0;
+  if (vibration_active) {
+    uint32_t elapsed = now_ms - vibration_started_ms;
+    if (elapsed >= VIBRATION_PATTERN_MS) {
+      vibration_active = false;
+      digitalWrite(VIBRATION_PIN, LOW);
+      digitalWrite(VIBRATION_PIN_ALT, LOW);
+    } else {
+      bool on = (elapsed % 600) < 400;
+      digitalWrite(VIBRATION_PIN, on ? HIGH : LOW);
+      digitalWrite(VIBRATION_PIN_ALT, on ? HIGH : LOW);
+    }
   }
   if (alert_active && now_ms - last_alert_ms > ALERT_STALE_MS) {
     alert_active = false;

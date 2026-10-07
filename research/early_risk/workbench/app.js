@@ -290,7 +290,7 @@ const ids = [
   "live-form", "live-start", "live-stop", "live-save", "live-source", "live-connection", "live-state", "live-source-label", "live-port", "live-rate", "live-count",
   "live-chart", "live-meta", "live-summary", "live-activity", "live-fall", "live-risk", "live-conclusion",
   "live-alert", "live-alert-text", "live-import", "live-import-form", "live-import-kind", "live-import-action", "live-import-note", "live-import-run", "live-import-result",
-  "live-device", "live-text-form", "live-text-input", "live-text-send", "live-wifi-form", "live-wifi-ssid", "live-wifi-password", "live-wifi-send", "live-vibrate", "live-clear", "live-control-result",
+  "live-device", "live-control-hint", "live-text-form", "live-text-input", "live-text-send", "live-wifi-form", "live-wifi-ssid", "live-wifi-password", "live-wifi-send", "live-vibrate", "live-clear", "live-control-result",
   "upload-file-row", "upload-file-name", "upload-file-meta", "upload-remove", "acceleration-unit",
   "gyroscope-unit", "upload-error", "upload-error-copy", "upload-submit", "upload-process-title",
   "upload-pipeline", "upload-result", "upload-result-title", "upload-result-state", "upload-generated-analysis", "upload-quality", "upload-activity",
@@ -1902,6 +1902,14 @@ function liveApplyStatus(payload) {
   elements["live-device"].textContent = deviceParts.length
     ? deviceParts.join(" · ")
     : "等待连接手表。";
+  const liveConnected = payload.status === "live";
+  elements["live-control-hint"].textContent = liveConnected
+    ? "已连接：下面的按钮会立即作用在手表上，先点“振动提示”试一下。"
+    : "还没连接：先在上方点“开始实时读取”，下面的按钮才能用。";
+  elements["live-control-hint"].dataset.state = liveConnected ? "ready" : "idle";
+  ["live-text-send", "live-wifi-send", "live-vibrate", "live-clear"].forEach((id) => {
+    elements[id].disabled = !liveConnected;
+  });
   elements["live-port"].textContent = payload.port || "—";
   elements["live-rate"].textContent = payload.rate_hz ? `${payload.rate_hz} 次/秒` : "—";
   elements["live-count"].textContent = String(payload.sample_count ?? 0);
