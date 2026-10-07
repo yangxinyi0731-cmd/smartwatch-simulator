@@ -536,6 +536,18 @@ def test_live_sample_units_are_converted_to_canonical() -> None:
     assert abs(converted[3] - 1.0) < 1e-9
 
 
+def test_watch_live_remembers_wifi_ip(tmp_path, monkeypatch) -> None:
+    from research.early_risk import watch_live
+
+    target = tmp_path / "wifi_target.json"
+    monkeypatch.setattr(watch_live, "WIFI_TARGET_PATH", target)
+    session = watch_live.WatchLiveSession()
+    session._remember_wifi_ip("10.0.0.9")
+    assert "10.0.0.9" in target.read_text(encoding="utf-8")
+    session._remember_wifi_ip("10.0.0.9")
+    assert target.read_text(encoding="utf-8").count("10.0.0.9") == 1
+
+
 def test_watch_live_notify_switch_mutes_device_push() -> None:
     from research.early_risk.watch_live import WatchLiveSession
 

@@ -299,14 +299,16 @@ void loop() {
 
   readCommands(Serial, usb_buffer);
   if (wifi_enabled || station_enabled) {
-    if (!tcp_client || !tcp_client.connected()) {
-      WiFiClient candidate = tcp_server.available();
-      if (candidate) {
-        tcp_client = candidate;
-        tcp_client.setNoDelay(true);
-        tcp_client.println("#READY:M5StickS3");
-        sendLine("#TCP:client-connected");
-      }
+    WiFiClient candidate = tcp_server.available();
+    if (candidate) {
+      tcp_client.stop();
+      tcp_client = candidate;
+      tcp_client.setNoDelay(true);
+      tcp_batch = "";
+      tcp_client.println("#READY:M5StickS3");
+      sendLine("#TCP:client-connected");
+    } else if (tcp_client && !tcp_client.connected()) {
+      tcp_client.stop();
     }
     if (tcp_client && tcp_client.connected()) {
       readCommands(tcp_client, tcp_buffer);

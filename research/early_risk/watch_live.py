@@ -401,6 +401,10 @@ class WatchLiveSession:
             if info:
                 with self._lock:
                     self._device.update(info)
+            if info.get("sta") == 1 and info.get("ip"):
+                address = str(info["ip"])
+                if address and address != "0.0.0.0":
+                    self._remember_wifi_ip(address)
         elif text.startswith("#STA:OK ip="):
             with self._lock:
                 self._device["sta"] = 1
@@ -411,6 +415,28 @@ class WatchLiveSession:
         elif text.startswith("#WIFI:OFF") or text.startswith("#WIFI:FAIL"):
             with self._lock:
                 self._device["ap"] = 0
+
+    def _remember_wifi_ip(self, address: str) -> None:
+        """把手表当前无线地址写回 wifi_target.json，避免热点换网后地址过期。"""
+        try:
+            payload = (
+                json.loads(WIFI_TARGET_PATH.read_text(encoding="utf-8"))
+                if WIFI_TARGET_PATH.is_file()
+                else {}
+            )
+        except (OSError, ValueError):
+            payload = {}
+        if payload.get("ip") == address:
+            return
+        payload["ip"] = address
+        try:
+            WIFI_TARGET_PATH.parent.mkdir(parents=True, exist_ok=True)
+            WIFI_TARGET_PATH.write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+        except OSError:
+            pass
 
     def _analysis(self, rows: list[tuple[int, tuple[float, ...]]]) -> dict[str, Any]:
         if len(rows) < MINIMUM_ANALYSIS_SAMPLES:
