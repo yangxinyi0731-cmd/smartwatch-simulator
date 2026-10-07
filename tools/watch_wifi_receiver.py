@@ -24,6 +24,20 @@ OUTPUT_DIR = PROJECT_ROOT / "data" / "raw" / "watch"
 TARGET_PATH = OUTPUT_DIR / "wifi_target.json"
 DEFAULT_HOST = "192.168.4.1"
 WATCH_PORT = 5005
+G_TO_MS2 = 9.80665
+DEG_TO_RAD = 0.017453292519943295
+
+
+def canonical_values(raw: list[float]) -> list[float]:
+    """把手表原始单位（g、deg/s）换算为项目标准单位（m/s²、rad/s）。"""
+    return [
+        raw[0] * G_TO_MS2,
+        raw[1] * G_TO_MS2,
+        raw[2] * G_TO_MS2,
+        raw[3] * DEG_TO_RAD,
+        raw[4] * DEG_TO_RAD,
+        raw[5] * DEG_TO_RAD,
+    ]
 
 
 def resolve_host() -> str:
@@ -74,9 +88,10 @@ def main() -> None:
                 if len(parts) != 7 or not parts[0].isdigit():
                     continue
                 try:
-                    samples.append((int(parts[0]), [float(value) for value in parts[1:]]))
+                    raw_values = [float(value) for value in parts[1:]]
                 except ValueError:
                     continue
+                samples.append((int(parts[0]), canonical_values(raw_values)))
             done = args.seconds - (deadline - time.monotonic())
             sys.stdout.write(f"\r已读取 {len(samples)} 个样本（{done:.1f} 秒）")
             sys.stdout.flush()

@@ -528,6 +528,14 @@ def test_watch_live_parsing_and_idle_endpoint() -> None:
         assert notify_error.value.code == 422
 
 
+def test_live_sample_units_are_converted_to_canonical() -> None:
+    from research.early_risk.watch_live import canonical_values
+
+    converted = canonical_values((1.0, 0.0, 0.0, 57.29577951308232, 0.0, 0.0))
+    assert abs(converted[0] - 9.80665) < 1e-6
+    assert abs(converted[3] - 1.0) < 1e-9
+
+
 def test_watch_live_notify_switch_mutes_device_push() -> None:
     from research.early_risk.watch_live import WatchLiveSession
 

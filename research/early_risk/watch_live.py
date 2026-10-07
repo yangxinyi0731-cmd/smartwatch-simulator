@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 import socket
 import threading
@@ -29,6 +30,8 @@ from research.early_risk.common import PROJECT_ROOT
 from research.early_risk.upload_analysis import analyze_normalized_imu
 
 TARGET_RATE_HZ = 50.0
+G_TO_MS2 = 9.80665
+DEG_TO_RAD = math.pi / 180.0
 BUFFER_SECONDS = 120
 OFFLINE_AFTER_S = 3.0
 RECONNECT_INTERVAL_S = 2.0
@@ -64,6 +67,18 @@ def find_watch_port() -> str | None:
     candidates = [item for item in list_ports.comports() if item.vid == 0x303A]
     candidates.sort(key=lambda item: 0 if item.pid == 0x1001 else 1)
     return candidates[0].device if candidates else None
+
+
+def canonical_values(values: tuple[float, ...]) -> tuple[float, ...]:
+    """把固件原始单位（加速度 g、角速度 deg/s）换算为项目标准单位（m/s²、rad/s）。"""
+    return (
+        values[0] * G_TO_MS2,
+        values[1] * G_TO_MS2,
+        values[2] * G_TO_MS2,
+        values[3] * DEG_TO_RAD,
+        values[4] * DEG_TO_RAD,
+        values[5] * DEG_TO_RAD,
+    )
 
 
 def resolve_wifi_host() -> str:
@@ -356,6 +371,7 @@ class WatchLiveSession:
                 self._handle_info_line(text)
                 continue
             t_ms, values = parsed
+            values = canonical_values(values)
             with self._lock:
                 self._buffer.append((t_ms, values))
                 self._cursor += 1
